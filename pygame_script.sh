@@ -2,6 +2,7 @@
 
 # Check if $CONDA_PREFIX is empty
 if [ -z "$CONDA_PREFIX" ]; then
+	source ~/.zshrc
     conda activate "42AI-$USER"
 fi
 
