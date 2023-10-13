@@ -2,6 +2,8 @@ import pygame
 import sys
 import math
 
+from minmax import nextTurn
+
 # Define the constant display size
 WIDTH = 640
 HEIGHT = 480
@@ -142,7 +144,8 @@ while run:
     if turn == 1:
         draw_circles(grid_x, grid_y, surface, black_transparent)
     elif turn == 2:
-        draw_circles(grid_x, grid_y, surface, white_transparent)
+        nextTurn(map)
+        turn = 1
 
     for x in range(num_lines):
         for y in range(num_lines):
