@@ -2,7 +2,7 @@ import pygame
 import sys
 import math
 
-from minmax import best_move, nextTurn
+from minmax import best_move, check_winner
 
 # Define the constant display size
 WIDTH = 640
@@ -67,33 +67,6 @@ def draw_circles(x, y, target, color):
         ),
         circle_size,
     )
-
-
-def check_winner(map):
-    # Check rows
-    for row in map:
-        if all(cell == 1 for cell in row):
-            return 1
-        elif all(cell == 2 for cell in row):
-            return 2
-
-    # Check columns
-    for col in range(3):
-        if all(map[row][col] == 1 for row in range(3)):
-            return 1
-        elif all(map[row][col] == 2 for row in range(3)):
-            return 2
-
-    # Check diagonals
-    if all(map[i][i] == 1 for i in range(3)) or all(
-        map[i][2 - i] == 1 for i in range(3)
-    ):
-        return 1
-    elif all(map[i][i] == 2 for i in range(3)) or all(
-        map[i][2 - i] == 2 for i in range(3)
-    ):
-        return 2
-    return None
 
 
 # initalize red as a beginning
