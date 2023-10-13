@@ -47,7 +47,7 @@ white = (255, 255, 255)
 white_transparent = pygame.Color(255, 255, 255, 128)
 
 # Create a grid data structure (a list of lists) to represent the intersections
-map = [[0] * num_lines for _ in range(num_lines)]
+board = [[0] * num_lines for _ in range(num_lines)]
 run = True
 
 
@@ -98,18 +98,19 @@ while run:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 # Ensure the cursor position is within the grid area
-                if map[grid_x][grid_y] != 0:
+                if board[grid_x][grid_y] != 0:
                     print("this cell is already occupied")
                 else:
-                    map[grid_x][grid_y] = turn
+                    board[grid_x][grid_y] = turn
                     turn = 3 - turn
                     trace.append((grid_x, grid_y))
             elif event.button == 3:
                 if len(trace) > 0:
                     x, y = trace.pop()
-                    if map[x][y] != 0:
-                        map[x][y] = 0
+                    if board[x][y] != 0:
+                        board[x][y] = 0
                         turn = 3 - turn
+                        best_move(board)
                     print("right click:", x, y)
 
     surface.fill((0, 0, 0, 0))
@@ -117,17 +118,17 @@ while run:
     if turn == 1:
         draw_circles(grid_x, grid_y, surface, black_transparent)
     elif turn == 2:
-        best_move(map)
+        best_move(board)
         turn = 1
 
     for x in range(num_lines):
         for y in range(num_lines):
-            if map[x][y] == 1:
+            if board[x][y] == 1:
                 draw_circles(x, y, screen, black)
-            elif map[x][y] == 2:
+            elif board[x][y] == 2:
                 draw_circles(x, y, screen, white)
 
-    winner = check_winner(map)
+    winner = check_winner(board)
     if winner is not None:
         print(f"Player {winner} wins!")
         winner = None
