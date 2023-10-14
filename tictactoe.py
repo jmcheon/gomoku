@@ -70,7 +70,7 @@ def draw_circles(x, y, target, color):
 
 
 # initalize red as a beginning
-turn = 1
+turn = 2
 grid_x, grid_y = 0, 0
 trace = []
 while run:
@@ -104,9 +104,6 @@ while run:
                     board[grid_x][grid_y] = turn
                     turn = 3 - turn
                     trace.append((grid_x, grid_y))
-                    best_move(board)
-                    print(board)
-                    turn = 3 - turn
             elif event.button == 3:
                 if len(trace) > 0:
                     x, y = trace.pop()
@@ -117,8 +114,20 @@ while run:
 
     surface.fill((0, 0, 0, 0))
 
+    winner = check_winner(board)
+    if winner is not None:
+        if winner == "tie":
+            print("tie game")
+        else:
+            print(f"Player {winner} wins!")
+        winner = None
+        break
+
     if turn == 1:
         draw_circles(grid_x, grid_y, surface, black_transparent)
+    elif turn == 2:
+        best_move(board)
+        turn = 3 - turn
 
     for x in range(num_lines):
         for y in range(num_lines):
@@ -126,12 +135,6 @@ while run:
                 draw_circles(x, y, screen, black)
             elif board[x][y] == 2:
                 draw_circles(x, y, screen, white)
-
-    winner = check_winner(board)
-    if winner is not None:
-        print(f"Player {winner} wins!")
-        winner = None
-        break
 
     pygame.display.update()
 
