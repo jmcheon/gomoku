@@ -110,7 +110,6 @@ while run:
                     if board[x][y] != 0:
                         board[x][y] = 0
                         turn = 3 - turn
-                        best_move(board)
                     print("right click:", x, y)
 
     surface.fill((0, 0, 0, 0))

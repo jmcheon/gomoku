@@ -2,6 +2,8 @@ import pygame
 import sys
 import math
 
+from minmax import check_winner
+
 # Define the constant display size
 WIDTH = 461
 HEIGHT = 459
@@ -17,9 +19,10 @@ grid_end_y = 451  # Adjust this value to position the grid as needed
 num_lines = 19  # Adjust this value to change the number of lines in the grid
 
 # Calculate the cell size based on the specified starting and ending positions
-cell_size = math.ceil(
-    min((grid_end_x - grid_start_x), (grid_end_y - grid_start_y)) / num_lines
-)
+cell_size_x = math.ceil((grid_end_x - grid_start_x) / num_lines)
+cell_size_y = math.ceil((grid_end_y - grid_start_y) / num_lines)
+
+# print(cell_size_x, cell_size_y)
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -27,6 +30,8 @@ surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 
 # Load your grid image
 bg = pygame.image.load("baduk_board.png")
+bg.set_colorkey((230, 230, 230))
+
 
 # Define a red color for the dots
 red = (255, 0, 0)
@@ -47,15 +52,20 @@ run = True
 
 
 def draw_circles(x, y, target, color):
+    initial_size = 8  # Adjust as needed
+    max_lines = 20  # Adjust as needed
+    size_increase = 1  # Adjust as needed
+
+    circle_size = initial_size + (max_lines - num_lines) * size_increase
     # print(x, y, grid_x, grid_y)
     pygame.draw.circle(
         target,
         color,
         (
-            x * cell_size + grid_start_x + cell_size // 2,
-            y * cell_size + grid_start_y + cell_size // 2,
+            x * cell_size_x + grid_start_x + cell_size_x // 2,
+            y * cell_size_y + grid_start_y + cell_size_y // 2,
         ),
-        5,
+        circle_size,
     )
 
 
@@ -63,7 +73,6 @@ def draw_circles(x, y, target, color):
 turn = 1
 grid_x, grid_y = 0, 0
 trace = []
-
 while run:
     screen.blit(bg, (0, 0))
     screen.blit(surface, (0, 0))
@@ -75,13 +84,13 @@ while run:
     mouse_x -= grid_start_x
     mouse_y -= grid_start_y
     if (
-        0 <= mouse_x < cell_size * num_lines
-        and 0 <= mouse_y < cell_size * num_lines
+        0 <= mouse_x < cell_size_x * num_lines
+        and 0 <= mouse_y < cell_size_y * num_lines
         and mouse_x <= WIDTH - grid_start_x
         and mouse_y <= HEIGHT - grid_start_y
     ):
-        grid_x = mouse_x // cell_size
-        grid_y = mouse_y // cell_size
+        grid_x = mouse_x // cell_size_x
+        grid_y = mouse_y // cell_size_y
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -116,6 +125,12 @@ while run:
                 draw_circles(x, y, screen, black)
             elif board[x][y] == 2:
                 draw_circles(x, y, screen, white)
+
+    winner = check_winner(board)
+    if winner is not None:
+        print(f"Player {winner} wins!")
+        winner = None
+        break
 
     pygame.display.update()
 
