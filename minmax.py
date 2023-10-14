@@ -1,34 +1,42 @@
 import random
 
 
-scores = {1: -10, 2: 10, None: 0}
+scores = {1: -10, 2: 10, "tie": 0}
+
+
+def equals3(a, b, c):
+    return a == b and b == c and a != 0
 
 
 def check_winner(board):
-    # Check rows
-    for row in board:
-        if all(cell == 1 for cell in row):
-            return 1
-        elif all(cell == 2 for cell in row):
-            return 2
+    winner = None
 
-    # Check columns
-    for col in range(3):
-        if all(board[row][col] == 1 for row in range(3)):
-            return 1
-        elif all(board[row][col] == 2 for row in range(3)):
-            return 2
+    # Horizontal
+    for i in range(3):
+        if equals3(board[i][0], board[i][1], board[i][2]):
+            winner = board[i][0]
 
-    # Check diagonals
-    if all(board[i][i] == 1 for i in range(3)) or all(
-        board[i][2 - i] == 1 for i in range(3)
-    ):
-        return 1
-    elif all(board[i][i] == 2 for i in range(3)) or all(
-        board[i][2 - i] == 2 for i in range(3)
-    ):
-        return 2
-    return None
+    # Vertical
+    for i in range(3):
+        if equals3(board[0][i], board[1][i], board[2][i]):
+            winner = board[0][i]
+
+    # Diagonal
+    if equals3(board[0][0], board[1][1], board[2][2]):
+        winner = board[0][0]
+    if equals3(board[2][0], board[1][1], board[0][2]):
+        winner = board[2][0]
+
+    open_spots = 0
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == 0:
+                open_spots += 1
+
+    if winner is None and open_spots == 0:
+        return "tie"
+    else:
+        return winner
 
 
 def nextTurn(board):
@@ -44,8 +52,6 @@ def nextTurn(board):
 
 
 def best_move(board):
-    print(board)
-    print(board[0][0], board[1][0])
     # available = []
     best_score = float("-inf")
     best_move = []
@@ -54,7 +60,7 @@ def best_move(board):
         for j in range(len(board[0])):
             if board[i][j] == 0:
                 board[i][j] = 2
-                score = minmax(board, 0, False)
+                score = minmax(board.copy(), 0, False)
                 print("score", score)
                 board[i][j] = 0
                 if score > best_score:
@@ -75,7 +81,7 @@ def minmax(board, depth, isMaximizing):
             for j in range(len(board[0])):
                 if board[i][j] == 0:
                     board[i][j] = 2
-                    score = minmax(board.copy(), depth + 1, False)
+                    score = minmax(board, depth + 1, False)
                     board[i][j] = 0
                     best_score = max(score, best_score)
         return best_score
@@ -86,7 +92,7 @@ def minmax(board, depth, isMaximizing):
             for j in range(len(board[0])):
                 if board[i][j] == 0:
                     board[i][j] = 1
-                    score = minmax(board.copy(), depth + 1, True)
+                    score = minmax(board, depth + 1, True)
                     board[i][j] = 0
                     bestScore = min(score, bestScore)
 

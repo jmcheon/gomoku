@@ -104,6 +104,9 @@ while run:
                     board[grid_x][grid_y] = turn
                     turn = 3 - turn
                     trace.append((grid_x, grid_y))
+                    best_move(board)
+                    print(board)
+                    turn = 3 - turn
             elif event.button == 3:
                 if len(trace) > 0:
                     x, y = trace.pop()
@@ -116,9 +119,6 @@ while run:
 
     if turn == 1:
         draw_circles(grid_x, grid_y, surface, black_transparent)
-    elif turn == 2:
-        best_move(board)
-        turn = 1
 
     for x in range(num_lines):
         for y in range(num_lines):
