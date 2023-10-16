@@ -1,11 +1,12 @@
-import pygame
-import sys
 import math
+import sys
 
-from minmax import best_move, check_winner
+import pygame
+
 from Board import Board
-from mcts import *
 from config import *
+from mcts import *
+from minmax import best_move, check_winner
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -30,7 +31,7 @@ white = (255, 255, 255)
 white_transparent = pygame.Color(255, 255, 255, 128)
 
 # Create a grid data structure (a list of lists) to represent the intersections
-board = Board()  # [[0] * num_lines for _ in range(num_lines)]
+board = Board()  # [[0] * NUM_LINES for _ in range(NUM_LINES)]
 
 
 def draw_circles(x, y, target, color):
@@ -38,14 +39,14 @@ def draw_circles(x, y, target, color):
     max_lines = 50  # Adjust as needed
     size_increase = 1  # Adjust as needed
 
-    circle_size = initial_size + (max_lines - num_lines) * size_increase
+    circle_size = initial_size + (max_lines - NUM_LINES) * size_increase
     # print(x, y, grid_x, grid_y)
     pygame.draw.circle(
         target,
         color,
         (
-            x * cell_size_x + grid_start_x + cell_size_x // 2,
-            y * cell_size_y + grid_start_y + cell_size_y // 2,
+            x * CELL_SIZE_X + GRID_START_X + CELL_SIZE_X // 2,
+            y * CELL_SIZE_Y + GRID_START_Y + CELL_SIZE_Y // 2,
         ),
         circle_size,
     )
@@ -72,16 +73,16 @@ while run:
     mouse_x, mouse_y = pygame.mouse.get_pos()
 
     # Calculate the grid coordinates for the cursor position with offset
-    mouse_x -= grid_start_x
-    mouse_y -= grid_start_y
+    mouse_x -= GRID_START_X
+    mouse_y -= GRID_START_Y
     if (
-        0 <= mouse_x < cell_size_x * num_lines
-        and 0 <= mouse_y < cell_size_y * num_lines
-        and mouse_x <= WIDTH - grid_start_x
-        and mouse_y <= HEIGHT - grid_start_y
+        0 <= mouse_x < CELL_SIZE_X * NUM_LINES
+        and 0 <= mouse_y < CELL_SIZE_Y * NUM_LINES
+        and mouse_x <= WIDTH - GRID_START_X
+        and mouse_y <= HEIGHT - GRID_START_Y
     ):
-        grid_x = mouse_x // cell_size_x
-        grid_y = mouse_y // cell_size_y
+        grid_x = mouse_x // CELL_SIZE_X
+        grid_y = mouse_y // CELL_SIZE_Y
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -89,7 +90,7 @@ while run:
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 # Ensure the cursor position is within the grid area
-                if board.position[(grid_y, grid_x)] != board.empty_square:
+                if board.position[grid_y][grid_x] != board.empty_square:
                     print("this cell is already occupied")
                 else:
                     # board[grid_x][grid_y] = turn
@@ -124,11 +125,11 @@ while run:
         board = best_move(board)
         turn = PLAYER1
 
-    for x in range(num_lines):
-        for y in range(num_lines):
-            if board.position[(y, x)] == "X":
+    for x in range(NUM_LINES):
+        for y in range(NUM_LINES):
+            if board.position[y][x] == "X":
                 draw_circles(x, y, screen, black)
-            elif board.position[(y, x)] == "O":
+            elif board.position[y][x] == "O":
                 draw_circles(x, y, screen, white)
 
     pygame.display.update()

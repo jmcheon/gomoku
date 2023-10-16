@@ -1,6 +1,7 @@
 from copy import deepcopy
-from mcts import *
+
 from config import *
+from mcts import *
 
 
 class Board:
@@ -11,25 +12,25 @@ class Board:
         self.empty_square = "."
 
         # define board position
-        self.position = {}
+        self.position = [["."] * NUM_LINES for _ in range(NUM_LINES)]
 
-        self.init_board()
+        # self.init_board()
 
         # create a copy of previous board state if available
         if board is not None:
             self.__dict__ = deepcopy(board.__dict__)
 
     def init_board(self) -> None:
-        for row in range(num_lines):
-            for col in range(num_lines):
-                self.position[row, col] = self.empty_square
+        for row in range(NUM_LINES):
+            for col in range(NUM_LINES):
+                self.position[row][col] = self.empty_square
 
     def make_move(self, row: int, col: int) -> object:
         # create new board instance that inherits from the current state
         board = Board(self)
 
         # make move
-        board.position[row, col] = self.player1
+        board.position[row][col] = self.player1
 
         # swap players
         (board.player1, board.player2) = (board.player2, board.player1)
@@ -40,44 +41,45 @@ class Board:
     # get whether the game is drawn
     def is_draw(self) -> bool:
         # loop over board square
-        for row, col in self.position:
-            if self.position[row, col] == self.empty_square:
-                return False
+        for row in range(NUM_LINES):
+            for col in range(NUM_LINES):
+                if self.position[row][col] == self.empty_square:
+                    return False
         return True
 
     # get whether is the game won
     def is_win(self) -> bool:
         # vertical sequence detection
-        for col in range(num_lines):
+        for col in range(NUM_LINES):
             winning_sequence = []
-            for row in range(num_lines):
-                if self.position[row, col] == self.player2:
+            for row in range(NUM_LINES):
+                if self.position[row][col] == self.player2:
                     winning_sequence.append((row, col))
-                if len(winning_sequence) == num_lines:
+                if len(winning_sequence) == NUM_LINES:
                     return True
         # horizontal sequence detection
-        for row in range(num_lines):
+        for row in range(NUM_LINES):
             winning_sequence = []
-            for col in range(num_lines):
-                if self.position[row, col] == self.player2:
+            for col in range(NUM_LINES):
+                if self.position[row][col] == self.player2:
                     winning_sequence.append((row, col))
-                if len(winning_sequence) == num_lines:
+                if len(winning_sequence) == NUM_LINES:
                     return True
         # 1st diagonal sequence detection
         winning_sequence = []
-        for row in range(num_lines):
+        for row in range(NUM_LINES):
             col = row
-            if self.position[row, col] == self.player2:
+            if self.position[row][col] == self.player2:
                 winning_sequence.append((row, col))
-            if len(winning_sequence) == num_lines:
+            if len(winning_sequence) == NUM_LINES:
                 return True
         # 2nd diagonal sequence detection
         winning_sequence = []
-        for row in range(num_lines):
-            col = num_lines - row - 1
-            if self.position[row, col] == self.player2:
+        for row in range(NUM_LINES):
+            col = NUM_LINES - row - 1
+            if self.position[row][col] == self.player2:
                 winning_sequence.append((row, col))
-            if len(winning_sequence) == num_lines:
+            if len(winning_sequence) == NUM_LINES:
                 return True
         return False
 
@@ -85,9 +87,9 @@ class Board:
     def generate_states(self) -> list:
         # define states list (move list - list of available actions to consider)
         action_lst = []
-        for row in range(num_lines):
-            for col in range(num_lines):
-                if self.position[row, col] == self.empty_square:
+        for row in range(NUM_LINES):
+            for col in range(NUM_LINES):
+                if self.position[row][col] == self.empty_square:
                     action_lst.append(self.make_move(row, col))
         return action_lst
 
@@ -104,7 +106,7 @@ class Board:
                 row = int(user_input.split(",")[1]) - 1
                 col = int(user_input.split(",")[0]) - 1
 
-                if self.position[row, col] != self.empty_square:
+                if self.position[row][col] != self.empty_square:
                     print("Illegal move")
                     continue
 
@@ -129,9 +131,9 @@ class Board:
 
     def __str__(self) -> str:
         board_str = ""
-        for row in range(num_lines):
-            for col in range(num_lines):
-                board_str += "%s" % self.position[row, col]
+        for row in range(NUM_LINES):
+            for col in range(NUM_LINES):
+                board_str += "%s" % self.position[row][col]
             board_str += "\n"
         # prepend side to move
         if self.player1 == "X":
