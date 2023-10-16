@@ -2,7 +2,7 @@ from copy import deepcopy
 
 
 class Board:
-    def __init__(self, board=None):
+    def __init__(self, board=None) -> None:
         # define players
         self.player1 = "X"
         self.player2 = "O"
@@ -17,26 +17,26 @@ class Board:
         if board is not None:
             self.__dict__ = deepcopy(board.__dict__)
 
-    def init_board(self):
+    def init_board(self) -> None:
         for row in range(3):
             for col in range(3):
                 self.position[row, col] = self.empty_square
 
-    def make_move(self, row, col):
-        # create new board instance
-        board = Board()
+    def make_move(self, row: int, col: int) -> object:
+        # create new board instance that inherits from the current state
+        board = Board(self)
 
         # make move
         board.position[row, col] = self.player1
 
         # swap players
-        (self.player1, self.player2) = (self.player2, self.player1)
+        (board.player1, board.player2) = (board.player2, board.player1)
 
         # return new board state
         return board
 
     # get whether the game is drawn
-    def is_draw(self):
+    def is_draw(self) -> bool:
         # loop over board square
         for row, col in self.position:
             if self.position[row, col] == self.empty_square:
@@ -44,7 +44,7 @@ class Board:
         return True
 
     # get whether is the game won
-    def is_win(self):
+    def is_win(self) -> bool:
         # vertical sequence detection
         for col in range(3):
             winning_sequence = []
@@ -79,7 +79,17 @@ class Board:
                 return True
         return False
 
-    def __str__(self):
+    # generate legal moves to play in the current position
+    def generate_states(self) -> list:
+        # define states list (move list - list of available actions to consider)
+        action_lst = []
+        for row in range(3):
+            for col in range(3):
+                if self.position[row, col] == self.empty_square:
+                    action_lst.append(self.make_move(row, col))
+        return action_lst
+
+    def __str__(self) -> str:
         board_str = ""
         for row in range(3):
             for col in range(3):
@@ -101,6 +111,9 @@ class Board:
 
 if __name__ == "__main__":
     board = Board()
+    print("This is initial board state:", board)
+
+    """
     board.position = {
         (0, 0): "O",
         (0, 1): "X",
@@ -117,3 +130,12 @@ if __name__ == "__main__":
         print("Won:", board.is_win())
     else:
         print("Drawn:", board.is_draw())
+        """
+
+    action_lst = board.generate_states()
+    board = action_lst[0]
+    print("First generated move has been made on the board:", board)
+
+    action_lst = board.generate_states()
+    for action in action_lst:
+        print(action)
