@@ -1,5 +1,6 @@
 from copy import deepcopy
 from mcts import *
+from config import *
 
 
 class Board:
@@ -19,8 +20,8 @@ class Board:
             self.__dict__ = deepcopy(board.__dict__)
 
     def init_board(self) -> None:
-        for row in range(3):
-            for col in range(3):
+        for row in range(num_lines):
+            for col in range(num_lines):
                 self.position[row, col] = self.empty_square
 
     def make_move(self, row: int, col: int) -> object:
@@ -47,36 +48,36 @@ class Board:
     # get whether is the game won
     def is_win(self) -> bool:
         # vertical sequence detection
-        for col in range(3):
+        for col in range(num_lines):
             winning_sequence = []
-            for row in range(3):
+            for row in range(num_lines):
                 if self.position[row, col] == self.player2:
                     winning_sequence.append((row, col))
-                if len(winning_sequence) == 3:
+                if len(winning_sequence) == num_lines:
                     return True
         # horizontal sequence detection
-        for row in range(3):
+        for row in range(num_lines):
             winning_sequence = []
-            for col in range(3):
+            for col in range(num_lines):
                 if self.position[row, col] == self.player2:
                     winning_sequence.append((row, col))
-                if len(winning_sequence) == 3:
+                if len(winning_sequence) == num_lines:
                     return True
         # 1st diagonal sequence detection
         winning_sequence = []
-        for row in range(3):
+        for row in range(num_lines):
             col = row
             if self.position[row, col] == self.player2:
                 winning_sequence.append((row, col))
-            if len(winning_sequence) == 3:
+            if len(winning_sequence) == num_lines:
                 return True
         # 2nd diagonal sequence detection
         winning_sequence = []
-        for row in range(3):
-            col = 3 - row - 1
+        for row in range(num_lines):
+            col = num_lines - row - 1
             if self.position[row, col] == self.player2:
                 winning_sequence.append((row, col))
-            if len(winning_sequence) == 3:
+            if len(winning_sequence) == num_lines:
                 return True
         return False
 
@@ -84,8 +85,8 @@ class Board:
     def generate_states(self) -> list:
         # define states list (move list - list of available actions to consider)
         action_lst = []
-        for row in range(3):
-            for col in range(3):
+        for row in range(num_lines):
+            for col in range(num_lines):
                 if self.position[row, col] == self.empty_square:
                     action_lst.append(self.make_move(row, col))
         return action_lst
@@ -128,8 +129,8 @@ class Board:
 
     def __str__(self) -> str:
         board_str = ""
-        for row in range(3):
-            for col in range(3):
+        for row in range(num_lines):
+            for col in range(num_lines):
                 board_str += "%s" % self.position[row, col]
             board_str += "\n"
         # prepend side to move

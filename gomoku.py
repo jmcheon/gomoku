@@ -5,26 +5,7 @@ import math
 from minmax import best_move, check_winner
 from Board import Board
 from mcts import *
-
-# Define the constant display size
-WIDTH = 640
-HEIGHT = 480
-
-# Specify the starting position for the grid
-grid_start_x = 20  # Adjust this value to position the grid as needed
-grid_start_y = 20  # Adjust this value to position the grid as needed
-
-grid_end_x = 620  # Adjust this value to position the grid as needed
-grid_end_y = 460  # Adjust this value to position the grid as needed
-
-# Define the number of lines (which determines grid size)
-num_lines = 3  # Adjust this value to change the number of lines in the grid
-
-# Calculate the cell size based on the specified starting and ending positions
-cell_size_x = math.ceil((grid_end_x - grid_start_x) / num_lines)
-cell_size_y = math.ceil((grid_end_y - grid_start_y) / num_lines)
-
-# print(cell_size_x, cell_size_y)
+from config import *
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -50,8 +31,6 @@ white_transparent = pygame.Color(255, 255, 255, 128)
 
 # Create a grid data structure (a list of lists) to represent the intersections
 board = Board()  # [[0] * num_lines for _ in range(num_lines)]
-
-run = True
 
 
 def draw_circles(x, y, target, color):
@@ -81,9 +60,10 @@ def best_move(board):
 
 
 # initalize red as a beginning
-turn = 1
+turn = PLAYER1
 grid_x, grid_y = 0, 0
 trace = []
+run = True
 while run:
     screen.fill((200, 200, 200, 128))
     screen.blit(surface, (0, 0))
@@ -115,15 +95,19 @@ while run:
                     # board[grid_x][grid_y] = turn
                     board = board.make_move(grid_y, grid_x)
                     print(board)
-                    turn = 3 - turn
+                    turn = PLAYER1 if turn == PLAYER2 else PLAYER2
                     trace.append((grid_x, grid_y))
+
+            # TODO: revert with right click
+            """
             elif event.button == 3:
                 if len(trace) > 0:
                     x, y = trace.pop()
                     if board[x][y] != 0:
                         board[x][y] = 0
-                        turn = 3 - turn
+                        turn = PLAYER1 if turn == PLAYER2 else PLAYER2
                     print("right click:", x, y)
+            """
 
     surface.fill((0, 0, 0, 0))
 
@@ -134,11 +118,11 @@ while run:
         print("Game is drawn")
         break
 
-    if turn == 1:
+    if turn == PLAYER1:
         draw_circles(grid_x, grid_y, surface, black_transparent)
-    elif turn == 2:
+    elif turn == PLAYER2:
         board = best_move(board)
-        turn = 1
+        turn = PLAYER1
 
     for x in range(num_lines):
         for y in range(num_lines):

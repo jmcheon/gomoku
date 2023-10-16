@@ -28,7 +28,7 @@ class MCTS:
         # create root node
         self.root = TreeNode(initial_state, None)
 
-        for iteration in range(1000):
+        for iteration in range(300):
             # select a node (selection phase)
             node = self.select(self.root)
 
