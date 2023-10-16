@@ -91,7 +91,7 @@ class Board:
         return action_lst
 
     def game_loop(self):
-        print("This is initial board state:", board)
+        # print("This is initial board state:", board)
         mcts = MCTS()
         while True:
             user_input = input(">")
@@ -110,6 +110,8 @@ class Board:
                 self = self.make_move(row, col)
 
                 best_move = mcts.search(self)
+                # print("best_move:", best_move.board.position)
+                # print(best_move.parent.board)
                 self = best_move.board
                 print(self)
 
@@ -143,11 +145,17 @@ class Board:
             )
         return board_str
 
+    def check_winner(self):
+        if self.is_win():
+            return True
+        if self.is_draw():
+            return "tie"
+
 
 if __name__ == "__main__":
     board = Board()
 
-    mcts = MCTS()
+    # mcts = MCTS()
     """
     score = mcts.rollout(board)
     print("score:", score)

@@ -58,6 +58,7 @@ class MCTS:
         # generate legal states for the given node
         state_lst = node.board.generate_states()
         for state in state_lst:
+            # print("state:", state)
             # make sure the current state is not present in child nodes
             if str(state.position) not in node.children:
                 # create a new node
@@ -139,4 +140,6 @@ class MCTS:
                 best_moves.append(child_node)
 
         # return one of the best moves randomly
+        # best_move = random.choice(best_moves)
+        # print("best_move board:", best_move.board)
         return random.choice(best_moves)
