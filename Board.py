@@ -33,6 +33,7 @@ class Board:
         board.position[row][col] = self.player1
 
         # swap players
+        board.swap_player()
         # (board.player1, board.player2) = (board.player2, board.player1)
 
         # return new board state
