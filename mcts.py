@@ -1,6 +1,8 @@
 import math
 import random
 
+from QLearningAgent import QLearningAgent
+
 
 class TreeNode:
     def __init__(self, board, parent):
@@ -23,6 +25,9 @@ class TreeNode:
 
 
 class MCTS:
+    def __init__(self, agent):
+        self.agent = agent
+
     # search for the best move in the current position
     def search(self, initial_state):
         # create root node

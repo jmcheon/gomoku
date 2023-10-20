@@ -1,7 +1,6 @@
 from copy import deepcopy
 
 from config import *
-from mcts import *
 
 
 class Board:
@@ -99,7 +98,7 @@ class Board:
 
     def game_loop(self):
         # print("This is initial board state:", board)
-        mcts = MCTS()
+        # mcts = MCTS()
         while True:
             user_input = input(">")
             if user_input == "exit":
@@ -116,7 +115,7 @@ class Board:
 
                 self = self.make_move(row, col)
 
-                best_move = mcts.search(self)
+                # best_move = mcts.search(self)
                 # print("best_move:", best_move.board.position)
                 # print(best_move.parent.board)
                 self = best_move.board
