@@ -12,7 +12,7 @@ from QLearningAgent import QLearningAgent
 
 class Gomoku:
     def __init__(self):
-        self.board = QLearningAgent()
+        self.board = Board()
         self.mcts = MCTS(None)
         self.init_pygame()
 
@@ -83,13 +83,13 @@ class Gomoku:
                     if event.button == 1:
                         # Ensure the cursor position is within the grid area
                         if (
-                            self.board.position[grid_y][grid_x]
+                            self.board.get_value(grid_x, grid_y)
                             != self.board.empty_square
                         ):
                             print("this cell is already occupied")
                         else:
                             # self.board[grid_x][grid_y] = turn
-                            self.board = self.board.make_move(grid_y, grid_x)
+                            self.board = self.board.make_move(grid_x, grid_y)
                             print(self.board)
                             turn = PLAYER1 if turn == PLAYER2 else PLAYER2
                             trace.append((grid_x, grid_y))
@@ -97,9 +97,9 @@ class Gomoku:
                     # revert with right click
                     elif event.button == 3:
                         if len(trace) > 0:
-                            # if self.board.position[grid_y][grid_x] != self.board.empty_square:
+                            # if self.board.get_value(grid_x, grid_y) != self.board.empty_square:
                             x, y = trace.pop()
-                            self.board.position[y][x] = self.board.empty_square
+                            self.board.set_value(x, y, self.board.empty_square)
                             self.board.swap_player()
                             turn = PLAYER1 if turn == PLAYER2 else PLAYER2
                             print(self.board)
@@ -122,9 +122,9 @@ class Gomoku:
 
             for x in range(NUM_LINES):
                 for y in range(NUM_LINES):
-                    if self.board.position[y][x] == "X":
+                    if self.board.get_value(x, y) == "X":
                         self.draw_circles(x, y, self.screen, black)
-                    elif self.board.position[y][x] == "O":
+                    elif self.board.get_value(x, y) == "O":
                         self.draw_circles(x, y, self.screen, white)
 
             pygame.display.update()

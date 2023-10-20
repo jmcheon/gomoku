@@ -24,7 +24,14 @@ class Board:
             for col in range(NUM_LINES):
                 self.position[row][col] = self.empty_square
 
-    def make_move(self, row: int, col: int) -> object:
+    def get_value(self, col: int, row: int) -> str:
+        return self.position[row][col]
+
+    def set_value(self, col: int, row: int, value: str) -> str:
+        self.position[row][col] = value
+        return value
+
+    def make_move(self, col: int, row: int) -> object:
         # create new board instance that inherits from the current state
         board = Board(self)
 
@@ -93,7 +100,7 @@ class Board:
         for row in range(NUM_LINES):
             for col in range(NUM_LINES):
                 if self.position[row][col] == self.empty_square:
-                    action_lst.append(self.make_move(row, col))
+                    action_lst.append(self.make_move(col, row))
         return action_lst
 
     def game_loop(self):
@@ -113,7 +120,7 @@ class Board:
                     print("Illegal move")
                     continue
 
-                self = self.make_move(row, col)
+                self = self.make_move(col, row)
 
                 # best_move = mcts.search(self)
                 # print("best_move:", best_move.board.position)
