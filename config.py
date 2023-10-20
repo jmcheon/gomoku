@@ -34,3 +34,11 @@ black_transparent = pygame.Color(0, 0, 0, 128)
 
 white = (255, 255, 255)
 white_transparent = pygame.Color(255, 255, 255, 128)
+
+
+# Neural Network
+INPUT_SHAPE = NUM_LINES * NUM_LINES
+OUTPUT_SHAPE = NUM_LINES
+
+# path
+MLP_DIR_NAME = "multilayer_perceptron"
