@@ -2,6 +2,8 @@ from copy import deepcopy
 
 from config import *
 
+from doublethree import *
+
 
 class Board:
     def __init__(self, board=None) -> None:
@@ -163,6 +165,91 @@ class Board:
             return True
         if self.is_draw():
             return "tie"
+
+    def is_valid_position(self, x, y):
+        # Check if the position (x, y) is within the bounds of the board.
+        return 0 <= x < NUM_LINES and 0 <= y < NUM_LINES
+
+    def find_single_threes(self, x, y, player):
+        print("x and y", x, y, player)
+        # Right, Down, Diagonal Right-Down, Diagonal Right-Up
+        directions = [
+            (1, 0),
+            (0, 1),
+            (1, 1),
+            (1, -1),
+        ]
+        single_threes = []
+
+        for dx, dy in directions:
+            count = 0
+            empty_count = 0
+            # possible_single_three = False
+
+            for i in range(-3, 4):  # Check a window of 7 cells around (x, y)
+                new_x, new_y = x + i * dx, y + i * dy
+                # print("new_x, new_y", new_x, new_y)
+                if self.is_valid_position(new_x, new_y):
+                    if self.get_value(new_x, new_y) == player:
+                        count += 1
+                        if empty_count > 0:
+                            possible_single_three = True
+                    elif self.get_value(new_x, new_y) == self.empty_square:
+                        empty_count += 1
+                    else:
+                        count = 0
+                        empty_count = 0
+                    if count == 3:
+                        print("new_x, new_y, empty_count", new_x, new_y, empty_count)
+                    if (
+                        count == 3
+                        and (empty_count == 1 or empty_count == 2)
+                        and possible_single_three == True
+                    ):
+                        print(empty_count)
+                        single_threes.append(
+                            [(x, y), (x + 3 * dx, y + 3 * dy), player]
+                        )  # Store the start and end of the single three
+
+        print(count)
+        return single_threes
+
+    def equal_three(self, position, player):
+        count = 0
+        for i in range(len(position)):
+            if self.get_value(position[i][0], position[i][1]) == player:
+                count += 1
+        return count == 3
+
+    def testing(self, x, y, player):
+        directions = [
+            (-2, 0),
+            (-2, -2),
+            (0, -2),
+            (2, -2),
+        ]
+        # print(x, y)
+        for i in range(len(directions)):
+            # test = get_continuous_three x + directions[i][0], y + directions[i][1])
+            test = get_continuous_three(x, y, directions[i])
+            # print(test)
+            # flag = None
+            # first_three = None
+            # print("--------")
+            # for i in range(len(test)):
+            #     flag = True
+            #     for j in range(len(test[i])):
+            #         if is_valid_position(test[i][j]) == False:
+            #             flag = False
+            #             print("not valid")
+            #             break
+            #         print(test[i][j])
+            #     if flag == True:
+            #         if self.equal_three(test[i], player) == True:
+            #             print("three found", test[i])
+            #             first_three = test[i]
+
+            #     print("---------")
 
 
 if __name__ == "__main__":

@@ -86,6 +86,9 @@ while run:
                 else:
                     # board[grid_x][grid_y] = turn
                     board = board.make_move(grid_y, grid_x)
+                    print(
+                        "single threes:", board.find_single_threes(grid_y, grid_x, turn)
+                    )
                     print(board)
                     turn = PLAYER1 if turn == PLAYER2 else PLAYER2
                     trace.append((grid_x, grid_y))

@@ -90,7 +90,12 @@ class Gomoku:
                         else:
                             # self.board[grid_x][grid_y] = turn
                             self.board = self.board.make_move(grid_x, grid_y)
-                            print(self.board)
+                            self.board.testing(grid_x, grid_y, turn)
+                            # print(
+                            #     "single threes:",
+                            #     self.board.find_single_threes(grid_x, grid_y, turn),
+                            # )
+                            # print(self.board)
                             turn = PLAYER1 if turn == PLAYER2 else PLAYER2
                             trace.append((grid_x, grid_y))
 
