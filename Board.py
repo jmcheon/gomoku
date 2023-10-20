@@ -7,8 +7,8 @@ from mcts import *
 class Board:
     def __init__(self, board=None) -> None:
         # define players
-        self.player1 = "X"
-        self.player2 = "O"
+        self.player1 = PLAYER1
+        self.player2 = PLAYER2
         self.empty_square = "."
 
         # define board position
@@ -33,10 +33,13 @@ class Board:
         board.position[row][col] = self.player1
 
         # swap players
-        (board.player1, board.player2) = (board.player2, board.player1)
+        # (board.player1, board.player2) = (board.player2, board.player1)
 
         # return new board state
         return board
+
+    def swap_player(self) -> None:
+        (self.player1, self.player2) = (self.player2, self.player1)
 
     # get whether the game is drawn
     def is_draw(self) -> bool:

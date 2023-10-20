@@ -14,29 +14,19 @@ surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 
 # Load your grid image
 bg = pygame.image.load("baduk_board.png")
+bg = pygame.transform.scale(bg, (WIDTH, HEIGHT))
 bg.set_colorkey((230, 230, 230))
 
-
-# Define a red color for the dots
-red = (255, 0, 0)
-red_transparent = pygame.Color(255, 0, 0, 128)
-
-blue = (0, 0, 255)
-blue_transparent = pygame.Color(0, 0, 255, 128)
-
-black = (0, 0, 0)
-black_transparent = pygame.Color(0, 0, 0, 128)
-
-white = (255, 255, 255)
-white_transparent = pygame.Color(255, 255, 255, 128)
 
 # Create a grid data structure (a list of lists) to represent the intersections
 board = Board()  # [[0] * NUM_LINES for _ in range(NUM_LINES)]
 
+print(CELL_SIZE_X, CELL_SIZE_Y)
+
 
 def draw_circles(x, y, target, color):
     initial_size = 10  # Adjust as needed
-    max_lines = 50  # Adjust as needed
+    max_lines = 20  # Adjust as needed
     size_increase = 1  # Adjust as needed
 
     circle_size = initial_size + (max_lines - NUM_LINES) * size_increase
@@ -66,7 +56,8 @@ grid_x, grid_y = 0, 0
 trace = []
 run = True
 while run:
-    screen.fill((200, 200, 200, 128))
+    # screen.fill((200, 200, 200, 128))
+    screen.blit(bg, (0, 0))
     screen.blit(surface, (0, 0))
 
     # Get the current mouse cursor position
@@ -96,19 +87,19 @@ while run:
                     # board[grid_x][grid_y] = turn
                     board = board.make_move(grid_y, grid_x)
                     print(board)
+                    board.swap_player()
                     turn = PLAYER1 if turn == PLAYER2 else PLAYER2
                     trace.append((grid_x, grid_y))
 
-            # TODO: revert with right click
-            """
+            # revert with right click
             elif event.button == 3:
                 if len(trace) > 0:
+                    # if board.position[grid_y][grid_x] != board.empty_square:
                     x, y = trace.pop()
-                    if board[x][y] != 0:
-                        board[x][y] = 0
-                        turn = PLAYER1 if turn == PLAYER2 else PLAYER2
-                    print("right click:", x, y)
-            """
+                    board.position[y][x] = board.empty_square
+                    board.swap_player()
+                    turn = PLAYER1 if turn == PLAYER2 else PLAYER2
+                    print("right click:", x, y, turn)
 
     surface.fill((0, 0, 0, 0))
 
@@ -122,8 +113,8 @@ while run:
     if turn == PLAYER1:
         draw_circles(grid_x, grid_y, surface, black_transparent)
     elif turn == PLAYER2:
-        board = best_move(board)
-        turn = PLAYER1
+        draw_circles(grid_x, grid_y, surface, white_transparent)
+        # board = best_move(board)
 
     for x in range(NUM_LINES):
         for y in range(NUM_LINES):
