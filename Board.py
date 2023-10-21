@@ -222,34 +222,23 @@ class Board:
         return count == 3
 
     def testing(self, x, y, player):
-        directions = [
-            (-2, 0),
-            (-2, -2),
-            (0, -2),
-            (2, -2),
-        ]
+        directions = [EAST, NORTHEAST, NORTH, NORTHWEST]
         # print(x, y)
         for i in range(len(directions)):
-            # test = get_continuous_three x + directions[i][0], y + directions[i][1])
-            test = get_continuous_three(x, y, directions[i])
-            # print(test)
-            # flag = None
-            # first_three = None
-            # print("--------")
-            # for i in range(len(test)):
-            #     flag = True
-            #     for j in range(len(test[i])):
-            #         if is_valid_position(test[i][j]) == False:
-            #             flag = False
-            #             print("not valid")
-            #             break
-            #         print(test[i][j])
-            #     if flag == True:
-            #         if self.equal_three(test[i], player) == True:
-            #             print("three found", test[i])
-            #             first_three = test[i]
-
-            #     print("---------")
+            test = get_continuous_range(x, y, directions[i], 3)
+            print(test)
+            flag = True
+            for i in range(len(test)):
+                for j in range(len(test[i])):
+                    if is_valid_position(test[i][j]) == False:
+                        flag = False
+                        print("not valid")
+                        break
+                    # print(test[i][j])
+                if flag == True:
+                    if self.equal_three(test[i], player) == True:
+                        print("three found", test[i], player)
+                        first_three = test[i]
 
 
 if __name__ == "__main__":

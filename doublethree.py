@@ -1,21 +1,25 @@
+from config import *
+
+
 def is_valid_position(position):
     # Check if the position (x, y) is within the bounds of the board.
     return 0 <= position[0] < 19 and 0 <= position[1] < 19
 
 
-def get_continuous_three(x, y, direction):
-    print("===================")
-    print(x, y)
-    print(x + direction[0], y + direction[1])
-    print(x - direction[0], y - direction[1])
-    print("===================")
+def get_continuous_range(x, y, direction, range_num):
     test = []
-    inside = []
-    for i in range(3):
-        for j in range(3):
-            inside.append((x + i + j, y))
-        test.append(inside.copy())
-        inside.clear()
+    for i in range(-(range_num - 1), 1, 1):
+        inside = []
+        for j in range(range_num):
+            if direction == EAST:
+                inside.append(((x + i) + j, y))
+            elif direction == NORTHEAST:
+                inside.append(((x + i) + j, (y + i) + j))
+            elif direction == NORTH:
+                inside.append((x, (y + i) + j))
+            elif direction == NORTHWEST:
+                inside.append(((x - i) - j, (y + i) + j))
+        test.append(inside)
     return test
 
 

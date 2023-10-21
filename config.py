@@ -42,3 +42,9 @@ OUTPUT_SHAPE = NUM_LINES
 
 # path
 MLP_DIR_NAME = "multilayer_perceptron"
+
+# doublethree direction
+EAST = 0
+NORTHEAST = 1
+NORTH = 2
+NORTHWEST = 3
