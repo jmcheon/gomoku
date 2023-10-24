@@ -1,3 +1,4 @@
+from Board import Board
 from config import *
 
 
@@ -23,59 +24,105 @@ def get_continuous_range(x, y, direction, range_num):
     return test
 
 
-def test(x, y, player):
-    print("left\n", get_continuous_three(x - 2, y))
-    test = get_continuous_three(x - 2, y)
-    # print(test)
-    flag = None
-    print("--------")
-    for i in range(len(test)):
-        flag = True
-        for j in range(len(test[i])):
-            if is_valid_position(test[i][j]) == False:
-                flag = False
-                print("not valid")
+def dfs(board: Board, x, y, player, direction, count):
+    if count == 3:
+        return True
+
+    nx = x + direction[0]
+    ny = y + direction[1]
+
+    if not is_valid_position((nx, ny)):
+        first_list = []
+        return False
+
+    if board.get_value(nx, ny) != player:
+        first_list = []
+        return False
+
+    return dfs(board, nx, ny, player, direction, count + 1)
+
+
+def find_all_continuous(board: Board, x, y, player, direction):
+    all_list = []
+    if direction == (-1, 0) or direction == (1, 0):
+        for i in range(0, x):
+            if board.get_value(i, y) == player:
+                all_list.append((i, y))
+        for i in range(x, 19):
+            if board.get_value(i, y) == player:
+                all_list.append((i, y))
+    elif direction == (0, 1) or direction == (0, -1):
+        for i in range(0, y):
+            if board.get_value(x, i) == player:
+                all_list.append((x, i))
+        for i in range(y, 19):
+            if board.get_value(x, i) == player:
+                all_list.append((x, i))
+    # elif direction == (-1, -1) and direction == (1, 1):
+
+    return all_list
+
+
+def check_next_only_range(board: Board, x, y, direction):
+    # board
+    print("next_only", x + direction[0], y + direction[1])
+    if (
+        is_valid_position((x + direction[0], y + direction[1])) is False
+        or is_valid_position((x - direction[0], y - direction[1])) is False
+    ):
+        return False
+    if (
+        board.get_value(x, y)
+        == board.get_value(x + direction[0], y + direction[1])
+        == board.get_value(x - direction[0], y - direction[1])
+    ):
+        print(
+            board.get_value(x, y),
+            board.get_value(x + direction[0], y + direction[1]),
+            board.get_value(x - direction[0], y - direction[1]),
+        )
+        return True
+    return False
+
+
+def check_double_three(board: Board, x, y, player):
+    print("init", x, y)
+    directions = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]
+    three_count = 0
+    direction = None
+    for dir in directions:
+        if dfs(board, x, y, player, dir, 1) == True:
+            # three_count +=1
+            direction = dir
+            break
+    print("first_none", direction)
+    if direction is None:
+        for i in range(len(directions) // 2):
+            if check_next_only_range(board, x, y, directions[i]) is True:
+                direction = directions[i]
                 break
-            print(test[i][j])
-        if flag == True:
-            equal_three(test[i], player)
+    print("direction", direction)
+    if direction is not None:
+        print("direction, rev", direction, (-direction[0], -direction[1]))
+        directions.remove(direction)
+        directions.remove((-direction[0], -direction[1]))
+        print("directions", directions)
+        all_cont = find_all_continuous(board, x, y, player, direction)
+        print(all_cont)
+        for one_place in all_cont:
+            print("one_place:", one_place)
+            for dir in directions:
+                if dfs(board, one_place[0], one_place[1], player, dir, 1) == True:
+                    print("double tree found!!!!!!!!!!!!")
+                    return True
+        ## remove direction from 'directions' and do the dfs again
+    else:
+        return False
 
-        print("---------")
-
-    # print("northeast\n", get_continuous_three(x - 2, y + 2))
-    # print("up\n", get_continuous_three(x, y + 2))
-    # print("northwest\n", get_continuous_three(x + 2, y + 2))
-    # print("northeast", x - 2, y - 2)
-    # print("up", x + 2, y)
-    # print("northwest", x + 2, y + 2)
-    # right_3 = []
-    # left_3 = []
-    # down_3 = []
-    # up_3 = []
-
-    # updown = []
-    # leftright = []
-
-    # for i in range(3):
-    #     right_3.append([x + i, y])
-
-    # for i in range(3):
-    #     left_3.append([x - i, y])
-
-    # for i in range(3):
-    #     down_3.append([x, y + i])
-
-    # for i in range(3):
-    #     up_3.append([x, y - i])
-
-    # for i in range(x - 1, x + 2, 1):
-    #     updown.append([i, y])
-
-    # print("right_3", right_3)
-    # print("left_3", left_3)
-    # print("down_3", down_3)
-    # print("up_3", up_3)
-    # print("updown", updown)
-
-
-# test(1, 1)
+    # print("three_count", three_count)
+    # if three_count >= 2:
+    #     print("Double Three Found!")
+    #     return True
+    # else:
+    #     print("Double Three Not Found")
+    #     return False

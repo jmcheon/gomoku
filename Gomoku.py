@@ -5,6 +5,7 @@ import pygame
 
 from Board import Board
 from config import *
+from doublethree import check_double_three
 from mcts import MCTS
 from minmax import best_move, check_winner
 from QLearningAgent import QLearningAgent
@@ -90,7 +91,9 @@ class Gomoku:
                         else:
                             # self.board[grid_x][grid_y] = turn
                             self.board = self.board.make_move(grid_x, grid_y)
-                            self.board.testing(grid_x, grid_y, turn)
+                            check_double_three(self.board, grid_x, grid_y, turn)
+
+                            # self.board.testing(grid_x, grid_y, turn)
                             # print(
                             #     "single threes:",
                             #     self.board.find_single_threes(grid_x, grid_y, turn),

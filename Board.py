@@ -2,7 +2,7 @@ from copy import deepcopy
 
 from config import *
 
-from doublethree import *
+# from doublethree import *
 
 
 class Board:
