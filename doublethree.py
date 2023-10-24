@@ -24,25 +24,31 @@ def get_continuous_range(x, y, direction, range_num):
     return test
 
 
-def dfs(board: Board, x, y, player, direction, count):
-    if count == 3:
-        return True
+def dfs(board: Board, x, y, player, direction, count, player_count):
+    if 3 <= count and count <= 4:
+        print("hi")
+        if player_count == 3:
+            return True
+        # else:
+        #     return False
 
     nx = x + direction[0]
     ny = y + direction[1]
 
     if not is_valid_position((nx, ny)):
-        first_list = []
         return False
 
-    if board.get_value(nx, ny) != player:
-        first_list = []
+    if board.get_value(nx, ny) == (PLAYER2 if player == PLAYER1 else PLAYER2):
         return False
 
-    return dfs(board, nx, ny, player, direction, count + 1)
+    if board.get_value(nx, ny) == player:
+        player_count += 1
+
+    return dfs(board, nx, ny, player, direction, count + 1, player_count)
 
 
 def find_all_continuous(board: Board, x, y, player, direction):
+    print("player", player, direction)
     all_list = []
     if direction == (-1, 0) or direction == (1, 0):
         for i in range(0, x):
@@ -58,7 +64,22 @@ def find_all_continuous(board: Board, x, y, player, direction):
         for i in range(y, 19):
             if board.get_value(x, i) == player:
                 all_list.append((x, i))
-    # elif direction == (-1, -1) and direction == (1, 1):
+    elif direction == (-1, -1) or direction == (1, 1):
+        for i in range(min(x, y), 0, -1):
+            if board.get_value(x - i, y - i) == player:
+                all_list.append((x - i, y - i))
+        all_list.append((x, y))
+        for i in range(min(x, y), min(19 - x, 19 - y)):
+            if board.get_value(x + i, y + i) == player:
+                all_list.append((x + i, y + i))
+    elif direction == (1, -1) or direction == (-1, 1):
+        for i in range(min(x, y), 0, -1):
+            if board.get_value(x + i, y - i) == player:
+                all_list.append((x + i, y - i))
+        all_list.append((x, y))
+        for i in range(1, min(NUM_LINES - x, NUM_LINES - y)):
+            if board.get_value(x - i, y + i) == player:
+                all_list.append((x - i, y + i))
 
     return all_list
 
@@ -91,7 +112,7 @@ def check_double_three(board: Board, x, y, player):
     three_count = 0
     direction = None
     for dir in directions:
-        if dfs(board, x, y, player, dir, 1) == True:
+        if dfs(board, x, y, player, dir, 1, 1) == True:
             # three_count +=1
             direction = dir
             break
@@ -108,11 +129,11 @@ def check_double_three(board: Board, x, y, player):
         directions.remove((-direction[0], -direction[1]))
         print("directions", directions)
         all_cont = find_all_continuous(board, x, y, player, direction)
-        print(all_cont)
+        print("all_cont", all_cont)
         for one_place in all_cont:
             print("one_place:", one_place)
             for dir in directions:
-                if dfs(board, one_place[0], one_place[1], player, dir, 1) == True:
+                if dfs(board, one_place[0], one_place[1], player, dir, 1, 1) == True:
                     print("double tree found!!!!!!!!!!!!")
                     return True
         ## remove direction from 'directions' and do the dfs again
@@ -126,3 +147,32 @@ def check_double_three(board: Board, x, y, player):
     # else:
     #     print("Double Three Not Found")
     #     return False
+
+
+def inversely_proportional_coordinates(x, y, board_size=19):
+    coordinates = []
+
+    # Generate coordinates in one direction (x increasing, y decreasing)
+    while x < board_size and y >= 0:
+        coordinates.append((x, y))
+        x += 1
+        y -= 1
+
+    # Reset the coordinates and generate in the other direction (x decreasing, y increasing)
+    x, y = x - 1, y + 1
+    while x >= 0 and y < board_size:
+        coordinates.append((x, y))
+        x -= 1
+        y += 1
+
+    return coordinates
+
+
+if __name__ == "__main__":
+    x, y = 10, 1  # Replace with your desired coordinates
+    for i in range(min(x, y), 0, -1):
+        print(x + i, y - i)
+    # inversely_proportional_coords = inversely_proportional_coordinates(x, y)
+    for i in range(1, min(NUM_LINES - x, NUM_LINES - y)):
+        print(x - i, y + i)
+    # print(inversely_proportional_coords)
