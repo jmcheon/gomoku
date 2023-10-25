@@ -95,19 +95,53 @@ def check_next_only_range(board: Board, x, y, direction, player):
         == board.get_value(x - direction[0], y - direction[1])
         == player
     ):
-        return True
+        # if is_valid_position(
+        #     (x + direction[0] + direction[0], y + direction[1] + direction[1])
+        # ) and is_valid_position(
+        #     (x - direction[0] - direction[0], y - direction[1] - direction[1])
+        # ):
+
+        if (
+            board.get_value(
+                x + direction[0] + direction[0], y + direction[1] + direction[1]
+            )
+            == board.empty_square
+            and board.get_value(
+                x - direction[0] - direction[0], y - direction[1] - direction[1]
+            )
+            == board.empty_square
+        ):
+            return True
+        else:
+            return False
     elif dfs(board, x, y, player, direction, 2, 2) == True and (
         board.get_value(x - direction[0], y - direction[1])
         == board.get_value(x, y)
         == player
     ):
-        return True
+        if (
+            board.get_value(
+                x - direction[0] - direction[0], y - direction[1] - direction[1]
+            )
+            == board.empty_square
+        ):
+            return True
+        else:
+            return False
     elif dfs(board, x, y, player, (-direction[0], -direction[1]), 2, 2) == True and (
         board.get_value(x + direction[0], y + direction[1])
         == board.get_value(x, y)
         == player
     ):
-        return True
+        if (
+            board.get_value(
+                x + direction[0] + direction[0], y + direction[1] + direction[1]
+            )
+            == board.empty_square
+        ):
+            return True
+        else:
+            return False
     return False
 
 
@@ -116,7 +150,10 @@ def check_double_three(board: Board, x, y, player):
     directions = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]
     direction = None
     for dir in directions:
-        if dfs(board, x, y, player, dir, 1, 1) == True:
+        if (
+            dfs(board, x, y, player, dir, 1, 1) == True
+            and board.get_value(x - dir[0], y - dir[1]) == board.empty_square
+        ):
             # three_count +=1
             direction = dir
             break
@@ -139,7 +176,11 @@ def check_double_three(board: Board, x, y, player):
             print("=============")
             for dir in directions:
                 print("directions", dir)
-                if dfs(board, one_place[0], one_place[1], player, dir, 1, 1) == True:
+                if (
+                    dfs(board, one_place[0], one_place[1], player, dir, 1, 1) == True
+                    and board.get_value(one_place[0] - dir[0], one_place[1] - dir[1])
+                    == board.empty_square
+                ):
                     print("double tree found!!!!!!!!!!!!")
                     return True
                 elif (
