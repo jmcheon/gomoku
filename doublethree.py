@@ -35,6 +35,8 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
             and board.get_value(nx, ny) == board.empty_square
         ):
             return True
+        else:
+            return False
 
     if not is_valid_position((nx, ny)):
         return False
@@ -48,8 +50,9 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
     return dfs(board, nx, ny, player, direction, count + 1, player_count)
 
 
+# rework
 def find_all_continuous(board: Board, x, y, player, direction):
-    print("player", player, direction)
+    print("player and direction", (x, y), player, direction)
     all_list = []
     if direction == (-1, 0) or direction == (1, 0):
         for i in range(0, x):
@@ -152,36 +155,31 @@ def check_next_only_range(board: Board, x, y, direction, player):
 
 
 def check_double_three(board: Board, x, y, player):
-    print("init", x, y, player)
+    # print("init", x, y, player)
     directions = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]
     direction = None
     for dir in directions:
         if (
             dfs(board, x, y, player, dir, 1, 1) == True
+            and is_valid_position((x - dir[0], y - dir[1])) == True
             and board.get_value(x - dir[0], y - dir[1]) == board.empty_square
         ):
-            # three_count +=1
             direction = dir
             break
-    # print("first_none", direction)
     if direction is None:
         for i in range(len(directions) // 2):
             if check_next_only_range(board, x, y, directions[i], player) is True:
                 direction = directions[i]
                 break
-    # print("direction", direction)
     if direction is not None:
         print("direction, rev", direction, (-direction[0], -direction[1]))
         directions.remove(direction)
         directions.remove((-direction[0], -direction[1]))
-        # print("directions", directions)
+        ### TODO
         all_cont = find_all_continuous(board, x, y, player, direction)
-        print("all_cont", all_cont)
+        ### TODO
         for one_place in all_cont:
-            # print("one_place:", one_place)
-            print("=============")
             for dir in directions:
-                print("directions", dir)
                 if (
                     dfs(board, one_place[0], one_place[1], player, dir, 1, 1) == True
                     and is_valid_position(
@@ -203,45 +201,24 @@ def check_double_three(board: Board, x, y, player):
                 ):
                     print("double tree found")
                     return True
-            print("=============")
-
-        ## remove direction from 'directions' and do the dfs again
     else:
         return False
 
-    # print("three_count", three_count)
-    # if three_count >= 2:
-    #     print("Double Three Found!")
-    #     return True
-    # else:
-    #     print("Double Three Not Found")
-    #     return False
-
-
-def inversely_proportional_coordinates(x, y, board_size=19):
-    coordinates = []
-
-    # Generate coordinates in one direction (x increasing, y decreasing)
-    while x < board_size and y >= 0:
-        coordinates.append((x, y))
-        x += 1
-        y -= 1
-
-    # Reset the coordinates and generate in the other direction (x decreasing, y increasing)
-    x, y = x - 1, y + 1
-    while x >= 0 and y < board_size:
-        coordinates.append((x, y))
-        x -= 1
-        y += 1
-
-    return coordinates
-
 
 if __name__ == "__main__":
-    x, y = 10, 1  # Replace with your desired coordinates
+    # x, y = 10, 1  # Replace with your desired coordinates
+    # for i in range(min(x, y), 0, -1):
+    #     print(x - i, y - i)
+    # # inversely_proportional_coords = inversely_proportional_coordinates(x, y)
+    # for i in range(1, min(NUM_LINES - x, NUM_LINES - y)):
+    #     print(x + i, y + i)
+    # # print(inversely_proportional_coords)
+
+    # direction(1, -1)
+    x = 17
+    y = 15
     for i in range(min(x, y), 0, -1):
-        print(x - i, y - i)
-    # inversely_proportional_coords = inversely_proportional_coordinates(x, y)
+        print((x + i, y - i))
+    print("-------------------------")
     for i in range(1, min(NUM_LINES - x, NUM_LINES - y)):
-        print(x + i, y + i)
-    # print(inversely_proportional_coords)
+        print((x - i, y + i))

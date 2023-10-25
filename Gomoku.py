@@ -4,6 +4,7 @@ import sys
 import pygame
 
 from Board import Board
+from capture import capture_opponent
 from config import *
 from doublethree import check_double_three
 from mcts import MCTS
@@ -92,13 +93,7 @@ class Gomoku:
                             # self.board[grid_x][grid_y] = turn
                             self.board = self.board.make_move(grid_x, grid_y)
                             check_double_three(self.board, grid_x, grid_y, turn)
-
-                            # self.board.testing(grid_x, grid_y, turn)
-                            # print(
-                            #     "single threes:",
-                            #     self.board.find_single_threes(grid_x, grid_y, turn),
-                            # )
-                            # print(self.board)
+                            capture_opponent(self.board, grid_x, grid_y, turn)
                             turn = PLAYER1 if turn == PLAYER2 else PLAYER2
                             trace.append((grid_x, grid_y))
 
