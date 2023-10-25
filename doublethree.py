@@ -29,7 +29,11 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
     ny = y + direction[1]
 
     if 3 <= count and count <= 4:
-        if player_count == 3 and board.get_value(nx, ny) == board.empty_square:
+        if (
+            player_count == 3
+            and is_valid_position(nx, ny) == True
+            and board.get_value(nx, ny) == board.empty_square
+        ):
             return True
 
     if not is_valid_position((nx, ny)):
@@ -180,9 +184,15 @@ def check_double_three(board: Board, x, y, player):
                 print("directions", dir)
                 if (
                     dfs(board, one_place[0], one_place[1], player, dir, 1, 1) == True
+                    and is_valid_position(
+                        (one_place[0] - dir[0], one_place[1] - dir[1])
+                    )
+                    == True
                     and board.get_value(one_place[0] - dir[0], one_place[1] - dir[1])
                     == board.empty_square
                 ):
+                    print()
+                    print(one_place[0], one_place[1], dir)
                     print("double tree found!!!!!!!!!!!!")
                     return True
                 elif (
