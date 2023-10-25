@@ -31,7 +31,7 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
     if 3 <= count and count <= 4:
         if (
             player_count == 3
-            and is_valid_position(nx, ny) == True
+            and is_valid_position((nx, ny)) == True
             and board.get_value(nx, ny) == board.empty_square
         ):
             return True
@@ -39,7 +39,7 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
     if not is_valid_position((nx, ny)):
         return False
 
-    if board.get_value(nx, ny) == (PLAYER2 if player == PLAYER1 else PLAYER2):
+    if board.get_value(nx, ny) == (PLAYER2 if player == PLAYER1 else PLAYER1):
         return False
 
     if board.get_value(nx, ny) == player:
@@ -152,7 +152,7 @@ def check_next_only_range(board: Board, x, y, direction, player):
 
 
 def check_double_three(board: Board, x, y, player):
-    print("init", x, y)
+    print("init", x, y, player)
     directions = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]
     direction = None
     for dir in directions:
