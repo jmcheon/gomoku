@@ -86,7 +86,15 @@ def check_next_only_range(board: Board, x, y, direction, player):
     # print("next_only", x + direction[0], y + direction[1])
     if (
         is_valid_position((x + direction[0], y + direction[1])) is False
+        or is_valid_position(
+            (x + direction[0] + direction[0], y + direction[1] + direction[1])
+        )
+        is False
         or is_valid_position((x - direction[0], y - direction[1])) is False
+        or is_valid_position(
+            (x - direction[0] - direction[0], y - direction[1] - direction[1])
+        )
+        is False
     ):
         return False
     if (
@@ -95,12 +103,6 @@ def check_next_only_range(board: Board, x, y, direction, player):
         == board.get_value(x - direction[0], y - direction[1])
         == player
     ):
-        # if is_valid_position(
-        #     (x + direction[0] + direction[0], y + direction[1] + direction[1])
-        # ) and is_valid_position(
-        #     (x - direction[0] - direction[0], y - direction[1] - direction[1])
-        # ):
-
         if (
             board.get_value(
                 x + direction[0] + direction[0], y + direction[1] + direction[1]
