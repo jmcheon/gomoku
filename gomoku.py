@@ -92,6 +92,7 @@ class Gomoku:
                             # self.board[grid_x][grid_y] = turn
                             self.board = self.board.make_move(grid_x, grid_y)
                             check_double_three(self.board, grid_x, grid_y, turn)
+
                             # self.board.testing(grid_x, grid_y, turn)
                             # print(
                             #     "single threes:",

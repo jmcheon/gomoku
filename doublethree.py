@@ -25,15 +25,12 @@ def get_continuous_range(x, y, direction, range_num):
 
 
 def dfs(board: Board, x, y, player, direction, count, player_count):
-    if 3 <= count and count <= 4:
-        print("hi")
-        if player_count == 3:
-            return True
-        # else:
-        #     return False
-
     nx = x + direction[0]
     ny = y + direction[1]
+
+    if 3 <= count and count <= 4:
+        if player_count == 3 and board.get_value(nx, ny) == board.empty_square:
+            return True
 
     if not is_valid_position((nx, ny)):
         return False
@@ -69,7 +66,7 @@ def find_all_continuous(board: Board, x, y, player, direction):
             if board.get_value(x - i, y - i) == player:
                 all_list.append((x - i, y - i))
         all_list.append((x, y))
-        for i in range(min(x, y), min(19 - x, 19 - y)):
+        for i in range(1, min(NUM_LINES - x, NUM_LINES - y)):
             if board.get_value(x + i, y + i) == player:
                 all_list.append((x + i, y + i))
     elif direction == (1, -1) or direction == (-1, 1):
@@ -84,9 +81,9 @@ def find_all_continuous(board: Board, x, y, player, direction):
     return all_list
 
 
-def check_next_only_range(board: Board, x, y, direction):
+def check_next_only_range(board: Board, x, y, direction, player):
     # board
-    print("next_only", x + direction[0], y + direction[1])
+    # print("next_only", x + direction[0], y + direction[1])
     if (
         is_valid_position((x + direction[0], y + direction[1])) is False
         or is_valid_position((x - direction[0], y - direction[1])) is False
@@ -96,12 +93,20 @@ def check_next_only_range(board: Board, x, y, direction):
         board.get_value(x, y)
         == board.get_value(x + direction[0], y + direction[1])
         == board.get_value(x - direction[0], y - direction[1])
+        == player
     ):
-        print(
-            board.get_value(x, y),
-            board.get_value(x + direction[0], y + direction[1]),
-            board.get_value(x - direction[0], y - direction[1]),
-        )
+        return True
+    elif dfs(board, x, y, player, direction, 2, 2) == True and (
+        board.get_value(x - direction[0], y - direction[1])
+        == board.get_value(x, y)
+        == player
+    ):
+        return True
+    elif dfs(board, x, y, player, (-direction[0], -direction[1]), 2, 2) == True and (
+        board.get_value(x + direction[0], y + direction[1])
+        == board.get_value(x, y)
+        == player
+    ):
         return True
     return False
 
@@ -109,33 +114,44 @@ def check_next_only_range(board: Board, x, y, direction):
 def check_double_three(board: Board, x, y, player):
     print("init", x, y)
     directions = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]
-    three_count = 0
     direction = None
     for dir in directions:
         if dfs(board, x, y, player, dir, 1, 1) == True:
             # three_count +=1
             direction = dir
             break
-    print("first_none", direction)
+    # print("first_none", direction)
     if direction is None:
         for i in range(len(directions) // 2):
-            if check_next_only_range(board, x, y, directions[i]) is True:
+            if check_next_only_range(board, x, y, directions[i], player) is True:
                 direction = directions[i]
                 break
-    print("direction", direction)
+    # print("direction", direction)
     if direction is not None:
         print("direction, rev", direction, (-direction[0], -direction[1]))
         directions.remove(direction)
         directions.remove((-direction[0], -direction[1]))
-        print("directions", directions)
+        # print("directions", directions)
         all_cont = find_all_continuous(board, x, y, player, direction)
         print("all_cont", all_cont)
         for one_place in all_cont:
-            print("one_place:", one_place)
+            # print("one_place:", one_place)
+            print("=============")
             for dir in directions:
+                print("directions", dir)
                 if dfs(board, one_place[0], one_place[1], player, dir, 1, 1) == True:
                     print("double tree found!!!!!!!!!!!!")
                     return True
+                elif (
+                    check_next_only_range(
+                        board, one_place[0], one_place[1], dir, player
+                    )
+                    == True
+                ):
+                    print("double tree found")
+                    return True
+            print("=============")
+
         ## remove direction from 'directions' and do the dfs again
     else:
         return False
@@ -171,8 +187,8 @@ def inversely_proportional_coordinates(x, y, board_size=19):
 if __name__ == "__main__":
     x, y = 10, 1  # Replace with your desired coordinates
     for i in range(min(x, y), 0, -1):
-        print(x + i, y - i)
+        print(x - i, y - i)
     # inversely_proportional_coords = inversely_proportional_coordinates(x, y)
     for i in range(1, min(NUM_LINES - x, NUM_LINES - y)):
-        print(x - i, y + i)
+        print(x + i, y + i)
     # print(inversely_proportional_coords)
