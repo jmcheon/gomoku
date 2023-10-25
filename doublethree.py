@@ -91,6 +91,7 @@ def find_all_continuous(board: Board, x, y, player, direction):
 def check_next_only_range(board: Board, x, y, direction, player):
     # board
     # print("next_only", x + direction[0], y + direction[1])
+
     if (
         is_valid_position((x + direction[0], y + direction[1])) is False
         or is_valid_position(

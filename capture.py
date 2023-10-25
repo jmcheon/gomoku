@@ -24,13 +24,24 @@ def dfs_capture(board: Board, x, y, player, direction, count):
     return dfs_capture(board, nx, ny, player, direction, count + 1)
 
 
+def remove_pairs(board: Board, captured_list):
+    (x, y), direction = captured_list
+    nx = 0
+    ny = 0
+    for _ in range(2):
+        nx = x + direction[0] if nx == 0 else nx + direction[0]
+        ny = y + direction[1] if ny == 0 else ny + direction[1]
+        board.set_value(nx, ny, board.empty_square)
+
+
 def capture_opponent(board: Board, x, y, player):
     print("capture_opponent", (x, y), player)
     captured_list = []
     for dir in directions:
         print(dir)
         if dfs_capture(board, x, y, player, dir, 1) == True:
-            captured_list.append(((x, y), dir))
+            captured_list.append([(x, y), dir])
             print("stone pairs found!")
 
-    print(captured_list)
+    for i in range(len(captured_list)):
+        remove_pairs(board, captured_list[i])
