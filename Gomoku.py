@@ -93,7 +93,7 @@ class Gomoku:
                             # self.board[grid_x][grid_y] = turn
                             self.board = self.board.make_move(grid_x, grid_y)
                             check_double_three(self.board, grid_x, grid_y, turn)
-                            capture_opponent(self.board, grid_x, grid_y, turn)
+                            # capture_opponent(self.board, grid_x, grid_y, turn)
                             turn = PLAYER1 if turn == PLAYER2 else PLAYER2
                             trace.append((grid_x, grid_y))
 

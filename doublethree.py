@@ -25,6 +25,8 @@ def get_continuous_range(x, y, direction, range_num):
 
 
 def dfs(board: Board, x, y, player, direction, count, player_count):
+    if count > 4:
+        return False
     nx = x + direction[0]
     ny = y + direction[1]
 
@@ -35,8 +37,8 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
             and board.get_value(nx, ny) == board.empty_square
         ):
             return True
-        else:
-            return False
+        # else:
+        #     return False
 
     if not is_valid_position((nx, ny)):
         return False
@@ -104,7 +106,7 @@ def check_next_only_range(board: Board, x, y, direction, player):
         )
         is False
     ):
-        return False
+        return None
     if (
         board.get_value(x, y)
         == board.get_value(x + direction[0], y + direction[1])
@@ -121,9 +123,11 @@ def check_next_only_range(board: Board, x, y, direction, player):
             )
             == board.empty_square
         ):
-            return True
-        else:
-            return False
+            return [
+                (x - direction[0], y - direction[1]),
+                (x, y),
+                (x + direction[0], y + direction[1]),
+            ]
     elif dfs(board, x, y, player, direction, 2, 2) == True and (
         board.get_value(x - direction[0], y - direction[1])
         == board.get_value(x, y)
@@ -135,9 +139,11 @@ def check_next_only_range(board: Board, x, y, direction, player):
             )
             == board.empty_square
         ):
-            return True
-        else:
-            return False
+            return [
+                (x - direction[0], y - direction[1]),
+                (x, y),
+                (x + direction[0] + direction[0], y + direction[1] + direction[1]),
+            ]
     elif dfs(board, x, y, player, (-direction[0], -direction[1]), 2, 2) == True and (
         board.get_value(x + direction[0], y + direction[1])
         == board.get_value(x, y)
@@ -149,37 +155,45 @@ def check_next_only_range(board: Board, x, y, direction, player):
             )
             == board.empty_square
         ):
-            return True
-        else:
-            return False
-    return False
+            return [
+                (x - direction[0] - direction[0], y - direction[1] - direction[1]),
+                (x, y),
+                (x + direction[0], y + direction[1]),
+            ]
+    return None
 
 
 def check_double_three(board: Board, x, y, player):
     # print("init", x, y, player)
     directions = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]
     direction = None
+    three = []
     for dir in directions:
         if (
             dfs(board, x, y, player, dir, 1, 1) == True
             and is_valid_position((x - dir[0], y - dir[1])) == True
             and board.get_value(x - dir[0], y - dir[1]) == board.empty_square
         ):
+            three.append((x, y))
+            three.append((x + dir[0], y + dir[1]))
+            three.append((x + dir[0] + dir[0], y + dir[1] + dir[1]))
             direction = dir
             break
     if direction is None:
         for i in range(len(directions) // 2):
-            if check_next_only_range(board, x, y, directions[i], player) is True:
+            three = check_next_only_range(board, x, y, directions[i], player)
+            if three is not None:
                 direction = directions[i]
                 break
+    print(three, direction)
     if direction is not None:
         print("direction, rev", direction, (-direction[0], -direction[1]))
         directions.remove(direction)
         directions.remove((-direction[0], -direction[1]))
-        ### TODO
-        all_cont = find_all_continuous(board, x, y, player, direction)
-        ### TODO
-        for one_place in all_cont:
+        # ### TODO
+        # all_cont = find_all_continuous(board, x, y, player, direction)
+        # ### TODO
+        for one_place in three:
             for dir in directions:
                 if (
                     dfs(board, one_place[0], one_place[1], player, dir, 1, 1) == True
@@ -198,7 +212,7 @@ def check_double_three(board: Board, x, y, player):
                     check_next_only_range(
                         board, one_place[0], one_place[1], dir, player
                     )
-                    == True
+                    is not None
                 ):
                     print("double tree found")
                     return True
