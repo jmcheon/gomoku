@@ -91,9 +91,7 @@ def find_all_continuous(board: Board, x, y, player, direction):
 
 
 def check_next_only_range(board: Board, x, y, direction, player):
-    # board
-    # print("next_only", x + direction[0], y + direction[1])
-
+    return_list = []
     if (
         is_valid_position((x + direction[0], y + direction[1])) is False
         or is_valid_position(
@@ -112,55 +110,97 @@ def check_next_only_range(board: Board, x, y, direction, player):
         == board.get_value(x + direction[0], y + direction[1])
         == board.get_value(x - direction[0], y - direction[1])
         == player
+    ) and (
+        board.get_value(
+            x + direction[0] + direction[0], y + direction[1] + direction[1]
+        )
+        != (PLAYER2 if player == PLAYER1 else PLAYER1)
+        and board.get_value(
+            x - direction[0] - direction[0], y - direction[1] - direction[1]
+        )
+        != (PLAYER2 if player == PLAYER1 else PLAYER1)
+    ):
+        if (
+            board.get_value(
+                x + direction[0] + direction[0], y + direction[1] + direction[1]
+            )
+            == player
+        ):
+            return_list.append(
+                x + direction[0] + direction[0], y + direction[1] + direction[1]
+            )
+        elif (
+            board.get_value(
+                x - direction[0] - direction[0], y - direction[1] - direction[1]
+            )
+            == player
+        ):
+            return_list.append(
+                (x - direction[0] - direction[0], y - direction[1] - direction[1])
+            )
+        return_list.append((x - direction[0], y - direction[1]))
+        return_list.append((x, y))
+        return_list.append((x + direction[0], y + direction[1]))
+
+    elif (
+        dfs(board, x, y, player, direction, 2, 2) == True
+        and (
+            board.get_value(x - direction[0], y - direction[1])
+            == board.get_value(x, y)
+            == player
+        )
+        and (
+            board.get_value(
+                x - direction[0] - direction[0], y - direction[1] - direction[1]
+            )
+            != (PLAYER2 if player == PLAYER1 else PLAYER1)
+        )
+    ):
+        if (
+            board.get_value(
+                x - direction[0] - direction[0], y - direction[1] - direction[1]
+            )
+            == board.empty_square
+        ):
+            return_list.append(
+                (x - direction[0] - direction[0], y - direction[1] - direction[1])
+            )
+
+        return_list.append((x - direction[0], y - direction[1]))
+        return_list.append((x, y))
+        return_list.append(
+            (x + direction[0] + direction[0], y + direction[1] + direction[1])
+        )
+
+    elif (
+        dfs(board, x, y, player, (-direction[0], -direction[1]), 2, 2) == True
+        and (
+            board.get_value(x + direction[0], y + direction[1])
+            == board.get_value(x, y)
+            == player
+        )
+        and (
+            board.get_value(
+                x + direction[0] + direction[0], y + direction[1] + direction[1]
+            )
+            != (PLAYER2 if player == PLAYER1 else PLAYER1)
+        )
     ):
         if (
             board.get_value(
                 x + direction[0] + direction[0], y + direction[1] + direction[1]
             )
             == board.empty_square
-            and board.get_value(
-                x - direction[0] - direction[0], y - direction[1] - direction[1]
-            )
-            == board.empty_square
         ):
-            return [
-                (x - direction[0], y - direction[1]),
-                (x, y),
-                (x + direction[0], y + direction[1]),
-            ]
-    elif dfs(board, x, y, player, direction, 2, 2) == True and (
-        board.get_value(x - direction[0], y - direction[1])
-        == board.get_value(x, y)
-        == player
-    ):
-        if (
-            board.get_value(
-                x - direction[0] - direction[0], y - direction[1] - direction[1]
+            return_list.append(
+                (x + direction[0] + direction[0], y + direction[1] + direction[1])
             )
-            == board.empty_square
-        ):
-            return [
-                (x - direction[0], y - direction[1]),
-                (x, y),
-                (x + direction[0] + direction[0], y + direction[1] + direction[1]),
-            ]
-    elif dfs(board, x, y, player, (-direction[0], -direction[1]), 2, 2) == True and (
-        board.get_value(x + direction[0], y + direction[1])
-        == board.get_value(x, y)
-        == player
-    ):
-        if (
-            board.get_value(
-                x + direction[0] + direction[0], y + direction[1] + direction[1]
-            )
-            == board.empty_square
-        ):
-            return [
-                (x - direction[0] - direction[0], y - direction[1] - direction[1]),
-                (x, y),
-                (x + direction[0], y + direction[1]),
-            ]
-    return None
+        return_list.append(
+            (x - direction[0] - direction[0], y - direction[1] - direction[1])
+        )
+        return_list.append((x, y))
+        return_list.append((x + direction[0], y + direction[1]))
+    return return_list
 
 
 def check_double_three(board: Board, x, y, player):
@@ -172,8 +212,11 @@ def check_double_three(board: Board, x, y, player):
         if (
             dfs(board, x, y, player, dir, 1, 1) == True
             and is_valid_position((x - dir[0], y - dir[1])) == True
-            and board.get_value(x - dir[0], y - dir[1]) == board.empty_square
+            and board.get_value(x - dir[0], y - dir[1])
+            != (PLAYER2 if player == PLAYER1 else PLAYER1)
         ):
+            if board.get_value(x - dir[0], y - dir[1]) == player:
+                three.append((x - dir[0], y - dir[1]))
             three.append((x, y))
             three.append((x + dir[0], y + dir[1]))
             three.append((x + dir[0] + dir[0], y + dir[1] + dir[1]))
@@ -209,9 +252,12 @@ def check_double_three(board: Board, x, y, player):
                     print("double tree found!!!!!!!!!!!!")
                     return True
                 elif (
-                    check_next_only_range(
-                        board, one_place[0], one_place[1], dir, player
+                    len(
+                        check_next_only_range(
+                            board, one_place[0], one_place[1], dir, player
+                        )
                     )
+                    != 0
                     is not None
                 ):
                     print("double tree found")
