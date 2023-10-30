@@ -7,6 +7,17 @@ def is_valid_position(position):
     return 0 <= position[0] < 19 and 0 <= position[1] < 19
 
 
+def make_list_to_direction(board: Board, x, y, dir, n, player):
+    return_list = []
+    return_list.append((x, y))
+    for i in range(1, n):
+        if is_valid_position((x + (dir[0] * i), y + (dir[1] * i))):
+            if board.get_value(x + (dir[0] * i), y + (dir[1] * i)) == player:
+                return_list.append((x + (dir[0] * i), y + (dir[1] * i)))
+
+    return return_list
+
+
 def dfs(board: Board, x, y, player, direction, count, player_count):
     if count > 4:
         return False
@@ -35,129 +46,75 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
     return dfs(board, nx, ny, player, direction, count + 1, player_count)
 
 
-def check_next_only_range(board: Board, x, y, direction, player):
+def check_next_only_range(board: Board, x, y, dir, player):
     return_list = []
     if (
-        is_valid_position((x + direction[0], y + direction[1])) is False
-        or is_valid_position(
-            (x + direction[0] + direction[0], y + direction[1] + direction[1])
-        )
-        is False
-        or is_valid_position((x - direction[0], y - direction[1])) is False
-        or is_valid_position(
-            (x - direction[0] - direction[0], y - direction[1] - direction[1])
-        )
-        is False
+        is_valid_position((x + dir[0], y + dir[1])) is False
+        or is_valid_position((x + dir[0] + dir[0], y + dir[1] + dir[1])) is False
+        or is_valid_position((x - dir[0], y - dir[1])) is False
+        or is_valid_position((x - dir[0] - dir[0], y - dir[1] - dir[1])) is False
     ):
         return None
     if (
         board.get_value(x, y)
-        == board.get_value(x + direction[0], y + direction[1])
-        == board.get_value(x - direction[0], y - direction[1])
+        == board.get_value(x + dir[0], y + dir[1])
+        == board.get_value(x - dir[0], y - dir[1])
         == player
     ) and (
-        board.get_value(
-            x + direction[0] + direction[0], y + direction[1] + direction[1]
-        )
+        board.get_value(x + (dir[0] * 2), y + (dir[1] * 2))
         != (PLAYER2 if player == PLAYER1 else PLAYER1)
-        and board.get_value(
-            x - direction[0] - direction[0], y - direction[1] - direction[1]
-        )
+        and board.get_value(x - (dir[0] * 2), y - (dir[1] * 2))
         != (PLAYER2 if player == PLAYER1 else PLAYER1)
     ):
-        if (
-            board.get_value(
-                x + direction[0] + direction[0], y + direction[1] + direction[1]
-            )
-            == player
-        ):
-            return_list.append(
-                x + direction[0] + direction[0], y + direction[1] + direction[1]
-            )
-        elif (
-            board.get_value(
-                x - direction[0] - direction[0], y - direction[1] - direction[1]
-            )
-            == player
-        ):
-            return_list.append(
-                (x - direction[0] - direction[0], y - direction[1] - direction[1])
-            )
-        return_list.append((x - direction[0], y - direction[1]))
-        return_list.append((x, y))
-        return_list.append((x + direction[0], y + direction[1]))
+        return_list = make_list_to_direction(board, x, y, (-dir[0], -dir[1]), 3, player)
+        return_list += make_list_to_direction(board, x, y, dir, 3, player)
+        # if board.get_value(x - dir[0] - dir[0], y - dir[1] - dir[1]) == player:
+        #     return_list.append((x - dir[0] - dir[0], y - dir[1] - dir[1]))
+        # return_list.append((x - dir[0], y - dir[1]))
+        # return_list.append((x, y))
+        # return_list.append((x + dir[0], y + dir[1]))
+        # if board.get_value(x + dir[0] + dir[0], y + dir[1] + dir[1]) == player:
+        #     return_list.append(x + dir[0] + dir[0], y + dir[1] + dir[1])
 
     elif (
-        dfs(board, x, y, player, direction, 2, 2) == True
+        dfs(board, x, y, player, dir, 2, 2) == True
+        and (board.get_value(x - dir[0], y - dir[1]) == board.get_value(x, y) == player)
         and (
-            board.get_value(x - direction[0], y - direction[1])
-            == board.get_value(x, y)
-            == player
-        )
-        and (
-            board.get_value(
-                x - direction[0] - direction[0], y - direction[1] - direction[1]
-            )
+            board.get_value(x - dir[0] - dir[0], y - dir[1] - dir[1])
             != (PLAYER2 if player == PLAYER1 else PLAYER1)
         )
     ):
-        print("testing", direction, x, y)
+        # TODO: 3 for dfs, 2 for opposite
+        print("testing", dir, x, y)
         if (
-            board.get_value(
-                x - direction[0] - direction[0], y - direction[1] - direction[1]
-            )
+            board.get_value(x - dir[0] - dir[0], y - dir[1] - dir[1])
             == board.empty_square
         ):
-            return_list.append(
-                (x - direction[0] - direction[0], y - direction[1] - direction[1])
-            )
+            return_list.append((x - dir[0] - dir[0], y - dir[1] - dir[1]))
 
-        return_list.append((x - direction[0], y - direction[1]))
+        return_list.append((x - dir[0], y - dir[1]))
         return_list.append((x, y))
-        return_list.append(
-            (x + direction[0] + direction[0], y + direction[1] + direction[1])
-        )
+        return_list.append((x + dir[0] + dir[0], y + dir[1] + dir[1]))
 
     elif (
-        dfs(board, x, y, player, (-direction[0], -direction[1]), 2, 2) == True
+        dfs(board, x, y, player, (-dir[0], -dir[1]), 2, 2) == True
+        and (board.get_value(x + dir[0], y + dir[1]) == board.get_value(x, y) == player)
         and (
-            board.get_value(x + direction[0], y + direction[1])
-            == board.get_value(x, y)
-            == player
-        )
-        and (
-            board.get_value(
-                x + direction[0] + direction[0], y + direction[1] + direction[1]
-            )
+            board.get_value(x + dir[0] + dir[0], y + dir[1] + dir[1])
             != (PLAYER2 if player == PLAYER1 else PLAYER1)
         )
     ):
-        print("testing_two", direction, x, y)
+        # TODO: 3 for dfs(opposite), 2 for reg.
+        print("testing_two", dir, x, y)
         if (
-            board.get_value(
-                x + direction[0] + direction[0], y + direction[1] + direction[1]
-            )
+            board.get_value(x + dir[0] + dir[0], y + dir[1] + dir[1])
             == board.empty_square
         ):
-            return_list.append(
-                (x + direction[0] + direction[0], y + direction[1] + direction[1])
-            )
-        return_list.append(
-            (x - direction[0] - direction[0], y - direction[1] - direction[1])
-        )
+            return_list.append((x + dir[0] + dir[0], y + dir[1] + dir[1]))
+        return_list.append((x - dir[0] - dir[0], y - dir[1] - dir[1]))
         return_list.append((x, y))
-        return_list.append((x + direction[0], y + direction[1]))
-    return return_list
-
-
-def make_list_to_direction(board: Board, x, y, dir, n, player):
-    return_list = []
-    return_list.append((x, y))
-    for i in range(1, n):
-        if is_valid_position((x + (dir[0] * i), y + (dir[1] * i))):
-            if board.get_value(x + (dir[0] * i), y + (dir[1] * i)) == player:
-                return_list.append((x + (dir[0] * i), y + (dir[1] * i)))
-
+        return_list.append((x + dir[0], y + dir[1]))
+    return_list = list(set(return_list))
     return return_list
 
 
