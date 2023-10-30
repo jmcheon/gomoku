@@ -32,7 +32,7 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
 
     if 3 <= count and count <= 4:
         if (
-            player_count == 3
+            player_count >= 3
             and is_valid_position((nx, ny)) == True
             and board.get_value(nx, ny) == board.empty_square
         ):
@@ -156,6 +156,7 @@ def check_next_only_range(board: Board, x, y, direction, player):
             != (PLAYER2 if player == PLAYER1 else PLAYER1)
         )
     ):
+        print("testing", direction, x, y)
         if (
             board.get_value(
                 x - direction[0] - direction[0], y - direction[1] - direction[1]
@@ -186,6 +187,7 @@ def check_next_only_range(board: Board, x, y, direction, player):
             != (PLAYER2 if player == PLAYER1 else PLAYER1)
         )
     ):
+        print("testing_two", direction, x, y)
         if (
             board.get_value(
                 x + direction[0] + direction[0], y + direction[1] + direction[1]
@@ -218,17 +220,30 @@ def check_double_three(board: Board, x, y, player):
             if board.get_value(x - dir[0], y - dir[1]) == player:
                 three.append((x - dir[0], y - dir[1]))
             three.append((x, y))
-            three.append((x + dir[0], y + dir[1]))
-            three.append((x + dir[0] + dir[0], y + dir[1] + dir[1]))
+            if board.get_value(x + dir[0], y + dir[1]) == player:
+                three.append((x + dir[0], y + dir[1]))
+            if board.get_value(x + dir[0] + dir[0], y + dir[1] + dir[1]) == player:
+                three.append((x + dir[0] + dir[0], y + dir[1] + dir[1]))
+
+            if (
+                board.get_value(
+                    x + dir[0] + dir[0] + dir[0], y + dir[1] + dir[1] + dir[1]
+                )
+                == player
+            ):
+                three.append(
+                    (x + dir[0] + dir[0] + dir[0], y + dir[1] + dir[1] + dir[1])
+                )
             direction = dir
             break
     if direction is None:
+        print("a")
         for i in range(len(directions) // 2):
             three = check_next_only_range(board, x, y, directions[i], player)
             if three is not None:
                 direction = directions[i]
                 break
-    print(three, direction)
+    print("three", three, direction)
     if direction is not None:
         print("direction, rev", direction, (-direction[0], -direction[1]))
         directions.remove(direction)
