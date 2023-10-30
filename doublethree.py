@@ -163,7 +163,7 @@ def make_list_to_direction(board: Board, x, y, dir, n, player):
 
 def check_double_three(board: Board, x, y, player):
     direction = None
-    three = []
+    cont_range = []
     for dir in DIRECTIONS:
         if (
             dfs(board, x, y, player, dir, 1, 1) == True
@@ -171,7 +171,7 @@ def check_double_three(board: Board, x, y, player):
             and board.get_value(x - dir[0], y - dir[1])
             != (PLAYER2 if player == PLAYER1 else PLAYER1)
         ):
-            three = make_list_to_direction(board, x, y, dir, 5, player)
+            cont_range = make_list_to_direction(board, x, y, dir, 5, player)
 
             # if board.get_value(x - dir[0], y - dir[1]) == player:
             #     three.append((x - dir[0], y - dir[1]))
@@ -194,8 +194,8 @@ def check_double_three(board: Board, x, y, player):
     if direction is None:
         # print("a")
         for i in range(len(DIRECTIONS) // 2):
-            three = check_next_only_range(board, x, y, DIRECTIONS[i], player)
-            if three is not None:
+            cont_range = check_next_only_range(board, x, y, DIRECTIONS[i], player)
+            if cont_range is not None:
                 direction = DIRECTIONS[i]
                 break
     # print("three", three, direction)
@@ -204,7 +204,7 @@ def check_double_three(board: Board, x, y, player):
         # print("direction, rev", direction, (-direction[0], -direction[1]))
         directions_copy.remove(direction)
         directions_copy.remove((-direction[0], -direction[1]))
-        for one_place in three:
+        for one_place in cont_range:
             for dir in directions_copy:
                 if (
                     dfs(board, one_place[0], one_place[1], player, dir, 1, 1) == True
