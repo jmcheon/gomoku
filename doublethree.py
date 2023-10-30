@@ -34,7 +34,7 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
         if (
             player_count >= 3
             and is_valid_position((nx, ny)) == True
-            and board.get_value(nx, ny) == board.empty_square
+            and board.get_value(nx, ny) != (PLAYER2 if player == PLAYER1 else PLAYER1)
         ):
             return True
         # else:
@@ -205,18 +205,31 @@ def check_next_only_range(board: Board, x, y, direction, player):
     return return_list
 
 
+def make_list_to_direction(board: Board, x, y, dir, n, player):
+    print("hello world")
+
+    print(x, y)
+    for i in range(1, n):
+        if board.get_value(x + (dir[0] * i), y + (dir[1] * i)) == player:
+            print(x + (dir[0] * i), y + (dir[1] * i))
+
+
+def check_positions_and_make_list(list, player):
+    for i in range(len(list)):
+        print(i)
+
+
 def check_double_three(board: Board, x, y, player):
-    # print("init", x, y, player)
-    directions = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]
     direction = None
     three = []
-    for dir in directions:
+    for dir in DIRECTIONS:
         if (
             dfs(board, x, y, player, dir, 1, 1) == True
             and is_valid_position((x - dir[0], y - dir[1])) == True
             and board.get_value(x - dir[0], y - dir[1])
             != (PLAYER2 if player == PLAYER1 else PLAYER1)
         ):
+            make_list_to_direction(board, x, y, dir, 5, player)
             if board.get_value(x - dir[0], y - dir[1]) == player:
                 three.append((x - dir[0], y - dir[1]))
             three.append((x, y))
@@ -224,7 +237,6 @@ def check_double_three(board: Board, x, y, player):
                 three.append((x + dir[0], y + dir[1]))
             if board.get_value(x + dir[0] + dir[0], y + dir[1] + dir[1]) == player:
                 three.append((x + dir[0] + dir[0], y + dir[1] + dir[1]))
-
             if (
                 board.get_value(
                     x + dir[0] + dir[0] + dir[0], y + dir[1] + dir[1] + dir[1]
@@ -238,21 +250,19 @@ def check_double_three(board: Board, x, y, player):
             break
     if direction is None:
         print("a")
-        for i in range(len(directions) // 2):
-            three = check_next_only_range(board, x, y, directions[i], player)
+        for i in range(len(DIRECTIONS) // 2):
+            three = check_next_only_range(board, x, y, DIRECTIONS[i], player)
             if three is not None:
-                direction = directions[i]
+                direction = DIRECTIONS[i]
                 break
     print("three", three, direction)
+    directions_copy = DIRECTIONS.copy()
     if direction is not None:
         print("direction, rev", direction, (-direction[0], -direction[1]))
-        directions.remove(direction)
-        directions.remove((-direction[0], -direction[1]))
-        # ### TODO
-        # all_cont = find_all_continuous(board, x, y, player, direction)
-        # ### TODO
+        directions_copy.remove(direction)
+        directions_copy.remove((-direction[0], -direction[1]))
         for one_place in three:
-            for dir in directions:
+            for dir in directions_copy:
                 if (
                     dfs(board, one_place[0], one_place[1], player, dir, 1, 1) == True
                     and is_valid_position(
@@ -279,22 +289,3 @@ def check_double_three(board: Board, x, y, player):
                     return True
     else:
         return False
-
-
-if __name__ == "__main__":
-    # x, y = 10, 1  # Replace with your desired coordinates
-    # for i in range(min(x, y), 0, -1):
-    #     print(x - i, y - i)
-    # # inversely_proportional_coords = inversely_proportional_coordinates(x, y)
-    # for i in range(1, min(NUM_LINES - x, NUM_LINES - y)):
-    #     print(x + i, y + i)
-    # # print(inversely_proportional_coords)
-
-    # direction(1, -1)
-    x = 17
-    y = 15
-    for i in range(min(x, y), 0, -1):
-        print((x + i, y - i))
-    print("-------------------------")
-    for i in range(1, min(NUM_LINES - x, NUM_LINES - y)):
-        print((x - i, y + i))
