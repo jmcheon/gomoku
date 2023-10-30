@@ -273,7 +273,7 @@ def check_double_three(board: Board, x, y, player):
                         )
                     )
                     != 0
-                    is not None
+                    # is not None
                 ):
                     print("double tree found")
                     return True
