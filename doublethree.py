@@ -86,15 +86,17 @@ def check_next_only_range(board: Board, x, y, dir, player):
     ):
         # TODO: 3 for dfs, 2 for opposite
         print("testing", dir, x, y)
-        if (
-            board.get_value(x - dir[0] - dir[0], y - dir[1] - dir[1])
-            == board.empty_square
-        ):
-            return_list.append((x - dir[0] - dir[0], y - dir[1] - dir[1]))
+        return_list = make_list_to_direction(board, x, y, (-dir[0], -dir[1]), 3, player)
+        return_list += make_list_to_direction(board, x, y, dir, 3, player)
+        # if (
+        #     board.get_value(x - dir[0] - dir[0], y - dir[1] - dir[1])
+        #     == board.empty_square
+        # ):
+        #     return_list.append((x - dir[0] - dir[0], y - dir[1] - dir[1]))
 
-        return_list.append((x - dir[0], y - dir[1]))
-        return_list.append((x, y))
-        return_list.append((x + dir[0] + dir[0], y + dir[1] + dir[1]))
+        # return_list.append((x - dir[0], y - dir[1]))
+        # return_list.append((x, y))
+        # return_list.append((x + dir[0] + dir[0], y + dir[1] + dir[1]))
 
     elif (
         dfs(board, x, y, player, (-dir[0], -dir[1]), 2, 2) == True
@@ -104,16 +106,22 @@ def check_next_only_range(board: Board, x, y, dir, player):
             != (PLAYER2 if player == PLAYER1 else PLAYER1)
         )
     ):
+        return_list = make_list_to_direction(board, x, y, dir, 3, player)
+        return_list += make_list_to_direction(
+            board, x, y, (-dir[0], -dir[1]), 3, player
+        )
         # TODO: 3 for dfs(opposite), 2 for reg.
-        print("testing_two", dir, x, y)
-        if (
-            board.get_value(x + dir[0] + dir[0], y + dir[1] + dir[1])
-            == board.empty_square
-        ):
-            return_list.append((x + dir[0] + dir[0], y + dir[1] + dir[1]))
-        return_list.append((x - dir[0] - dir[0], y - dir[1] - dir[1]))
-        return_list.append((x, y))
-        return_list.append((x + dir[0], y + dir[1]))
+        # print("testing_two", dir, x, y)
+        # if (
+        #     board.get_value(x + dir[0] + dir[0], y + dir[1] + dir[1])
+        #     == board.empty_square
+        # ):
+        #     return_list.append((x + dir[0] + dir[0], y + dir[1] + dir[1]))
+        # return_list.append((x - dir[0] - dir[0], y - dir[1] - dir[1]))
+        # return_list.append((x, y))
+        # return_list.append((x + dir[0], y + dir[1]))
+        return_list = make_list_to_direction(board, x, y, (-dir[0], -dir[1]), 3, player)
+        return_list += make_list_to_direction(board, x, y, dir, 3, player)
     return_list = list(set(return_list))
     return return_list
 

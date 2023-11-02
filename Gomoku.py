@@ -4,7 +4,7 @@ import sys
 import pygame
 
 from Board import Board
-from capture import capture_opponent
+from capture import capture_opponent, remove_captured_list
 from config import *
 from doublethree import check_double_three
 from mcts import MCTS
@@ -54,7 +54,7 @@ class Gomoku:
 
     def play(self):
         # initalize red as a beginning
-        turn = PLAYER1
+        turn = self.board.player1
         grid_x, grid_y = 0, 0
         trace = []
         run = True
@@ -90,23 +90,36 @@ class Gomoku:
                         ):
                             print("this cell is already occupied")
                         else:
-                            # self.board[grid_x][grid_y] = turn
                             self.board = self.board.make_move(grid_x, grid_y)
+                            if self.board.is_win() == False:
+                                print("Wtf")
+                            elif self.board.is_draw():
+                                print("Game is drawn")
+                                break
+                            # self.board[grid_x][grid_y] = turn
+                            capture_list = capture_opponent(
+                                self.board, grid_x, grid_y, turn
+                            )
+                            if capture_list:
+                                remove_captured_list(self.board, capture_list)
                             check_double_three(self.board, grid_x, grid_y, turn)
-                            # capture_opponent(self.board, grid_x, grid_y, turn)
-                            turn = PLAYER1 if turn == PLAYER2 else PLAYER2
-                            trace.append((grid_x, grid_y))
+                            # turn = PLAYER1 if turn == PLAYER2 else PLAYER2
+                            trace.append(self.board.position)
 
                     # revert with right click
                     elif event.button == 3:
-                        if len(trace) > 0:
-                            # if self.board.get_value(grid_x, grid_y) != self.board.empty_square:
-                            x, y = trace.pop()
-                            self.board.set_value(x, y, self.board.empty_square)
+                        # print("trace enabled")
+                        if trace:  # Checks if the trace list is not empty
+                            trace.pop()  # Remove the last item from the list
+                            if trace:
+                                self.board.position = trace[-1]
+                            else:
+                                self.board.position = [
+                                    ["."] * NUM_LINES for _ in range(NUM_LINES)
+                                ]
                             self.board.swap_player()
-                            turn = PLAYER1 if turn == PLAYER2 else PLAYER2
-                            print(self.board)
-                            print("right click:", x, y, turn)
+                        else:
+                            print("Trace is empty, cannot go back further")
 
             self.surface.fill((0, 0, 0, 0))
 
@@ -117,9 +130,9 @@ class Gomoku:
                 print("Game is drawn")
                 break
 
-            if turn == PLAYER1:
+            if self.board.player1 == PLAYER1:
                 self.draw_circles(grid_x, grid_y, self.surface, black_transparent)
-            elif turn == PLAYER2:
+            elif self.board.player1 == PLAYER2:
                 self.draw_circles(grid_x, grid_y, self.surface, white_transparent)
                 # self.board = best_move(self.board)
 
