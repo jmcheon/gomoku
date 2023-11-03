@@ -100,22 +100,24 @@ class Gomoku:
                                 self.board, grid_x, grid_y, self.board.player1
                             )
                             if capture_list:
+                                self.board = self.board.make_move(grid_x, grid_y)
                                 print("capture gogo")
                                 remove_captured_list(self.board, capture_list)
-                                print(self.board)
-                            check_double_three(
-                                self.board, grid_x, grid_y, self.board.player1
-                            )
-                            self.board = self.board.make_move(grid_x, grid_y)
+                                # print(self.board)
+                            else:
+                                check_double_three(
+                                    self.board, grid_x, grid_y, self.board.player1
+                                )
+                                self.board = self.board.make_move(grid_x, grid_y)
                             print(self.board)
                             trace.append(self.board)
                         # print(self.board)
                     # revert with right click
                     elif event.button == 3:
-                        print(self.board)
+                        # print(self.board)
                         # print("trace enabled")
                         if trace:  # Checks if the trace list is not empty
-                            print(trace.pop())  # Remove the last item from the list
+                            print('trace.pop', trace.pop())  # Remove the last item from the list
                             if trace:
                                 self.board = trace[-1]
                             else:
@@ -123,7 +125,7 @@ class Gomoku:
                                     ["."] * NUM_LINES for _ in range(NUM_LINES)
                                 ]
                             print(self.board)
-                            self.board.swap_player()
+                            # self.board.swap_player()
                         else:
                             print("Trace is empty, cannot go back further")
 

@@ -15,6 +15,8 @@ class Board:
         # define board position
         self.position = [["."] * NUM_LINES for _ in range(NUM_LINES)]
 
+        self.record = []
+
         # self.init_board()
 
         # create a copy of previous board state if available
@@ -25,6 +27,9 @@ class Board:
         for row in range(NUM_LINES):
             for col in range(NUM_LINES):
                 self.position[row][col] = self.empty_square
+
+    def get_position(self) -> list:
+        return deepcopy(self.position)
 
     def get_value(self, col: int, row: int) -> str:
         return self.position[row][col]
@@ -39,6 +44,7 @@ class Board:
 
         # make move
         board.position[row][col] = self.player1
+        board.record.append((row, col, self.player1))
 
         # swap players
         board.swap_player()
@@ -213,6 +219,65 @@ class Board:
 
         print(count)
         return single_threes
+
+    def equal_three(self, position, player):
+        count = 0
+        for i in range(len(position)):
+            if self.get_value(position[i][0], position[i][1]) == player:
+                count += 1
+        return count == 3
+
+    def testing(self, x, y, player):
+        directions = [EAST, NORTHEAST, NORTH, NORTHWEST]
+        # print(x, y)
+        first_three = None
+        for i in range(len(directions)):
+            test = get_continuous_range(x, y, directions[i], 3)
+            flag = True
+            for i in range(len(test)):
+                for j in range(len(test[i])):
+                    if is_valid_position(test[i][j]) == False:
+                        flag = False
+                        print("not valid")
+                        break
+                    # print(test[i][j])
+                if flag == True:
+                    if self.equal_three(test[i], player) == True:
+                        print("three found", test[i], player)
+
+                        first_three = test[i]
+        second_result = False
+        if first_three != None:
+            for i in range(len(first_three)):
+                print(first_three[i])
+                second_result = self.testing_two(
+                    first_three, first_three[i][0], first_three[i][1], player
+                )
+            print("second_result:", second_result)
+            return second_result
+        return second_result
+
+    def testing_two(self, first_three, x, y, player):
+        directions = [EAST, NORTHEAST, NORTH, NORTHWEST]
+        result = False
+        for i in range(len(directions)):
+            test = get_continuous_range(x, y, directions[i], 3)
+            flag = True
+            for i in range(len(test)):
+                for j in range(len(test[i])):
+                    if is_valid_position(test[i][j]) == False:
+                        flag = False
+                        print("not valid")
+                        break
+                    # print(test[i][j])
+                if flag == True:
+                    if (
+                        self.equal_three(test[i], player) == True
+                        and test[i] != first_three
+                    ):
+                        print("three found", test[i], player)
+                        result = True
+        return result
 
 
 if __name__ == "__main__":
