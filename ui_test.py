@@ -264,8 +264,8 @@ class Interface:
 
 
 if __name__ == "__main__":
-    starting_x = 50  # Change the starting X coordinate
-    starting_y = 50  # Change the starting Y coordinate
+    starting_x = (5 * SCREEN_WIDTH / 8) / 10  # Change the starting X coordinate
+    starting_y = SCREEN_HEIGHT / 10  # Change the starting Y coordinate
     grid_width = SCREEN_WIDTH // 2  # Change the width of the grid
     grid_height = SCREEN_HEIGHT // 1.25  # Change the height of the grid
 
