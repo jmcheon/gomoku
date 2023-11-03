@@ -1,5 +1,13 @@
 import math
+import os
+import sys
+
 import pygame
+
+path = os.path.join(os.path.dirname(__file__), "..", "multilayer_perceptron")
+sys.path.insert(1, path)
+from DenseLayer import DenseLayer
+from NeuralNet import NeuralNet
 
 # Define the constant display size
 # baduk_board original size is 461 x 459
