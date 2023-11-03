@@ -1,7 +1,7 @@
 import pygame
 
 # Constants
-SCREEN_WIDTH, SCREEN_HEIGHT = 1600, 1000
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 500
 NUM_LINES = 19
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -84,7 +84,8 @@ class Interface:
             self.create_grid()
             self.grid_created = True
 
-        self.display_time()
+        self.display_right_pane()
+        # self.display_time()
         self.display_captured_score()
         pygame.display.flip()
 
@@ -152,11 +153,52 @@ class Interface:
         # self.create_alphabet_row()
         # self.create_number_col()
 
+    def display_right_pane(self):
+        right_pane_begin_x = 5 * SCREEN_WIDTH / 8
+
+        right_pane_rect = pygame.Rect(
+            right_pane_begin_x, 0, (3 * SCREEN_WIDTH / 8), SCREEN_HEIGHT
+        )
+        pygame.draw.rect(self.screen, (255, 0, 0), right_pane_rect, 2)
+
+        # self.display_dummy(right_pane_rect)
+
+    def display_dummy(self, right_pane_rect: pygame.Rect):
+        box_width = right_pane_rect.width / 3
+        box_height = right_pane_rect.height / 10
+        time_rect = pygame.Rect(
+            right_pane_rect.centerx - box_width / 2,
+            box_height / 2,
+            box_width,
+            box_height,
+        )
+        pygame.draw.rect(self.screen, (0, 255, 0), time_rect, 3)
+
+        # Get the elapsed time since pygame started
+        elapsed_time_millis = pygame.time.get_ticks()
+
+        # Convert the time to minutes and seconds
+        elapsed_time = divmod(elapsed_time_millis // 1000, 60)
+
+        # Format the time as "00:00"
+        formatted_time = "{:02}:{:02}".format(*elapsed_time)
+
+        # Draw the time
+        self.draw_text(
+            str(formatted_time),
+            22,
+            BLACK,
+            time_rect.centerx,
+            time_rect.centery,
+        )
+
+        # print("hello world")
+
     def display_time(self):
         # Define the area where the time is displayed (adjust as needed)
-        time_area = pygame.Rect(
-            SCREEN_WIDTH / 2 + SCREEN_WIDTH / 4 - 50, SCREEN_HEIGHT / 10 - 20, 100, 40
-        )
+        time_x = (5 * SCREEN_WIDTH / 8) + (2 * SCREEN_WIDTH / 8)
+        time_y = SCREEN_HEIGHT / 10
+        time_area = pygame.Rect(time_x, time_y, 100, 40)
 
         # Fill the area with the background color
         pygame.draw.rect(self.screen, BACKGROUND_COLOR, time_area)
@@ -175,8 +217,8 @@ class Interface:
             str(formatted_time),
             22,
             BLACK,
-            SCREEN_WIDTH / 2 + SCREEN_WIDTH / 4,
-            SCREEN_HEIGHT / 10,
+            time_x,
+            time_y,
         )
 
     def display_captured_score(self):
