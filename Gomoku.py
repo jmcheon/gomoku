@@ -90,7 +90,6 @@ class Gomoku:
                         ):
                             print("this cell is already occupied")
                         else:
-                            self.board = self.board.make_move(grid_x, grid_y)
                             if self.board.is_win() == False:
                                 print("Wtf")
                             elif self.board.is_draw():
@@ -98,25 +97,32 @@ class Gomoku:
                                 break
                             # self.board[grid_x][grid_y] = turn
                             capture_list = capture_opponent(
-                                self.board, grid_x, grid_y, turn
+                                self.board, grid_x, grid_y, self.board.player1
                             )
                             if capture_list:
+                                print("capture gogo")
                                 remove_captured_list(self.board, capture_list)
-                            check_double_three(self.board, grid_x, grid_y, turn)
-                            # turn = PLAYER1 if turn == PLAYER2 else PLAYER2
-                            trace.append(self.board.position)
-
+                                print(self.board)
+                            check_double_three(
+                                self.board, grid_x, grid_y, self.board.player1
+                            )
+                            self.board = self.board.make_move(grid_x, grid_y)
+                            print(self.board)
+                            trace.append(self.board)
+                        # print(self.board)
                     # revert with right click
                     elif event.button == 3:
+                        print(self.board)
                         # print("trace enabled")
                         if trace:  # Checks if the trace list is not empty
-                            trace.pop()  # Remove the last item from the list
+                            print(trace.pop())  # Remove the last item from the list
                             if trace:
-                                self.board.position = trace[-1]
+                                self.board = trace[-1]
                             else:
                                 self.board.position = [
                                     ["."] * NUM_LINES for _ in range(NUM_LINES)
                                 ]
+                            print(self.board)
                             self.board.swap_player()
                         else:
                             print("Trace is empty, cannot go back further")

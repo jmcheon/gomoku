@@ -40,7 +40,7 @@ def remove_pairs(board: Board, captured_pairs):
 
 
 def capture_opponent(board: Board, x, y, player):
-    # print("capture_opponent", (x, y), player)
+    print("capture_opponent", (x, y), player)
     captured_list = []
     for dir in directions:
         # print(dir)
