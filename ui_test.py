@@ -1,12 +1,14 @@
 import pygame
 
 # Constants
-SCREEN_WIDTH, SCREEN_HEIGHT = 800, 500
+SCREEN_WIDTH, SCREEN_HEIGHT = 1600, 1000
 NUM_LINES = 19
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 LINE_COLOR = BLACK
 BACKGROUND_COLOR = WHITE
+PLAYER_1 = 1
+PLAYER_2 = 2
 
 
 class Interface:
@@ -24,8 +26,7 @@ class Interface:
         self.grid_height = grid_height
         self.captured_p1 = 0
         self.captured_p2 = 0
-        self.start_pos = None
-        self.end_pos = None
+        self.turn = PLAYER_1
         self.duration = 1.0  # You can adjust this as needed
         self.animation_start_time = None
 
@@ -74,19 +75,20 @@ class Interface:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.turn = PLAYER_2 if self.turn == PLAYER_1 else PLAYER_1
+                # self.captured_p1 += 1
+                # self.captured_p2 -= 1
+                print("hello world")
 
     def update(self):
         pass
 
     def draw(self):
-        # self.screen.fill(BACKGROUND_COLOR)
         if not self.grid_created:
             self.create_grid()
             self.grid_created = True
-
         self.display_right_pane()
-        # self.display_time()
-        self.display_captured_score()
         pygame.display.flip()
 
     def create_grid(self):
@@ -161,9 +163,11 @@ class Interface:
         )
         pygame.draw.rect(self.screen, (255, 0, 0), right_pane_rect, 2)
 
-        # self.display_dummy(right_pane_rect)
+        time_rect = self.display_time(right_pane_rect)
+        scorebox_rect = self.display_scorebox(right_pane_rect, time_rect)
+        self.display_log(right_pane_rect, scorebox_rect)
 
-    def display_dummy(self, right_pane_rect: pygame.Rect):
+    def display_time(self, right_pane_rect: pygame.Rect):
         box_width = right_pane_rect.width / 3
         box_height = right_pane_rect.height / 10
         time_rect = pygame.Rect(
@@ -172,7 +176,7 @@ class Interface:
             box_width,
             box_height,
         )
-        pygame.draw.rect(self.screen, (0, 255, 0), time_rect, 3)
+        pygame.draw.rect(self.screen, BACKGROUND_COLOR, time_rect)
 
         # Get the elapsed time since pygame started
         elapsed_time_millis = pygame.time.get_ticks()
@@ -191,35 +195,104 @@ class Interface:
             time_rect.centerx,
             time_rect.centery,
         )
+        return time_rect
 
-        # print("hello world")
-
-    def display_time(self):
-        # Define the area where the time is displayed (adjust as needed)
-        time_x = (5 * SCREEN_WIDTH / 8) + (2 * SCREEN_WIDTH / 8)
-        time_y = SCREEN_HEIGHT / 10
-        time_area = pygame.Rect(time_x, time_y, 100, 40)
-
-        # Fill the area with the background color
-        pygame.draw.rect(self.screen, BACKGROUND_COLOR, time_area)
-
-        # Get the elapsed time since pygame started
-        elapsed_time_millis = pygame.time.get_ticks()
-
-        # Convert the time to minutes and seconds
-        elapsed_time = divmod(elapsed_time_millis // 1000, 60)
-
-        # Format the time as "00:00"
-        formatted_time = "{:02}:{:02}".format(*elapsed_time)
-
-        # Draw the time
-        self.draw_text(
-            str(formatted_time),
-            22,
-            BLACK,
-            time_x,
-            time_y,
+    def display_scorebox(self, right_pane_rect: pygame.Rect, time_rect: pygame.Rect):
+        scorebox_width = 4 * right_pane_rect.width / 5
+        scorebox_height = right_pane_rect.height / 3
+        scorebox_rect = pygame.Rect(
+            right_pane_rect.centerx - scorebox_width / 2,
+            time_rect.bottom,
+            scorebox_width,
+            scorebox_height,
         )
+        pygame.draw.rect(self.screen, (0, 255, 0), scorebox_rect, 3)
+
+        p1_name_rect = pygame.Rect(
+            scorebox_rect.left,
+            scorebox_rect.top,
+            scorebox_rect.width / 2,
+            scorebox_rect.height / 2 * 0.8,
+        )
+        p2_name_rect = pygame.Rect(
+            scorebox_rect.centerx,
+            scorebox_rect.top,
+            scorebox_rect.width / 2,
+            scorebox_rect.height / 2 * 0.8,
+        )
+
+        cursor_left = pygame.Rect(
+            scorebox_rect.left,
+            scorebox_rect.top + scorebox_rect.height / 2 * 0.8,
+            scorebox_rect.width / 2,
+            scorebox_rect.height / 2 * 0.2,
+        )
+
+        cursor_right = pygame.Rect(
+            scorebox_rect.centerx,
+            scorebox_rect.top + scorebox_rect.height / 2 * 0.8,
+            scorebox_rect.width / 2,
+            scorebox_rect.height / 2 * 0.2,
+        )
+
+        p1_score_rect = pygame.Rect(
+            scorebox_rect.left,
+            scorebox_rect.top + scorebox_rect.height / 2,
+            scorebox_rect.width / 2,
+            scorebox_rect.height / 2,
+        )
+        p2_score_rect = pygame.Rect(
+            scorebox_rect.centerx,
+            scorebox_rect.top + scorebox_rect.height / 2,
+            # scorebox_rect.bottom,
+            scorebox_rect.width / 2,
+            scorebox_rect.height / 2,
+        )
+
+        pygame.draw.rect(self.screen, BLACK, p1_name_rect, 2)
+        pygame.draw.rect(self.screen, BLACK, p2_name_rect, 2)
+        pygame.draw.rect(
+            self.screen,
+            BLACK if self.turn == PLAYER_1 else BACKGROUND_COLOR,
+            cursor_left,
+        )
+        pygame.draw.rect(
+            self.screen,
+            BLACK if self.turn == PLAYER_2 else BACKGROUND_COLOR,
+            cursor_right,
+        )
+        pygame.draw.rect(self.screen, BLACK, p1_score_rect, 2)
+        pygame.draw.rect(self.screen, BLACK, p2_score_rect, 2)
+
+        font_captured_score = pygame.font.Font(
+            None, 8 * (SCREEN_WIDTH // 100)
+        )  # Use the default font
+        p1_text = font_captured_score.render(f"{self.captured_p1}", True, BLACK)
+        p1_textbox = p1_text.get_rect()
+        p1_textbox.centerx = p1_score_rect.centerx
+        p1_textbox.centery = p1_score_rect.centery
+        # player1_rect.centery = captured_score_area.centery
+
+        p2_text = font_captured_score.render(f"{self.captured_p2}", True, BLACK)
+        p2_textbox = p2_text.get_rect()
+        p2_textbox.centerx = p2_score_rect.centerx
+        p2_textbox.centery = p2_score_rect.centery
+
+        self.screen.blit(p1_text, p1_textbox)
+        self.screen.blit(p2_text, p2_textbox)
+
+        return scorebox_rect
+
+    def display_log(self, right_pane_rect: pygame.Rect, scorebox_rect: pygame.Rect):
+        log_width = 5 * right_pane_rect.width / 6
+        log_height = 4 * right_pane_rect.height / 10
+        log_rect = pygame.Rect(
+            right_pane_rect.centerx - log_width / 2,
+            scorebox_rect.bottom + right_pane_rect.height / 20,
+            log_width,
+            log_height,
+        )
+        pygame.draw.rect(self.screen, (0, 0, 255), log_rect, 3)
 
     def display_captured_score(self):
         box_width = SCREEN_WIDTH / 5
@@ -296,13 +369,6 @@ class Interface:
         self.screen.blit(p2_text, p2_textbox)
 
         # self.screen.blit(player2_text, player2_rect)
-        def animate(self, time_elapsed):
-            progress = time_elapsed / self.duration
-            if progress > 1.0:
-                progress = 1.0
-            x = self.start_pos[0] * (1 - progress) + self.end_pos[0] * progress
-            y = self.start_pos[1] * (1 - progress) + self.end_pos[1] * progress
-            self.cursor_left.topleft = (x, y)
 
 
 if __name__ == "__main__":
