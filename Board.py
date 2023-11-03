@@ -67,7 +67,7 @@ class Board:
             for row in range(NUM_LINES):
                 if self.position[row][col] == self.player2:
                     winning_sequence.append((row, col))
-                if len(winning_sequence) == NUM_LINES:
+                if len(winning_sequence) >= 5:
                     return True
         # horizontal sequence detection
         for row in range(NUM_LINES):
@@ -75,7 +75,7 @@ class Board:
             for col in range(NUM_LINES):
                 if self.position[row][col] == self.player2:
                     winning_sequence.append((row, col))
-                if len(winning_sequence) == NUM_LINES:
+                if len(winning_sequence) >= 5:
                     return True
         # 1st diagonal sequence detection
         winning_sequence = []
@@ -83,7 +83,7 @@ class Board:
             col = row
             if self.position[row][col] == self.player2:
                 winning_sequence.append((row, col))
-            if len(winning_sequence) == NUM_LINES:
+            if len(winning_sequence) >= 5:
                 return True
         # 2nd diagonal sequence detection
         winning_sequence = []
@@ -91,7 +91,7 @@ class Board:
             col = NUM_LINES - row - 1
             if self.position[row][col] == self.player2:
                 winning_sequence.append((row, col))
-            if len(winning_sequence) == NUM_LINES:
+            if len(winning_sequence) >= 5:
                 return True
         return False
 
