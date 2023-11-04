@@ -2,6 +2,8 @@ import pygame
 import pygame_gui
 from pygame_gui.elements.ui_text_box import UITextBox
 from Board import Board
+from capture import capture_opponent, remove_captured_list
+from doublethree import check_double_three
 from ui_config import *
 
 
@@ -27,10 +29,13 @@ class Interface:
         self.grid_width = SCREEN_WIDTH // 2
         self.grid_height = SCREEN_HEIGHT // 1.25
         self.running = True
+        self.trace = []
 
     def _initialize_ui(self):
         # for pygame_gui (log textbox)
-        self.ui_manager = pygame_gui.UIManager((self.width, self.height))
+        self.ui_manager = pygame_gui.UIManager(
+            (self.width, self.height), "log_theme.json"
+        )
 
         self._initialize_gameboard()
         self._initialize_right_pane()
@@ -215,17 +220,50 @@ class Interface:
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                grid_x, grid_y = self._convert_mouse_to_grid()
-                if self.board.get_value(grid_x, grid_y) != self.board.empty_square:
-                    print("this cell is already occupied")
-                else:
-                    self.board = self.board.make_move(grid_x, grid_y)
-                    # print(self.board.player_turn)
-                self.text_box.append_html_text("hihihihi<br>")
-                self.text_box.update(5.0)
-            elif event.type == pygame.KEYUP:
-                if event.type == pygame.K_SPACE:
-                    pass
+                if event.button == 1:
+                    grid_x, grid_y = self._convert_mouse_to_grid()
+                    if self.board.get_value(grid_x, grid_y) != self.board.empty_square:
+                        self.text_box.append_html_text(
+                            "this cell is already occupied<br>"
+                        )
+                    elif self.board.is_win():
+                        self.text_box.append_html_text("Game Over. <br>")
+                    elif self.board.is_draw():
+                        self.text_box.append_html_text("Game is drawn.<br>")
+                    else:
+                        capture_list = capture_opponent(
+                            self.board, grid_x, grid_y, self.board.player_turn
+                        )
+                        if capture_list:
+                            self.board = self.board.make_move(grid_x, grid_y)
+                            self.text_box.append_html_text.print("capture gogo")
+                            remove_captured_list(self.board, capture_list)
+                        else:
+                            check_double_three(
+                                self.board, grid_x, grid_y, self.board.player1
+                            )
+                            self.board = self.board.make_move(grid_x, grid_y)
+                        # print(self.board.player_turn)
+                        self.trace.append(self.board)
+                    self.text_box.update(5.0)
+                elif event.button == 3:
+                    if self.trace:  # Checks if the trace list is not empty
+                        print("trace.pop", self.trace.pop())
+                        if self.trace:
+                            self.board = self.trace[-1]
+                        else:
+                            self.board.position = [
+                                ["."] * NUM_LINES for _ in range(NUM_LINES)
+                            ]
+                        # print(self.board)
+                    else:
+                        self.text_box.append_html_text(
+                            "Trace is empty, cannot go back further<br>"
+                        )
+
+            # elif event.type == pygame.KEYUP:
+            #     if event.type == pygame.K_SPACE:
+            #         pass
             self.ui_manager.process_events(event)
 
     def _anchor_mouse_stones(self):
@@ -342,7 +380,7 @@ class Interface:
         )
 
     def display_log(self):
-        pygame.draw.rect(self.screen, (0, 0, 255), self.log_rect, 3)
+        pygame.draw.rect(self.screen, BACKGROUND_COLOR, self.log_rect)
 
     def display_scorebox(self):
         pygame.draw.rect(self.screen, BLACK, self.p1_name_rect, 2)
