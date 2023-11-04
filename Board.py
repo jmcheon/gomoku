@@ -10,6 +10,7 @@ class Board:
         # define players
         self.player1 = PLAYER1
         self.player2 = PLAYER2
+        self.player_turn = PLAYER1
         self.empty_square = "."
 
         # define board position
@@ -54,6 +55,7 @@ class Board:
         return board
 
     def swap_player(self) -> None:
+        self.player_turn = PLAYER2 if self.player_turn == PLAYER1 else PLAYER1
         (self.player1, self.player2) = (self.player2, self.player1)
 
     # get whether the game is drawn
