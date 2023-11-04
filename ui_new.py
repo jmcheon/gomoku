@@ -20,6 +20,8 @@ class Interface:
     def _initialize_game(self):
         # Game-related initializations
         self.board = Board()
+        self.captured_p1 = 0
+        self.captured_p2 = 0
         self.start_x = GRID_START_X
         self.start_y = GRID_START_Y
         self.grid_width = SCREEN_WIDTH // 2
@@ -39,9 +41,11 @@ class Interface:
         )
 
     def _initialize_right_pane(self):
-        # Right pane UI setup
-        self.right_pane_rect = pygame.Rect(
-            right_pane_begin_x, right_pane_begin_y, right_pane_width, right_pane_height
+        self.right_pane = pygame.Surface(
+            (right_pane_width, right_pane_height), pygame.SRCALPHA
+        )
+        self.right_pane_rect = self.right_pane.get_rect(
+            topleft=(right_pane_begin_x, right_pane_begin_y)
         )
         self._initialize_time_rect()
         self._initialize_scorebox_rect()
@@ -64,6 +68,46 @@ class Interface:
             self.time_rect.bottom,
             scorebox_width,
             scorebox_height,
+        )
+        self.p1_name_rect = pygame.Rect(
+            self.scorebox_rect.left,
+            self.scorebox_rect.top,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2 * 0.8,
+        )
+        self.p2_name_rect = pygame.Rect(
+            self.scorebox_rect.centerx,
+            self.scorebox_rect.top,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2 * 0.8,
+        )
+
+        self.cursor_left = pygame.Rect(
+            self.scorebox_rect.left,
+            self.scorebox_rect.top + self.scorebox_rect.height / 2 * 0.8,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2 * 0.2,
+        )
+
+        self.cursor_right = pygame.Rect(
+            self.scorebox_rect.centerx,
+            self.scorebox_rect.top + self.scorebox_rect.height / 2 * 0.8,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2 * 0.2,
+        )
+
+        self.p1_score_rect = pygame.Rect(
+            self.scorebox_rect.left,
+            self.scorebox_rect.top + self.scorebox_rect.height / 2,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2,
+        )
+        self.p2_score_rect = pygame.Rect(
+            self.scorebox_rect.centerx,
+            self.scorebox_rect.top + self.scorebox_rect.height / 2,
+            # self.scorebox_rect.bottom,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2,
         )
 
     def _initialize_log_rect(self):
@@ -184,7 +228,12 @@ class Interface:
                     print("this cell is already occupied")
                 else:
                     self.board = self.board.make_move(grid_x, grid_y)
-                    print(self.board.player_turn)
+                    # print(self.board.player_turn)
+                self.text_box.append_html_text("hihihihi<br>")
+                self.text_box.update(5.0)
+            elif event.type == pygame.KEYUP:
+                if event.type == pygame.K_SPACE:
+                    pass
             self.ui_manager.process_events(event)
 
     def _anchor_mouse_stones(self):
@@ -263,19 +312,86 @@ class Interface:
             # Draw the text on the screen
             self.screen.blit(text, (x, y))
 
+    def display_time(self):
+        pygame.draw.rect(self.screen, BACKGROUND_COLOR, self.time_rect)
+
+        # Get the elapsed time since pygame started
+        elapsed_time_millis = pygame.time.get_ticks()
+
+        # Convert the time to minutes and seconds
+        elapsed_time = divmod(elapsed_time_millis // 1000, 60)
+
+        # Format the time as "00:00"
+        formatted_time = "{:02}:{:02}".format(*elapsed_time)
+
+        # Draw the time
+        self.draw_text(
+            str(formatted_time),
+            6 * (self.width // 200),  # for responsive
+            BLACK,
+            self.time_rect.centerx,
+            self.time_rect.centery // 1.5,
+        )
+
+    def display_score(self):
+        self.draw_text(
+            f"{self.captured_p1}",
+            8 * (self.width // 200),
+            BLACK,
+            self.p1_score_rect.centerx,
+            self.p1_score_rect.centery,
+        )
+        self.draw_text(
+            f"{self.captured_p2}",
+            8 * (self.width // 200),
+            BLACK,
+            self.p2_score_rect.centerx,
+            self.p2_score_rect.centery,
+        )
+
+    def display_log(self):
+        pygame.draw.rect(self.screen, (0, 0, 255), self.log_rect, 3)
+
+    def display_scorebox(self):
+        pygame.draw.rect(self.screen, BLACK, self.p1_name_rect, 2)
+        pygame.draw.rect(self.screen, BLACK, self.p2_name_rect, 2)
+        pygame.draw.rect(
+            self.screen,
+            BACKGROUND_COLOR,
+            self.cursor_left,
+        )
+        pygame.draw.rect(
+            self.screen,
+            BACKGROUND_COLOR,
+            self.cursor_right,
+        )
+        pygame.draw.rect(self.screen, BLACK, self.p1_score_rect, 2)
+        pygame.draw.rect(self.screen, BLACK, self.p2_score_rect, 2)
+        self.display_score()
+
+    def _display_right_pane(self):
+        self.right_pane.fill((128, 128, 128, 128))
+        self.display_time()
+        self.display_scorebox()
+        self.display_log()
+        # pygame.draw.rect(self.screen, (255, 0, 0), self.right_pane_rect, 2)
+
     def draw(self):
-        # clear board surface
+        # left
         self.create_grid()
         self._anchor_mouse_stones()
         self._draw_placed_stones()
 
+        # right
+        self._display_right_pane()
+        self.ui_manager.update(0.01)
+        self.ui_manager.draw_ui(window_surface=self.screen)
+
     def run(self):
         while self.running:
-            # self.screen.blit(self.bg, (0, 0))
             self.screen.blit(self.board_surface, (0, 0))
-            # self.clock.tick(60)
+            self.screen.blit(self.right_pane, (right_pane_begin_x, right_pane_begin_y))
             self.events()
-            # self.update()
             self.draw()
             pygame.display.update()
         pygame.quit()
