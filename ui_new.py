@@ -13,25 +13,25 @@ class Interface:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.bg = pygame.Surface((self.width, self.height))
         self.font_name = pygame.font.match_font("arial")
-        # Other initializations
         self._initialize_game()
         self._initialize_ui()
 
     def _initialize_game(self):
-        # Game-related initializations
         self.board = Board()
+        # TODO: integrate with Board
         self.captured_p1 = 0
         self.captured_p2 = 0
+        # TODO: integrate with Board
         self.start_x = GRID_START_X
         self.start_y = GRID_START_Y
         self.grid_width = SCREEN_WIDTH // 2
         self.grid_height = SCREEN_HEIGHT // 1.25
         self.running = True
-        # Other game-related attributes
 
     def _initialize_ui(self):
-        # UI-related initializations
+        # for pygame_gui (log textbox)
         self.ui_manager = pygame_gui.UIManager((self.width, self.height))
+
         self._initialize_gameboard()
         self._initialize_right_pane()
 
@@ -53,7 +53,6 @@ class Interface:
         self._initialize_text_box()
 
     def _initialize_time_rect(self):
-        # Initialize time rectangle within the right pane
         self.time_rect = pygame.Rect(
             self.right_pane_rect.centerx - time_width / 2,
             time_height / 2,
@@ -62,7 +61,6 @@ class Interface:
         )
 
     def _initialize_scorebox_rect(self):
-        # Initialize time rectangle within the right pane
         self.scorebox_rect = pygame.Rect(
             self.right_pane_rect.centerx - scorebox_width / 2,
             self.time_rect.bottom,
@@ -105,13 +103,11 @@ class Interface:
         self.p2_score_rect = pygame.Rect(
             self.scorebox_rect.centerx,
             self.scorebox_rect.top + self.scorebox_rect.height / 2,
-            # self.scorebox_rect.bottom,
             self.scorebox_rect.width / 2,
             self.scorebox_rect.height / 2,
         )
 
     def _initialize_log_rect(self):
-        # Initialize time rectangle within the right pane
         self.log_rect = pygame.Rect(
             self.right_pane_rect.centerx - log_width / 2,
             self.scorebox_rect.bottom + self.right_pane_rect.height / 20,
@@ -119,10 +115,7 @@ class Interface:
             log_height,
         )
 
-    # Other _initialize_* methods for different UI elements within the right pane
-
     def _initialize_text_box(self):
-        # Initialize the text box
         self.text_box = UITextBox(
             html_text="<body><font color=#E0E080></font>",
             relative_rect=self.log_rect,
@@ -142,7 +135,6 @@ class Interface:
         size_increase = 1  # Adjust as needed
 
         circle_size = initial_size + (max_lines - NUM_LINES) * size_increase
-        # print(x, y, grid_x, grid_y)
 
         if color == BLACK or color == BLACK_TRANSPARENT:
             pygame.draw.circle(
