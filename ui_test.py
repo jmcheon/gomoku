@@ -8,6 +8,9 @@ class Interface:
     def __init__(self, start_x, start_y, grid_width, grid_height):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.board_surface = pygame.Surface(
+            (SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA
+        )
         pygame.display.set_caption("Omok")
         self.clock = pygame.time.Clock()
         self.running = True
@@ -52,7 +55,6 @@ class Interface:
             relative_rect=self.log_rect,
             manager=self.ui_manager,
         )
-        self.cursor_toggle = 0
 
     def new(self):
         self.show_start_screen()
@@ -87,9 +89,46 @@ class Interface:
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
 
+    def draw_circles(self, x, y, target, color):
+        initial_size = 6  # Adjust as needed
+        max_lines = 20  # Adjust as needed
+        size_increase = 1  # Adjust as needed
+
+        circle_size = initial_size + (max_lines - NUM_LINES) * size_increase
+        # print(x, y, grid_x, grid_y)
+        pygame.draw.circle(
+            target,
+            color,
+            (
+                x * CELL_SIZE_X + GRID_START_X + CELL_SIZE_X // 2,
+                y * CELL_SIZE_Y + GRID_START_Y + CELL_SIZE_Y // 2,
+            ),
+            circle_size,
+        )
+
     def run(self):
+        grid_x, grid_y = 0, 0
         while self.running:
-            self.clock.tick(60)
+            self.screen.blit(self.board_surface, (0, 0))
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            mouse_x -= GRID_START_X
+            mouse_y -= GRID_START_Y
+            if (
+                0 <= mouse_x < CELL_SIZE_X * NUM_LINES
+                and 0 <= mouse_y < CELL_SIZE_Y * NUM_LINES
+                and mouse_x <= SCREEN_WIDTH - GRID_START_X
+                and mouse_y <= SCREEN_HEIGHT - GRID_START_Y
+            ):
+                grid_x = mouse_x // CELL_SIZE_X
+                grid_y = mouse_y // CELL_SIZE_Y
+
+            self.board_surface.fill((0, 0, 0, 0))
+            if self.turn == PLAYER_1:
+                self.draw_circles(grid_x, grid_y, self.board_surface, black_transparent)
+            elif self.turn == PLAYER_2:
+                self.draw_circles(grid_x, grid_y, self.board_surface, white_transparent)
+
+            # self.clock.tick(60)
             self.events()
             self.update()
             self.draw()
@@ -112,6 +151,7 @@ class Interface:
             self.ui_manager.process_events(event)
 
     def update(self):
+        pygame.display.update()
         pass
 
     def draw(self):
@@ -191,11 +231,11 @@ class Interface:
     def display_right_pane(self):
         pygame.draw.rect(self.screen, (255, 0, 0), self.right_pane_rect, 2)
 
-        time_rect = self.display_time(self.right_pane_rect)
-        scorebox_rect = self.display_scorebox(self.right_pane_rect, time_rect)
-        self.display_log(self.right_pane_rect, scorebox_rect)
+        self.display_time()
+        self.display_scorebox()
+        self.display_log()
 
-    def display_time(self, right_pane_rect: pygame.Rect):
+    def display_time(self):
         pygame.draw.rect(self.screen, BACKGROUND_COLOR, self.time_rect)
 
         # Get the elapsed time since pygame started
@@ -215,9 +255,8 @@ class Interface:
             self.time_rect.centerx,
             self.time_rect.centery,
         )
-        return self.time_rect
 
-    def display_scorebox(self, right_pane_rect: pygame.Rect, time_rect: pygame.Rect):
+    def display_scorebox(self):
         pygame.draw.rect(self.screen, (0, 255, 0), self.scorebox_rect, 3)
 
         p1_name_rect = pygame.Rect(
@@ -293,9 +332,7 @@ class Interface:
         self.screen.blit(p1_text, p1_textbox)
         self.screen.blit(p2_text, p2_textbox)
 
-        return self.scorebox_rect
-
-    def display_log(self, right_pane_rect: pygame.Rect, scorebox_rect: pygame.Rect):
+    def display_log(self):
         pygame.draw.rect(self.screen, (0, 0, 255), self.log_rect, 3)
 
     # def display_captured_score(self):

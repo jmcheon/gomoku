@@ -1,5 +1,10 @@
 # Constants
-SCREEN_WIDTH, SCREEN_HEIGHT = 800, 500
+import math
+
+import pygame
+
+
+SCREEN_WIDTH, SCREEN_HEIGHT = 1600, 1000
 NUM_LINES = 19
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -7,6 +12,22 @@ LINE_COLOR = BLACK
 BACKGROUND_COLOR = WHITE
 PLAYER_1 = 1
 PLAYER_2 = 2
+
+GRID_START_X = (5 * SCREEN_WIDTH / 8) / 10
+GRID_START_Y = SCREEN_HEIGHT / 10
+
+GRID_END_X = GRID_START_X + SCREEN_WIDTH // 2
+GRID_END_Y = GRID_START_Y + SCREEN_HEIGHT // 1.25
+
+CELL_SIZE_X = (SCREEN_WIDTH // 2) / NUM_LINES
+CELL_SIZE_Y = (SCREEN_HEIGHT // 1.25) / NUM_LINES
+
+
+black = (0, 0, 0)
+black_transparent = pygame.Color(0, 0, 0, 128)
+
+white = (0, 0, 0)
+white_transparent = pygame.Color(0, 0, 0, 128)
 
 right_pane_begin_x = 5 * SCREEN_WIDTH / 8
 right_pane_begin_y = 0

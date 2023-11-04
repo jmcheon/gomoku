@@ -117,7 +117,9 @@ class Gomoku:
                         # print(self.board)
                         # print("trace enabled")
                         if trace:  # Checks if the trace list is not empty
-                            print('trace.pop', trace.pop())  # Remove the last item from the list
+                            print(
+                                "trace.pop", trace.pop()
+                            )  # Remove the last item from the list
                             if trace:
                                 self.board = trace[-1]
                             else:
