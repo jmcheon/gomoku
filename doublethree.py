@@ -195,5 +195,4 @@ def check_double_three(board: Board, x, y, player):
                 ):
                     print("double tree found")
                     return True
-    else:
-        return False
+    return False

@@ -223,12 +223,15 @@ class Interface:
                 if event.button == 1:
                     grid_x, grid_y = self._convert_mouse_to_grid()
                     if self.board.get_value(grid_x, grid_y) != self.board.empty_square:
+                        # TODO: change log message
                         self.text_box.append_html_text(
                             "this cell is already occupied<br>"
                         )
                     elif self.board.is_win():
+                        # TODO: change log message
                         self.text_box.append_html_text("Game Over. <br>")
                     elif self.board.is_draw():
+                        # TODO: change log message
                         self.text_box.append_html_text("Game is drawn.<br>")
                     else:
                         capture_list = capture_opponent(
@@ -236,15 +239,24 @@ class Interface:
                         )
                         if capture_list:
                             self.board = self.board.make_move(grid_x, grid_y)
-                            self.text_box.append_html_text.print("capture gogo")
+                            # TODO: change log message
+                            self.text_box.append_html_text("capture gogo")
                             remove_captured_list(self.board, capture_list)
+                            self.trace.append(self.board)
                         else:
-                            check_double_three(
-                                self.board, grid_x, grid_y, self.board.player1
+                            doublethree_detect = check_double_three(
+                                self.board, grid_x, grid_y, self.board.player_turn
                             )
-                            self.board = self.board.make_move(grid_x, grid_y)
+                            print(doublethree_detect)
+                            if doublethree_detect is False:
+                                self.board = self.board.make_move(grid_x, grid_y)
+                                self.trace.append(self.board)
+                            else:
+                                # TODO: change log message related
+                                self.text_box.append_html_text(
+                                    f"doublethree detected{123} <br>"
+                                )
                         # print(self.board.player_turn)
-                        self.trace.append(self.board)
                     self.text_box.update(5.0)
                 elif event.button == 3:
                     if self.trace:  # Checks if the trace list is not empty
