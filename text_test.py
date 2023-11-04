@@ -1,76 +1,106 @@
 import pygame
-import pygame.freetype
+import pygame_gui
 
-pygame.init()
+import pygame_gui.data
 
-# Set up some constants
-WIDTH, HEIGHT = 800, 600
-FONT_SIZE = 24
-TEXT_BOX_HEIGHT = 100
-SCROLL_SPEED = 1
+from pygame.color import Color
+from pygame.surface import Surface
 
-# Set up some colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
+from pygame_gui.elements.ui_text_box import UITextBox
 
-# Create the window
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+"""
+A test bed to tinker with future text features.
+"""
 
-# Create a font
-font = pygame.freetype.SysFont(None, FONT_SIZE)
 
-# Create a list of texts
-texts = ["Line {}".format(i) for i in range(1, 51)]
+def test_app():
+    pygame.init()
 
-# Create a surface for the text box
-text_box_surf = pygame.Surface((WIDTH, TEXT_BOX_HEIGHT))
+    display_surface = pygame.display.set_mode((800, 600))
 
-# Create a rect for the text box
-text_box_rect = text_box_surf.get_rect(topleft=(0, HEIGHT - TEXT_BOX_HEIGHT))
+    ui_manager = pygame_gui.UIManager((800, 600), "data/themes/theme_1.json")
 
-# Variables to keep track of scrolling
-scroll_y = 0
-scrolling_up = False
-scrolling_down = False
+    background = Surface((800, 600), depth=32)
+    background.fill(Color("#FFFFFF"))
 
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
-                scrolling_up = True
-            elif event.key == pygame.K_DOWN:
-                scrolling_down = True
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_UP:
-                scrolling_up = False
-            elif event.key == pygame.K_DOWN:
-                scrolling_down = False
+    text_box = UITextBox(
+        html_text="<body><font color=#E0E080></font>",
+        relative_rect=pygame.Rect(100, 100, 400, 200),
+        manager=ui_manager,
+    )
 
-    # Fill the screen
-    screen.fill(WHITE)
+    # text_box.scroll_bar.has_moved_recently = True
+    text_box.update(5.0)
 
-    # Fill the text box
-    text_box_surf.fill(WHITE)
+    is_running = True
+    row_key_pos = 13
+    typing_row = len(text_box.text_box_layout.layout_rows) - 1
 
-    # Draw the texts
-    for i, text in enumerate(texts):
-        text_surf, _ = font.render(text, BLACK)
-        text_rect = text_surf.get_rect(topleft=(0, i * FONT_SIZE - scroll_y))
-        text_box_surf.blit(text_surf, text_rect)
+    clock = pygame.time.Clock()
 
-    # Scroll the text box
-    if scrolling_up:
-        scroll_y -= SCROLL_SPEED
-    elif scrolling_down:
-        scroll_y += SCROLL_SPEED
+    cursor_toggle = 0
+    while is_running:
+        time_delta = clock.tick(60) / 1000.0
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                is_running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                text_box.append_html_text("hihihihi<br>")
 
-    # Draw the text box
-    screen.blit(text_box_surf, text_box_rect)
+            if (
+                event.type == pygame.MOUSEBUTTONDOWN
+                and event.button == pygame.BUTTON_LEFT
+            ):
+                text_block_full_height = text_box.text_box_layout.layout_rect.height
+                height_adjustment = (
+                    text_box.scroll_bar.start_percentage * text_block_full_height
+                )
+                base_x = int(
+                    text_box.rect[0]
+                    + text_box.padding[0]
+                    + text_box.border_width
+                    + text_box.shadow_width
+                    + text_box.rounded_corner_offset
+                )
+                base_y = int(
+                    text_box.rect[1]
+                    + text_box.padding[1]
+                    + text_box.border_width
+                    + text_box.shadow_width
+                    + text_box.rounded_corner_offset
+                    - height_adjustment
+                )
+                text_box.text_box_layout.set_cursor_from_click_pos(
+                    (event.pos[0] - base_x, event.pos[1] - base_y)
+                )
 
-    # Update the display
-    pygame.display.flip()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_a:
+                text_box.text_box_layout.set_text_selection(48, 245)
 
-pygame.quit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
+                text_box.text_box_layout.set_text_selection(56, 220)
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_d:
+                text_box.text_box_layout.set_text_selection(0, 5)
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_f:
+                text_box.text_box_layout.set_text_selection(0, 4)
+
+            ui_manager.process_events(event)
+
+        cursor_toggle += time_delta
+        if cursor_toggle >= 0.4:
+            cursor_toggle = 0.0
+            text_box.text_box_layout.toggle_cursor()
+            text_box.redraw_from_text_block()
+
+        display_surface.blit(background, (0, 0))
+
+        ui_manager.update(0.01)
+        ui_manager.draw_ui(window_surface=display_surface)
+
+        pygame.display.update()
+
+
+if __name__ == "__main__":
+    test_app()

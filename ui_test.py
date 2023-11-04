@@ -1,14 +1,7 @@
 import pygame
-
-# Constants
-SCREEN_WIDTH, SCREEN_HEIGHT = 800, 500
-NUM_LINES = 19
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-LINE_COLOR = BLACK
-BACKGROUND_COLOR = WHITE
-PLAYER_1 = 1
-PLAYER_2 = 2
+import pygame_gui
+from pygame_gui.elements.ui_text_box import UITextBox
+from ui_config import *
 
 
 class Interface:
@@ -29,6 +22,36 @@ class Interface:
         self.turn = PLAYER_1
         self.duration = 1.0  # You can adjust this as needed
         self.animation_start_time = None
+        self.ui_manager = pygame_gui.UIManager((SCREEN_WIDTH, SCREEN_HEIGHT))
+        ##
+        ## right pane
+        ##
+        self.right_pane_rect = pygame.Rect(
+            right_pane_begin_x, right_pane_begin_y, right_pane_width, right_pane_height
+        )
+        self.time_rect = pygame.Rect(
+            self.right_pane_rect.centerx - time_width / 2,
+            time_height / 2,
+            time_width,
+            time_height,
+        )
+        self.scorebox_rect = pygame.Rect(
+            self.right_pane_rect.centerx - scorebox_width / 2,
+            self.time_rect.bottom,
+            scorebox_width,
+            scorebox_height,
+        )
+        self.log_rect = pygame.Rect(
+            self.right_pane_rect.centerx - log_width / 2,
+            self.scorebox_rect.bottom + self.right_pane_rect.height / 20,
+            log_width,
+            log_height,
+        )
+        self.text_box = UITextBox(
+            html_text="<body><font color=#E0E080></font>",
+            relative_rect=self.log_rect,
+            manager=self.ui_manager,
+        )
 
     def new(self):
         self.show_start_screen()
@@ -75,8 +98,13 @@ class Interface:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if (
+                event.type == pygame.MOUSEBUTTONDOWN
+                and event.button == pygame.BUTTON_LEFT
+            ):
                 self.turn = PLAYER_2 if self.turn == PLAYER_1 else PLAYER_1
+                self.text_box.append_html_text("hihihihi<br>")
+                self.text_box.update(5.0)
                 # self.captured_p1 += 1
                 # self.captured_p2 -= 1
                 print("hello world")
@@ -89,6 +117,9 @@ class Interface:
             self.create_grid()
             self.grid_created = True
         self.display_right_pane()
+
+        self.ui_manager.update(0.01)
+        self.ui_manager.draw_ui(window_surface=self.screen)
         pygame.display.flip()
 
     def create_grid(self):
@@ -156,27 +187,14 @@ class Interface:
         # self.create_number_col()
 
     def display_right_pane(self):
-        right_pane_begin_x = 5 * SCREEN_WIDTH / 8
+        pygame.draw.rect(self.screen, (255, 0, 0), self.right_pane_rect, 2)
 
-        right_pane_rect = pygame.Rect(
-            right_pane_begin_x, 0, (3 * SCREEN_WIDTH / 8), SCREEN_HEIGHT
-        )
-        pygame.draw.rect(self.screen, (255, 0, 0), right_pane_rect, 2)
-
-        time_rect = self.display_time(right_pane_rect)
-        scorebox_rect = self.display_scorebox(right_pane_rect, time_rect)
-        self.display_log(right_pane_rect, scorebox_rect)
+        time_rect = self.display_time(self.right_pane_rect)
+        scorebox_rect = self.display_scorebox(self.right_pane_rect, time_rect)
+        self.display_log(self.right_pane_rect, scorebox_rect)
 
     def display_time(self, right_pane_rect: pygame.Rect):
-        box_width = right_pane_rect.width / 3
-        box_height = right_pane_rect.height / 10
-        time_rect = pygame.Rect(
-            right_pane_rect.centerx - box_width / 2,
-            box_height / 2,
-            box_width,
-            box_height,
-        )
-        pygame.draw.rect(self.screen, BACKGROUND_COLOR, time_rect)
+        pygame.draw.rect(self.screen, BACKGROUND_COLOR, self.time_rect)
 
         # Get the elapsed time since pygame started
         elapsed_time_millis = pygame.time.get_ticks()
@@ -192,61 +210,53 @@ class Interface:
             str(formatted_time),
             22,
             BLACK,
-            time_rect.centerx,
-            time_rect.centery,
+            self.time_rect.centerx,
+            self.time_rect.centery,
         )
-        return time_rect
+        return self.time_rect
 
     def display_scorebox(self, right_pane_rect: pygame.Rect, time_rect: pygame.Rect):
-        scorebox_width = 4 * right_pane_rect.width / 5
-        scorebox_height = right_pane_rect.height / 3
-        scorebox_rect = pygame.Rect(
-            right_pane_rect.centerx - scorebox_width / 2,
-            time_rect.bottom,
-            scorebox_width,
-            scorebox_height,
-        )
-        pygame.draw.rect(self.screen, (0, 255, 0), scorebox_rect, 3)
+        pygame.draw.rect(self.screen, (0, 255, 0), self.scorebox_rect, 3)
 
         p1_name_rect = pygame.Rect(
-            scorebox_rect.left,
-            scorebox_rect.top,
-            scorebox_rect.width / 2,
-            scorebox_rect.height / 2 * 0.8,
+            self.scorebox_rect.left,
+            self.scorebox_rect.top,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2 * 0.8,
         )
         p2_name_rect = pygame.Rect(
-            scorebox_rect.centerx,
-            scorebox_rect.top,
-            scorebox_rect.width / 2,
-            scorebox_rect.height / 2 * 0.8,
+            self.scorebox_rect.centerx,
+            self.scorebox_rect.top,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2 * 0.8,
         )
 
         cursor_left = pygame.Rect(
-            scorebox_rect.left,
-            scorebox_rect.top + scorebox_rect.height / 2 * 0.8,
-            scorebox_rect.width / 2,
-            scorebox_rect.height / 2 * 0.2,
+            self.scorebox_rect.left,
+            self.scorebox_rect.top + self.scorebox_rect.height / 2 * 0.8,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2 * 0.2,
         )
 
         cursor_right = pygame.Rect(
-            scorebox_rect.centerx,
-            scorebox_rect.top + scorebox_rect.height / 2 * 0.8,
-            scorebox_rect.width / 2,
-            scorebox_rect.height / 2 * 0.2,
+            self.scorebox_rect.centerx,
+            self.scorebox_rect.top + self.scorebox_rect.height / 2 * 0.8,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2 * 0.2,
         )
 
         p1_score_rect = pygame.Rect(
-            scorebox_rect.left,
-            scorebox_rect.top + scorebox_rect.height / 2,
-            scorebox_rect.width / 2,
-            scorebox_rect.height / 2,
+            self.scorebox_rect.left,
+            self.scorebox_rect.top + self.scorebox_rect.height / 2,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2,
         )
         p2_score_rect = pygame.Rect(
-            scorebox_rect.centerx,
-            scorebox_rect.top + scorebox_rect.height / 2,
-            # scorebox_rect.bottom,
-            scorebox_rect.width / 2,
-            scorebox_rect.height / 2,
+            self.scorebox_rect.centerx,
+            self.scorebox_rect.top + self.scorebox_rect.height / 2,
+            # self.scorebox_rect.bottom,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2,
         )
 
         pygame.draw.rect(self.screen, BLACK, p1_name_rect, 2)
@@ -281,94 +291,86 @@ class Interface:
         self.screen.blit(p1_text, p1_textbox)
         self.screen.blit(p2_text, p2_textbox)
 
-        return scorebox_rect
+        return self.scorebox_rect
 
     def display_log(self, right_pane_rect: pygame.Rect, scorebox_rect: pygame.Rect):
-        log_width = 5 * right_pane_rect.width / 6
-        log_height = 4 * right_pane_rect.height / 10
-        log_rect = pygame.Rect(
-            right_pane_rect.centerx - log_width / 2,
-            scorebox_rect.bottom + right_pane_rect.height / 20,
-            log_width,
-            log_height,
-        )
-        pygame.draw.rect(self.screen, (0, 0, 255), log_rect, 3)
+        pygame.draw.rect(self.screen, (0, 0, 255), self.log_rect, 3)
 
-    def display_captured_score(self):
-        box_width = SCREEN_WIDTH / 5
-        box_height = 200
-        captured_score_area = pygame.Rect(
-            SCREEN_WIDTH / 2 + SCREEN_WIDTH / 4 - 50,
-            SCREEN_HEIGHT / 8,
-            box_width,
-            box_height,
-        )
+    # def display_captured_score(self):
+    #     box_width = SCREEN_WIDTH / 5
+    #     box_height = 200
+    #     captured_score_area = pygame.Rect(
+    #         SCREEN_WIDTH / 2 + SCREEN_WIDTH / 4 - 50,
+    #         SCREEN_HEIGHT / 8,
+    #         box_width,
+    #         box_height,
+    #     )
 
-        p1_name_rect = pygame.Rect(
-            captured_score_area.left,
-            captured_score_area.top,
-            captured_score_area.width / 2,
-            captured_score_area.height / 2 * 0.8,
-        )
+    #     p1_name_rect = pygame.Rect(
+    #         captured_score_area.left,
+    #         captured_score_area.top,
+    #         captured_score_area.width / 2,
+    #         captured_score_area.height / 2 * 0.8,
+    #     )
 
-        p2_name_rect = pygame.Rect(
-            captured_score_area.centerx,
-            captured_score_area.top,
-            captured_score_area.width / 2,
-            captured_score_area.height / 2 * 0.8,
-        )
+    #     p2_name_rect = pygame.Rect(
+    #         captured_score_area.centerx,
+    #         captured_score_area.top,
+    #         captured_score_area.width / 2,
+    #         captured_score_area.height / 2 * 0.8,
+    #     )
 
-        cursor_left = pygame.Rect(
-            captured_score_area.left,
-            captured_score_area.top + captured_score_area.height / 2 * 0.8,
-            captured_score_area.width / 2,
-            captured_score_area.height / 2 * 0.2,
-        )
-        cursor_right = pygame.Rect(
-            captured_score_area.centerx,
-            captured_score_area.top + captured_score_area.height / 2 * 0.8,
-            captured_score_area.width / 2,
-            captured_score_area.height / 2 * 0.2,
-        )
+    #     cursor_left = pygame.Rect(
+    #         captured_score_area.left,
+    #         captured_score_area.top + captured_score_area.height / 2 * 0.8,
+    #         captured_score_area.width / 2,
+    #         captured_score_area.height / 2 * 0.2,
+    #     )
+    #     cursor_right = pygame.Rect(
+    #         captured_score_area.centerx,
+    #         captured_score_area.top + captured_score_area.height / 2 * 0.8,
+    #         captured_score_area.width / 2,
+    #         captured_score_area.height / 2 * 0.2,
+    #     )
 
-        p1_score_rect = pygame.Rect(
-            captured_score_area.left,
-            captured_score_area.top + captured_score_area.height / 2,
-            captured_score_area.width / 2,
-            captured_score_area.height / 2,
-        )
-        p2_score_rect = pygame.Rect(
-            captured_score_area.centerx,
-            captured_score_area.top + captured_score_area.height / 2,
-            # captured_score_area.bottom,
-            captured_score_area.width / 2,
-            captured_score_area.height / 2,
-        )
+    #     p1_score_rect = pygame.Rect(
+    #         captured_score_area.left,
+    #         captured_score_area.top + captured_score_area.height / 2,
+    #         captured_score_area.width / 2,
+    #         captured_score_area.height / 2,
+    #     )
+    #     p2_score_rect = pygame.Rect(
+    #         captured_score_area.centerx,
+    #         captured_score_area.top + captured_score_area.height / 2,
+    #         # captured_score_area.bottom,
+    #         captured_score_area.width / 2,
+    #         captured_score_area.height / 2,
+    #     )
 
-        pygame.draw.rect(self.screen, BLACK, captured_score_area, 2)
-        pygame.draw.rect(self.screen, BLACK, cursor_left)
-        pygame.draw.rect(self.screen, BLACK, cursor_right, 2)
-        pygame.draw.rect(self.screen, BLACK, p1_name_rect, 2)
-        pygame.draw.rect(self.screen, BLACK, p2_name_rect, 2)
-        pygame.draw.rect(self.screen, BLACK, p1_score_rect, 2)
-        pygame.draw.rect(self.screen, BLACK, p2_score_rect, 2)
+    #     pygame.draw.rect(self.screen, BLACK, captured_score_area, 2)
+    #     pygame.draw.rect(self.screen, BLACK, cursor_left)
+    #     pygame.draw.rect(self.screen, BLACK, cursor_right, 2)
+    #     pygame.draw.rect(self.screen, BLACK, p1_name_rect, 2)
+    #     pygame.draw.rect(self.screen, BLACK, p2_name_rect, 2)
+    #     pygame.draw.rect(self.screen, BLACK, p1_score_rect, 2)
+    #     pygame.draw.rect(self.screen, BLACK, p2_score_rect, 2)
 
-        font_captured_score = pygame.font.Font(None, 36)  # Use the default font
-        p1_text = font_captured_score.render(f"{self.captured_p1}", True, BLACK)
-        p1_textbox = p1_text.get_rect()
-        p1_textbox.centerx = p1_score_rect.centerx
-        p1_textbox.centery = p1_score_rect.centery
-        # player1_rect.centery = captured_score_area.centery
+    #     font_captured_score = pygame.font.Font(None, 36)  # Use the default font
+    #     p1_text = font_captured_score.render(f"{self.captured_p1}", True, BLACK)
+    #     p1_textbox = p1_text.get_rect()
+    #     p1_textbox.centerx = p1_score_rect.centerx
+    #     p1_textbox.centery = p1_score_rect.centery
+    #     # player1_rect.centery = captured_score_area.centery
 
-        p2_text = font_captured_score.render(f"{self.captured_p2}", True, BLACK)
-        p2_textbox = p2_text.get_rect()
-        p2_textbox.centerx = p2_score_rect.centerx
-        p2_textbox.centery = p2_score_rect.centery
+    #     p2_text = font_captured_score.render(f"{self.captured_p2}", True, BLACK)
+    #     p2_textbox = p2_text.get_rect()
+    #     p2_textbox.centerx = p2_score_rect.centerx
+    #     p2_textbox.centery = p2_score_rect.centery
 
-        self.screen.blit(p1_text, p1_textbox)
-        self.screen.blit(p2_text, p2_textbox)
+    #     self.screen.blit(p1_text, p1_textbox)
+    #     self.screen.blit(p2_text, p2_textbox)
 
-        # self.screen.blit(player2_text, player2_rect)
+    #     # self.screen.blit(player2_text, player2_rect)
 
 
 if __name__ == "__main__":
