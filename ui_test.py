@@ -8,8 +8,10 @@ class Interface:
     def __init__(self, start_x, start_y, grid_width, grid_height):
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.bg = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        # self.bg.fill((255, 255, 255))
         self.board_surface = pygame.Surface(
-            (SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA
+            (5 * SCREEN_WIDTH / 8, SCREEN_HEIGHT), pygame.SRCALPHA
         )
         pygame.display.set_caption("Omok")
         self.clock = pygame.time.Clock()
@@ -74,13 +76,15 @@ class Interface:
     def wait_for_key(self):
         waiting = True
         while waiting:
-            self.clock.tick(60)
+            # self.clock.tick(60)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
                     waiting = False
                 if event.type == pygame.KEYUP:
                     waiting = False
+        self.screen.fill(BACKGROUND_COLOR)
+        pygame.display.flip()
 
     def draw_text(self, text, size, color, x, y):
         font = pygame.font.Font(self.font_name, size)
@@ -107,27 +111,9 @@ class Interface:
         )
 
     def run(self):
-        grid_x, grid_y = 0, 0
         while self.running:
+            # self.screen.blit(self.bg, (0, 0))
             self.screen.blit(self.board_surface, (0, 0))
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            mouse_x -= GRID_START_X
-            mouse_y -= GRID_START_Y
-            if (
-                0 <= mouse_x < CELL_SIZE_X * NUM_LINES
-                and 0 <= mouse_y < CELL_SIZE_Y * NUM_LINES
-                and mouse_x <= SCREEN_WIDTH - GRID_START_X
-                and mouse_y <= SCREEN_HEIGHT - GRID_START_Y
-            ):
-                grid_x = mouse_x // CELL_SIZE_X
-                grid_y = mouse_y // CELL_SIZE_Y
-
-            self.board_surface.fill((0, 0, 0, 0))
-            if self.turn == PLAYER_1:
-                self.draw_circles(grid_x, grid_y, self.board_surface, black_transparent)
-            elif self.turn == PLAYER_2:
-                self.draw_circles(grid_x, grid_y, self.board_surface, white_transparent)
-
             # self.clock.tick(60)
             self.events()
             self.update()
@@ -135,7 +121,7 @@ class Interface:
         pygame.quit()
 
     def events(self):
-        time_delta = pygame.time.Clock().tick(60) / 1000.0
+        grid_x, grid_y = 0, 0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -155,17 +141,37 @@ class Interface:
         pass
 
     def draw(self):
+        # self.board_surface.fill((0, 0, 0, 0))  # Clear the board surface
         if not self.grid_created:
-            self.create_grid()
             self.grid_created = True
+            self.create_grid()
+            pygame.display.flip()
+        self.board_surface.fill(BACKGROUND_COLOR)
+
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        mouse_x -= GRID_START_X
+        mouse_y -= GRID_START_Y
+        if (
+            0 <= mouse_x < CELL_SIZE_X * NUM_LINES
+            and 0 <= mouse_y < CELL_SIZE_Y * NUM_LINES
+            and mouse_x <= SCREEN_WIDTH - GRID_START_X
+            and mouse_y <= SCREEN_HEIGHT - GRID_START_Y
+        ):
+            grid_x = mouse_x // CELL_SIZE_X
+            grid_y = mouse_y // CELL_SIZE_Y
+
+            if self.turn == PLAYER_1:
+                self.draw_circles(grid_x, grid_y, self.board_surface, black_transparent)
+            elif self.turn == PLAYER_2:
+                self.draw_circles(grid_x, grid_y, self.board_surface, white_transparent)
+
         self.display_right_pane()
 
         self.ui_manager.update(0.01)
         self.ui_manager.draw_ui(window_surface=self.screen)
-        pygame.display.flip()
+        # pygame.display.flip()
 
     def create_grid(self):
-        self.screen.fill(BACKGROUND_COLOR)
         cell_width = self.grid_width / NUM_LINES
         cell_height = self.grid_height / NUM_LINES
 
@@ -304,12 +310,12 @@ class Interface:
         pygame.draw.rect(self.screen, BLACK, p2_name_rect, 2)
         pygame.draw.rect(
             self.screen,
-            BLACK if self.turn == PLAYER_1 else BACKGROUND_COLOR,
+            BACKGROUND_COLOR,
             cursor_left,
         )
         pygame.draw.rect(
             self.screen,
-            BLACK if self.turn == PLAYER_2 else BACKGROUND_COLOR,
+            BACKGROUND_COLOR,
             cursor_right,
         )
         pygame.draw.rect(self.screen, BLACK, p1_score_rect, 2)

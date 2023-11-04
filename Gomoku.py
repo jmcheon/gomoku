@@ -77,6 +77,7 @@ class Gomoku:
             ):
                 grid_x = mouse_x // CELL_SIZE_X
                 grid_y = mouse_y // CELL_SIZE_Y
+                print(grid_x, grid_y)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
