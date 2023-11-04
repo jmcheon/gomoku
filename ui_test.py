@@ -52,6 +52,7 @@ class Interface:
             relative_rect=self.log_rect,
             manager=self.ui_manager,
         )
+        self.cursor_toggle = 0
 
     def new(self):
         self.show_start_screen()
@@ -95,6 +96,7 @@ class Interface:
         pygame.quit()
 
     def events(self):
+        time_delta = pygame.time.Clock().tick(60) / 1000.0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
@@ -105,9 +107,9 @@ class Interface:
                 self.turn = PLAYER_2 if self.turn == PLAYER_1 else PLAYER_1
                 self.text_box.append_html_text("hihihihi<br>")
                 self.text_box.update(5.0)
-                # self.captured_p1 += 1
-                # self.captured_p2 -= 1
-                print("hello world")
+                self.captured_p1 += 1
+                self.captured_p2 -= 1
+            self.ui_manager.process_events(event)
 
     def update(self):
         pass
