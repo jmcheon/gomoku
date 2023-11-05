@@ -1,7 +1,7 @@
 import math
 import random
 
-from QLearningAgent import QLearningAgent
+from etc.QLearningAgent import QLearningAgent
 
 
 class TreeNode:

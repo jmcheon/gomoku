@@ -39,3 +39,16 @@ scorebox_height = right_pane_height / 3
 
 log_width = 5 * right_pane_width / 6
 log_height = 4 * right_pane_height / 10
+
+
+# doublethree direction
+NORTH = (0, -1)
+NORTHEAST = (1, -1)
+EAST = (1, 0)
+SOUTHEAST = (1, 1)
+SOUTH = (0, 1)
+SOUTHWEST = (-1, 1)
+WEST = (-1, 0)
+NORTHWEST = (-1, -1)
+
+DIRECTIONS = [NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST]

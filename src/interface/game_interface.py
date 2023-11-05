@@ -1,13 +1,13 @@
 import pygame
 import pygame_gui
 from pygame_gui.elements.ui_text_box import UITextBox
-from Board import Board
-from capture import capture_opponent, remove_captured_list
-from doublethree import check_double_three
-from ui_config import *
+from src.game.board import Board
+from src.game.capture import capture_opponent, remove_captured_list
+from src.game.doublethree import check_double_three
+from src.config import *
 
 
-class Interface:
+class GameInterface:
     def __init__(self, width, height):
         pygame.init()
         self.width = width
@@ -34,7 +34,7 @@ class Interface:
     def _initialize_ui(self):
         # for pygame_gui (log textbox)
         self.ui_manager = pygame_gui.UIManager(
-            (self.width, self.height), "log_theme.json"
+            (self.width, self.height), "resources/log_theme.json"
         )
 
         self._initialize_gameboard()
@@ -437,9 +437,3 @@ class Interface:
             self.draw()
             pygame.display.update()
         pygame.quit()
-
-
-if __name__ == "__main__":
-    game = Interface(SCREEN_WIDTH, SCREEN_HEIGHT)
-    game.new()
-    game.run()

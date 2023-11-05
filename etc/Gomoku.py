@@ -6,10 +6,10 @@ import pygame
 from Board import Board
 from capture import capture_opponent, remove_captured_list
 from config import *
-from doublethree import check_double_three
-from mcts import MCTS
-from minmax import best_move, check_winner
-from QLearningAgent import QLearningAgent
+from src.logic.doublethree import check_double_three
+from etc.mcts import MCTS
+from etc.minmax import best_move, check_winner
+from etc.QLearningAgent import QLearningAgent
 
 
 class Gomoku:

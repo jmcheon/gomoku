@@ -1,5 +1,5 @@
-from Board import Board
-from config import *
+from src.game.board import Board
+from src.config import *
 
 
 def is_valid_position(position):
@@ -28,7 +28,8 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
         if (
             player_count >= 3
             and is_valid_position((nx, ny)) == True
-            and board.get_value(nx, ny) != (PLAYER2 if player == PLAYER1 else PLAYER1)
+            and board.get_value(nx, ny)
+            != (PLAYER_2 if player == PLAYER_1 else PLAYER_1)
         ):
             return True
         # else:
@@ -37,7 +38,7 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
     if not is_valid_position((nx, ny)):
         return False
 
-    if board.get_value(nx, ny) == (PLAYER2 if player == PLAYER1 else PLAYER1):
+    if board.get_value(nx, ny) == (PLAYER_2 if player == PLAYER_1 else PLAYER_1):
         return False
 
     if board.get_value(nx, ny) == player:
@@ -62,9 +63,9 @@ def check_next_only_range(board: Board, x, y, dir, player):
         == player
     ) and (
         board.get_value(x + (dir[0] * 2), y + (dir[1] * 2))
-        != (PLAYER2 if player == PLAYER1 else PLAYER1)
+        != (PLAYER_2 if player == PLAYER_1 else PLAYER_1)
         and board.get_value(x - (dir[0] * 2), y - (dir[1] * 2))
-        != (PLAYER2 if player == PLAYER1 else PLAYER1)
+        != (PLAYER_2 if player == PLAYER_1 else PLAYER_1)
     ):
         return_list = make_list_to_direction(board, x, y, (-dir[0], -dir[1]), 3, player)
         return_list += make_list_to_direction(board, x, y, dir, 3, player)
@@ -81,7 +82,7 @@ def check_next_only_range(board: Board, x, y, dir, player):
         and (board.get_value(x - dir[0], y - dir[1]) == board.get_value(x, y) == player)
         and (
             board.get_value(x - dir[0] - dir[0], y - dir[1] - dir[1])
-            != (PLAYER2 if player == PLAYER1 else PLAYER1)
+            != (PLAYER_2 if player == PLAYER_1 else PLAYER_1)
         )
     ):
         # TODO: 3 for dfs, 2 for opposite
@@ -103,7 +104,7 @@ def check_next_only_range(board: Board, x, y, dir, player):
         and (board.get_value(x + dir[0], y + dir[1]) == board.get_value(x, y) == player)
         and (
             board.get_value(x + dir[0] + dir[0], y + dir[1] + dir[1])
-            != (PLAYER2 if player == PLAYER1 else PLAYER1)
+            != (PLAYER_2 if player == PLAYER_1 else PLAYER_1)
         )
     ):
         return_list = make_list_to_direction(board, x, y, dir, 3, player)
@@ -134,7 +135,7 @@ def check_double_three(board: Board, x, y, player):
             dfs(board, x, y, player, dir, 1, 1) == True
             and is_valid_position((x - dir[0], y - dir[1])) == True
             and board.get_value(x - dir[0], y - dir[1])
-            != (PLAYER2 if player == PLAYER1 else PLAYER1)
+            != (PLAYER_2 if player == PLAYER_1 else PLAYER_1)
         ):
             cont_range = make_list_to_direction(board, x, y, dir, 5, player)
 

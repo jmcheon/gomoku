@@ -1,6 +1,7 @@
 from copy import deepcopy
+from etc.minmax import best_move
 
-from config import *
+from src.config import *
 
 # from doublethree import *
 
@@ -8,9 +9,9 @@ from config import *
 class Board:
     def __init__(self, board=None) -> None:
         # define players
-        self.player1 = PLAYER1
-        self.player2 = PLAYER2
-        self.player_turn = PLAYER1
+        self.player1 = PLAYER_1
+        self.player2 = PLAYER_2
+        self.player_turn = PLAYER_1
         self.empty_square = "."
 
         # define board position
@@ -55,7 +56,7 @@ class Board:
         return board
 
     def swap_player(self) -> None:
-        self.player_turn = PLAYER2 if self.player_turn == PLAYER1 else PLAYER1
+        self.player_turn = PLAYER_2 if self.player_turn == PLAYER_1 else PLAYER_1
         (self.player1, self.player2) = (self.player2, self.player1)
 
     # get whether the game is drawn
@@ -228,58 +229,6 @@ class Board:
             if self.get_value(position[i][0], position[i][1]) == player:
                 count += 1
         return count == 3
-
-    def testing(self, x, y, player):
-        directions = [EAST, NORTHEAST, NORTH, NORTHWEST]
-        # print(x, y)
-        first_three = None
-        for i in range(len(directions)):
-            test = get_continuous_range(x, y, directions[i], 3)
-            flag = True
-            for i in range(len(test)):
-                for j in range(len(test[i])):
-                    if is_valid_position(test[i][j]) == False:
-                        flag = False
-                        print("not valid")
-                        break
-                    # print(test[i][j])
-                if flag == True:
-                    if self.equal_three(test[i], player) == True:
-                        print("three found", test[i], player)
-
-                        first_three = test[i]
-        second_result = False
-        if first_three != None:
-            for i in range(len(first_three)):
-                print(first_three[i])
-                second_result = self.testing_two(
-                    first_three, first_three[i][0], first_three[i][1], player
-                )
-            print("second_result:", second_result)
-            return second_result
-        return second_result
-
-    def testing_two(self, first_three, x, y, player):
-        directions = [EAST, NORTHEAST, NORTH, NORTHWEST]
-        result = False
-        for i in range(len(directions)):
-            test = get_continuous_range(x, y, directions[i], 3)
-            flag = True
-            for i in range(len(test)):
-                for j in range(len(test[i])):
-                    if is_valid_position(test[i][j]) == False:
-                        flag = False
-                        print("not valid")
-                        break
-                    # print(test[i][j])
-                if flag == True:
-                    if (
-                        self.equal_three(test[i], player) == True
-                        and test[i] != first_three
-                    ):
-                        print("three found", test[i], player)
-                        result = True
-        return result
 
 
 if __name__ == "__main__":

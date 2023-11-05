@@ -1,7 +1,6 @@
 import pygame
 import pygame_gui
 from pygame_gui.elements.ui_text_box import UITextBox
-from ui_config import *
 
 
 class Interface:
