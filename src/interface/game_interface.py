@@ -5,31 +5,29 @@ from src.game.board import Board
 from src.game.capture import capture_opponent, remove_captured_list
 from src.game.doublethree import check_double_three
 from src.config import *
+from src.game.game_logic import GameLogic
 
 
 class GameInterface:
     def __init__(self, width, height):
-        pygame.init()
+        self.running = True
         self.width = width
         self.height = height
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.bg = pygame.Surface((self.width, self.height))
         self.font_name = pygame.font.match_font("arial")
-        self._initialize_game()
+        # self._initialize_game()
         self._initialize_ui()
+        self._initialize_size()
 
-    def _initialize_game(self):
-        self.board = Board()
-        # TODO: integrate with Board
-        self.captured_p1 = 0
-        self.captured_p2 = 0
-        # TODO: integrate with Board
-        self.start_x = GRID_START_X
-        self.start_y = GRID_START_Y
+    def set_game_logic(self, game_logic: GameLogic):
+        self.game_logic = game_logic
+
+    def _initialize_size(self):
+        self.grid_start_x = GRID_START_X
+        self.grid_start_y = GRID_START_Y
         self.grid_width = SCREEN_WIDTH // 2
         self.grid_height = SCREEN_HEIGHT // 1.25
-        self.running = True
-        self.trace = []
 
     def _initialize_ui(self):
         # for pygame_gui (log textbox)
@@ -186,10 +184,9 @@ class GameInterface:
         pygame.display.flip()
 
     def new(self):
-        pygame.init()
         self.screen.fill(BACKGROUND_COLOR)
         self.draw_text(
-            "Press any key to create the grid",
+            "Gomoku.\nPress any key to create the grid",
             22,
             LINE_COLOR,
             self.width / 2,
@@ -222,52 +219,65 @@ class GameInterface:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     grid_x, grid_y = self._convert_mouse_to_grid()
-                    if self.board.get_value(grid_x, grid_y) != self.board.empty_square:
+                    if (
+                        self.game_logic.board.get_value(grid_x, grid_y)
+                        != self.game_logic.board.empty_square
+                    ):
                         # TODO: change log message
                         self.text_box.append_html_text(
                             "this cell is already occupied<br>"
                         )
-                    elif self.board.is_win():
+                    elif self.game_logic.board.is_win():
                         # TODO: change log message
                         self.text_box.append_html_text("Game Over. <br>")
-                    elif self.board.is_draw():
+                    elif self.game_logic.board.is_draw():
                         # TODO: change log message
                         self.text_box.append_html_text("Game is drawn.<br>")
                     else:
                         capture_list = capture_opponent(
-                            self.board, grid_x, grid_y, self.board.player_turn
+                            self.game_logic.board,
+                            grid_x,
+                            grid_y,
+                            self.game_logic.board.player_turn,
                         )
                         if capture_list:
-                            self.board = self.board.make_move(grid_x, grid_y)
+                            self.game_logic.board = self.game_logic.board.make_move(
+                                grid_x, grid_y
+                            )
                             # TODO: change log message
                             self.text_box.append_html_text("capture gogo")
-                            remove_captured_list(self.board, capture_list)
-                            self.trace.append(self.board)
+                            remove_captured_list(self.game_logic.board, capture_list)
+                            self.trace.append(self.game_logic.board)
                         else:
                             doublethree_detect = check_double_three(
-                                self.board, grid_x, grid_y, self.board.player_turn
+                                self.game_logic.board,
+                                grid_x,
+                                grid_y,
+                                self.game_logic.board.player_turn,
                             )
                             print(doublethree_detect)
                             if doublethree_detect is False:
-                                self.board = self.board.make_move(grid_x, grid_y)
-                                self.trace.append(self.board)
+                                self.game_logic.board = self.game_logic.board.make_move(
+                                    grid_x, grid_y
+                                )
+                                self.game_logic.trace.append(self.game_logic.board)
                             else:
                                 # TODO: change log message related
                                 self.text_box.append_html_text(
                                     f"doublethree detected{123} <br>"
                                 )
-                        # print(self.board.player_turn)
+                        # print(self.game_logic.board.player_turn)
                     self.text_box.update(5.0)
                 elif event.button == 3:
-                    if self.trace:  # Checks if the trace list is not empty
-                        print("trace.pop", self.trace.pop())
+                    if self.game_logic.trace:  # Checks if the trace list is not empty
+                        print("trace.pop", self.game_logic.trace.pop())
                         if self.trace:
-                            self.board = self.trace[-1]
+                            self.game_logic.board = self.trace[-1]
                         else:
-                            self.board.position = [
+                            self.game_logic.board.position = [
                                 ["."] * NUM_LINES for _ in range(NUM_LINES)
                             ]
-                        # print(self.board)
+                        # print(self.game_logic.board)
                     else:
                         self.text_box.append_html_text(
                             "Trace is empty, cannot go back further<br>"
@@ -283,18 +293,18 @@ class GameInterface:
         grid_x, grid_y = self._convert_mouse_to_grid()
 
         # for anchor
-        if self.board.player_turn == PLAYER_1:
+        if self.game_logic.board.player_turn == PLAYER_1:
             self.draw_stone(grid_x, grid_y, self.board_surface, BLACK)
-        elif self.board.player_turn == PLAYER_2:
+        elif self.game_logic.board.player_turn == PLAYER_2:
             self.draw_stone(grid_x, grid_y, self.board_surface, WHITE, 1)
 
     def _draw_placed_stones(self):
         # for drawing already placed dots
         for x in range(NUM_LINES):
             for y in range(NUM_LINES):
-                if self.board.get_value(x, y) == "X":
+                if self.game_logic.board.get_value(x, y) == "X":
                     self.draw_stone(x, y, self.screen, BLACK)
-                elif self.board.get_value(x, y) == "O":
+                elif self.game_logic.board.get_value(x, y) == "O":
                     self.draw_stone(x, y, self.screen, WHITE, 1)
 
     def create_grid(self):
@@ -309,10 +319,13 @@ class GameInterface:
             pygame.draw.line(
                 self.screen,
                 LINE_COLOR,
-                (self.start_x + i * cell_width - (cell_width / 2), self.start_y),
                 (
-                    self.start_x + i * cell_width - (cell_width / 2),
-                    self.start_y + self.grid_height,
+                    self.grid_start_x + i * cell_width - (cell_width / 2),
+                    self.grid_start_y,
+                ),
+                (
+                    self.grid_start_x + i * cell_width - (cell_width / 2),
+                    self.grid_start_y + self.grid_height,
                 ),
             )
             text = font.render(chr(64 + i), True, (0, 0, 0))
@@ -321,8 +334,13 @@ class GameInterface:
             text_width, text_height = text.get_size()
 
             # Calculate the x and y coordinates to center the text
-            x = self.start_x + (i - 1) * cell_width + cell_width / 2 - text_width / 2
-            y = self.start_y - text_height * 1.2
+            x = (
+                self.grid_start_x
+                + (i - 1) * cell_width
+                + cell_width / 2
+                - text_width / 2
+            )
+            y = self.grid_start_y - text_height * 1.2
 
             # Draw the text on the screen
             self.screen.blit(text, (x, y))
@@ -333,12 +351,12 @@ class GameInterface:
                 self.screen,
                 LINE_COLOR,
                 (
-                    self.start_x,
-                    self.start_y + i * cell_height - (cell_height / 2),
+                    self.grid_start_x,
+                    self.grid_start_y + i * cell_height - (cell_height / 2),
                 ),
                 (
-                    self.start_x + self.grid_width,
-                    self.start_y + i * cell_height - (cell_height / 2),
+                    self.grid_start_x + self.grid_width,
+                    self.grid_start_y + i * cell_height - (cell_height / 2),
                 ),
             )
             # Create a text surface object for horizontal lines
@@ -348,8 +366,13 @@ class GameInterface:
             text_width, text_height = text.get_size()
 
             # Calculate the x and y coordinates to center the text
-            x = self.start_x - text_width * 1.2
-            y = self.start_y + (i - 1) * cell_height + cell_height / 2 - text_height / 2
+            x = self.grid_start_x - text_width * 1.2
+            y = (
+                self.grid_start_y
+                + (i - 1) * cell_height
+                + cell_height / 2
+                - text_height / 2
+            )
 
             # Draw the text on the screen
             self.screen.blit(text, (x, y))
@@ -377,14 +400,14 @@ class GameInterface:
 
     def display_score(self):
         self.draw_text(
-            f"{self.captured_p1}",
+            f"{self.game_logic.captured_p1}",
             8 * (self.width // 200),
             BLACK,
             self.p1_score_rect.centerx,
             self.p1_score_rect.centery,
         )
         self.draw_text(
-            f"{self.captured_p2}",
+            f"{self.game_logic.captured_p2}",
             8 * (self.width // 200),
             BLACK,
             self.p2_score_rect.centerx,
@@ -430,10 +453,8 @@ class GameInterface:
         self.ui_manager.draw_ui(window_surface=self.screen)
 
     def run(self):
-        while self.running:
-            self.screen.blit(self.board_surface, (0, 0))
-            self.screen.blit(self.right_pane, (right_pane_begin_x, right_pane_begin_y))
-            self.events()
-            self.draw()
-            pygame.display.update()
-        pygame.quit()
+        self.screen.blit(self.board_surface, (0, 0))
+        self.screen.blit(self.right_pane, (right_pane_begin_x, right_pane_begin_y))
+        self.events()
+        self.draw()
+        pygame.display.update()
