@@ -1,6 +1,7 @@
 import pygame
 import pygame_gui
 from pygame_gui.elements.ui_text_box import UITextBox
+from src.interface.modal_window import ModalWindow
 from src.game.board import Board
 from src.game.capture import capture_opponent, remove_captured_list
 from src.game.doublethree import check_double_three
@@ -17,6 +18,7 @@ class GameInterface:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.bg = pygame.Surface((self.width, self.height))
         self.font_name = pygame.font.match_font("arial")
+        self.test_count = 0
         # self._initialize_game()
         self._initialize_ui()
         self._initialize_size()
@@ -35,6 +37,8 @@ class GameInterface:
         self.ui_manager = pygame_gui.UIManager(
             (self.width, self.height), "resources/log_theme.json"
         )
+
+        self.modal_window = ModalWindow(self.ui_manager, (self.width, self.height))
 
         self._initialize_gameboard()
         self._initialize_right_pane()
@@ -184,6 +188,21 @@ class GameInterface:
         self.screen.fill(BACKGROUND_COLOR)
         pygame.display.flip()
 
+    def wait_for_modal(self):
+        waiting = True
+        while waiting:
+            for event in pygame.event.get():
+                if event.type == pygame.USEREVENT:
+                    if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
+                        if event.ui_element == self.modal_window.exit_button:
+                            pygame.quit()
+                        elif event.ui_element == self.modal_window.back_button:
+                            print(
+                                "back to main menu: TODO, reset board, pull up modal window"
+                            )
+                self.ui_manager.process_events(event)
+            # pygame.display.update()
+
     def new(self):
         game_menu = GameMenu(self.screen, self.width, self.height)
         # game_menu.new()
@@ -208,10 +227,16 @@ class GameInterface:
 
     def events(self):
         for event in pygame.event.get():
+            if self.modal_window.is_open:
+                self.wait_for_modal()
+                return
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
+                    self.test_count += 1
+                    if self.test_count == 5:
+                        self.modal_window.open_modal()
                     grid_x, grid_y = self._convert_mouse_to_grid()
                     if not self.game_logic.is_emptyspace(grid_x, grid_y):
                         # TODO: change log message
@@ -410,7 +435,8 @@ class GameInterface:
     def draw(self):
         # left
         self.create_grid()
-        self._anchor_mouse_stones()
+        if not self.modal_window.is_open:
+            self._anchor_mouse_stones()
         self._draw_placed_stones()
 
         # right

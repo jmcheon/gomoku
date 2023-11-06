@@ -6,8 +6,9 @@ class ModalWindow:
     def __init__(self, manager, window_size):
         self.manager = manager
         self.window_size = window_size
+        self.is_open = False
         self.modal_window = pygame_gui.elements.UIPanel(
-            relative_rect=pygame.Rect((100, 100), self.window_size),
+            relative_rect=pygame.Rect((100, 100), (400, 400)),
             manager=self.manager,
             visible=False,
         )
@@ -34,6 +35,7 @@ class ModalWindow:
 
     def open_modal(self):
         self.modal_window.show()
+        self.is_open = True
 
     def close_modal(self):
         self.modal_window.hide()
