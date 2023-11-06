@@ -20,6 +20,7 @@ class GameInterface:
         self.font_name = pygame.font.match_font("arial")
         self.test_count = 0
         # self._initialize_game()
+        self.reset_requested = False
         self._initialize_ui()
         self._initialize_size()
 
@@ -175,31 +176,8 @@ class GameInterface:
                 thickness,
             )
 
-    def wait_for_key(self):
-        waiting = True
-        while waiting:
-            # self.clock.tick(60)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-                    waiting = False
-                if event.type == pygame.KEYUP:
-                    waiting = False
-        self.screen.fill(BACKGROUND_COLOR)
-        pygame.display.flip()
-
-    def wait_for_modal(self):
-        for event in pygame.event.get():
-            if event.type == pygame.USEREVENT:
-                if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
-                    if event.ui_element == self.modal_window.exit_button:
-                        pygame.quit()
-                    elif event.ui_element == self.modal_window.back_button:
-                        print(
-                            "back to main menu: TODO, reset board, pull up modal window"
-                        )
-
     def new(self):
+        self.__init__(self.width, self.height)
         game_menu = GameMenu(self.screen, self.width, self.height)
         # game_menu.new()
         game_menu.wait_for_key()
@@ -431,9 +409,9 @@ class GameInterface:
 
     def draw(self):
         # left
-        self.create_grid()
         if not self.modal_window.is_open:
             self._anchor_mouse_stones()
+        self.create_grid()
         self._draw_placed_stones()
 
         # right
@@ -446,7 +424,8 @@ class GameInterface:
         self.screen.blit(self.right_pane, (right_pane_begin_x, right_pane_begin_y))
         self.events()
         if self.modal_window.is_open:
-            self.modal_window.wait_for_response()
+            if self.modal_window.wait_for_response() == RESET:
+                self.reset_requested = True
         else:
             self.events()
         self.draw()

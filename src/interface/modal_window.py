@@ -49,7 +49,6 @@ class ModalWindow:
                     if event.ui_element == self.exit_button:
                         pygame.quit()
                     elif event.ui_element == self.back_button:
-                        print(
-                            "back to main menu: TODO, reset board, pull up modal window"
-                        )
+                        self.close_modal()
+                        return True
             self.manager.process_events(event)

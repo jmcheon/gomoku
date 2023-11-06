@@ -3,6 +3,8 @@ import math
 
 import pygame
 
+RESET = 1
+
 BLACK = (0, 0, 0)
 BLACK_TRANSPARENT = pygame.Color(0, 0, 0, 128)
 
