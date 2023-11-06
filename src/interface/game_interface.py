@@ -185,7 +185,7 @@ class GameInterface:
         pygame.display.flip()
 
     def new(self):
-        game_menu = GameMenu(self.screen, self.ui_manager)
+        game_menu = GameMenu(self.screen, self.width, self.height)
         # game_menu.new()
         game_menu.wait_for_key()
 
