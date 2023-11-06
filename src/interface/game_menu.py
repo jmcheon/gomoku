@@ -53,6 +53,12 @@ class GameMenu:
         # Create texts for different screens
         self.text_main = font.render("Main Menu", True, BLACK)
         self.text_options = font.render("Options Menu", True, BLACK)
+        self.text_name_email_1 = font.render(
+            "by Jung Moo Cheon (cjung-mo@student.42.fr)", True, BLACK
+        )
+        self.text_name_email_2 = font.render(
+            "Sungyong Cho (sucho@student.42.fr)", True, BLACK
+        )
 
     def draw(self):
         self.screen.fill(WHITE)  # Set a background color for the screen
@@ -71,6 +77,9 @@ class GameMenu:
             self.button_to_options.hide()
             self.button_to_main.show()
 
+        # TODO: responsive
+        self.screen.blit(self.text_name_email_1, (self.width - 550, self.height - 70))
+        self.screen.blit(self.text_name_email_2, (self.width - 460, self.height - 40))
         self.manager.draw_ui(self.screen)
         pygame.display.update()
 
