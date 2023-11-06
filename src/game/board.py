@@ -11,13 +11,10 @@ class Board:
         # define players
         self.player1 = PLAYER_1
         self.player2 = PLAYER_2
-        self.player_turn = PLAYER_1
         self.empty_square = "."
 
         # define board position
         self.position = [["."] * NUM_LINES for _ in range(NUM_LINES)]
-
-        self.record = []
 
         # self.init_board()
 
@@ -46,17 +43,13 @@ class Board:
 
         # make move
         board.position[row][col] = self.player1
-        board.record.append((row, col, self.player1))
 
         # swap players
         board.swap_player()
-        # (board.player1, board.player2) = (board.player2, board.player1)
-
         # return new board state
         return board
 
     def swap_player(self) -> None:
-        self.player_turn = PLAYER_2 if self.player_turn == PLAYER_1 else PLAYER_1
         (self.player1, self.player2) = (self.player2, self.player1)
 
     # get whether the game is drawn

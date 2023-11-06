@@ -6,6 +6,7 @@ from src.game.capture import capture_opponent, remove_captured_list
 from src.game.doublethree import check_double_three
 from src.config import *
 from src.game.game_logic import GameLogic
+from src.interface.game_menu import GameMenu
 
 
 class GameInterface:
@@ -184,16 +185,9 @@ class GameInterface:
         pygame.display.flip()
 
     def new(self):
-        self.screen.fill(BACKGROUND_COLOR)
-        self.draw_text(
-            "Gomoku.\nPress any key to create the grid",
-            22,
-            LINE_COLOR,
-            self.width / 2,
-            self.height / 2,
-        )
-        pygame.display.flip()
-        self.wait_for_key()
+        game_menu = GameMenu(self.screen, self.ui_manager)
+        # game_menu.new()
+        game_menu.wait_for_key()
 
     def _convert_mouse_to_grid(self):
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -219,10 +213,7 @@ class GameInterface:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     grid_x, grid_y = self._convert_mouse_to_grid()
-                    if (
-                        self.game_logic.board.get_value(grid_x, grid_y)
-                        != self.game_logic.board.empty_square
-                    ):
+                    if not self.game_logic.is_emptyspace(grid_x, grid_y):
                         # TODO: change log message
                         self.text_box.append_html_text(
                             "this cell is already occupied<br>"
@@ -230,59 +221,34 @@ class GameInterface:
                     elif self.game_logic.board.is_win():
                         # TODO: change log message
                         self.text_box.append_html_text("Game Over. <br>")
-                    elif self.game_logic.board.is_draw():
+                    elif self.game_logic.is_game_drawn():
                         # TODO: change log message
                         self.text_box.append_html_text("Game is drawn.<br>")
                     else:
-                        capture_list = capture_opponent(
-                            self.game_logic.board,
-                            grid_x,
-                            grid_y,
-                            self.game_logic.board.player_turn,
-                        )
+                        capture_list = self.game_logic.capture_opponent(grid_x, grid_y)
                         if capture_list:
-                            self.game_logic.board = self.game_logic.board.make_move(
-                                grid_x, grid_y
+                            self.game_logic.place_stone(
+                                grid_x, grid_y, captured_list=capture_list
                             )
-                            # TODO: change log message
                             self.text_box.append_html_text("capture gogo")
-                            remove_captured_list(self.game_logic.board, capture_list)
-                            self.trace.append(self.game_logic.board)
                         else:
-                            doublethree_detect = check_double_three(
-                                self.game_logic.board,
-                                grid_x,
-                                grid_y,
-                                self.game_logic.board.player_turn,
-                            )
-                            print(doublethree_detect)
-                            if doublethree_detect is False:
-                                self.game_logic.board = self.game_logic.board.make_move(
-                                    grid_x, grid_y
-                                )
-                                self.game_logic.trace.append(self.game_logic.board)
+                            if (
+                                self.game_logic.check_doublethree(grid_x, grid_y)
+                                is False
+                            ):
+                                self.game_logic.place_stone(grid_x, grid_y)
                             else:
                                 # TODO: change log message related
                                 self.text_box.append_html_text(
                                     f"doublethree detected{123} <br>"
                                 )
-                        # print(self.game_logic.board.player_turn)
                     self.text_box.update(5.0)
                 elif event.button == 3:
-                    if self.game_logic.trace:  # Checks if the trace list is not empty
-                        print("trace.pop", self.game_logic.trace.pop())
-                        if self.trace:
-                            self.game_logic.board = self.trace[-1]
-                        else:
-                            self.game_logic.board.position = [
-                                ["."] * NUM_LINES for _ in range(NUM_LINES)
-                            ]
-                        # print(self.game_logic.board)
-                    else:
+                    if self.game_logic.undo_last_move() is False:
                         self.text_box.append_html_text(
                             "Trace is empty, cannot go back further<br>"
                         )
-
+            # TODO: testing
             # elif event.type == pygame.KEYUP:
             #     if event.type == pygame.K_SPACE:
             #         pass
@@ -293,9 +259,9 @@ class GameInterface:
         grid_x, grid_y = self._convert_mouse_to_grid()
 
         # for anchor
-        if self.game_logic.board.player_turn == PLAYER_1:
+        if self.game_logic.turn == PLAYER_1:
             self.draw_stone(grid_x, grid_y, self.board_surface, BLACK)
-        elif self.game_logic.board.player_turn == PLAYER_2:
+        elif self.game_logic.turn == PLAYER_2:
             self.draw_stone(grid_x, grid_y, self.board_surface, WHITE, 1)
 
     def _draw_placed_stones(self):
