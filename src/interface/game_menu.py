@@ -17,16 +17,26 @@ class GameMenu:
         self.show_options_menu = False
 
     def init_buttons(self):
+        button_width = self.width / 6
+        button_height = self.height / 12
+        button_padding_horiz = button_height / 3
         # Create the main menu button
         self.button_to_singleplay = pygame_gui.elements.UIButton(
-            relative_rect=pygame.Rect((self.width / 2, self.height / 2), (200, 50)),
+            relative_rect=pygame.Rect(
+                ((self.width - button_width) // 2, self.height / 2),
+                (button_width, button_height),
+            ),
             text="Single Player (vs AI)",
             manager=self.manager,
         )
 
         self.button_to_multiplay = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                (self.width / 2, self.height / 2 + 100), (200, 50)
+                (
+                    (self.width - button_width) // 2,
+                    self.height / 2 + (button_height + button_padding_horiz),
+                ),
+                (button_width, button_height),
             ),
             text="Multiplayer",
             manager=self.manager,
@@ -34,7 +44,11 @@ class GameMenu:
 
         self.button_to_options = pygame_gui.elements.UIButton(
             relative_rect=pygame.Rect(
-                (self.width / 2, self.height / 2 + 200), (200, 50)
+                (
+                    (self.width - button_width) // 2,
+                    self.height / 2 + (2 * (button_height + button_padding_horiz)),
+                ),
+                (button_width, button_height),
             ),
             text="Options",
             manager=self.manager,

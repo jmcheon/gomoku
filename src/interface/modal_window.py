@@ -32,7 +32,7 @@ class ModalWindow:
         )
 
         button_width = panel_width // 3
-        button_height = 40
+        button_height = panel_height / 10
         button_padding = button_width / 5  # Padding from the bottom of the panel
 
         button_x_left = (panel_width / 2) - button_width - button_padding

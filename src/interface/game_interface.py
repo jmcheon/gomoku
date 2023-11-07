@@ -208,20 +208,24 @@ class GameInterface:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         self.test_count += 1
-                        if self.test_count == 5:
-                            self.modal_window.set_modal_message("hello world two")
-                            self.modal_window.open_modal()
-                            return
+                        # if self.test_count == 5:
+                        #     return
                         grid_x, grid_y = self._convert_mouse_to_grid()
+                        print(self.game_logic.board)
                         if not self.game_logic.board.is_empty_square(grid_x, grid_y):
                             # TODO: change log message
                             self.text_box.append_html_text(
                                 "this cell is already occupied<br>"
                             )
                         elif self.game_logic.is_win():
+                            self.modal_window.set_modal_message(
+                                f"Game Over! Player {1 if self.game_logic.turn == PLAYER_1 else 2} Wins!"
+                            )
+                            self.modal_window.open_modal()
                             # TODO: change log message
                             self.text_box.append_html_text("Game Over. <br>")
                         elif self.game_logic.is_draw():
+                            self.modal_window.set_modal_message(f"Game is drawn.")
                             # TODO: change log message
                             self.text_box.append_html_text("Game is drawn.<br>")
                         else:
