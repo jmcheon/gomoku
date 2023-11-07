@@ -345,19 +345,19 @@ class GameInterface:
 
     def display_time(self):
         pygame.draw.rect(self.screen, BACKGROUND_COLOR, self.time_rect)
-
         # Get the elapsed time since pygame started
+
         elapsed_time_millis = pygame.time.get_ticks()
-
         # Convert the time to minutes and seconds
-        elapsed_time = divmod(elapsed_time_millis // 1000, 60)
 
-        # Format the time as "00:00"
-        formatted_time = "{:02}:{:02}".format(*elapsed_time)
+        if not self.modal_window.is_open:
+            elapsed_time = divmod(elapsed_time_millis // 1000, 60)
+            # Format the time as "00:00"
 
-        # Draw the time
+            self.formatted_time = "{:02}:{:02}".format(*elapsed_time)
+            # Draw the time
         self.draw_text(
-            str(formatted_time),
+            str(self.formatted_time),
             6 * (self.width // 200),  # for responsive
             BLACK,
             self.time_rect.centerx,
