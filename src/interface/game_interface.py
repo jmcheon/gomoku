@@ -1,13 +1,13 @@
 import pygame
 import pygame_gui
 from pygame_gui.elements.ui_text_box import UITextBox
-from src.interface.modal_window import ModalWindow
+from src.config import *
 from src.game.board import Board
 from src.game.capture import capture_opponent, remove_captured_list
 from src.game.doublethree import check_double_three
-from src.config import *
 from src.game.game_logic import GameLogic
 from src.interface.game_menu import GameMenu
+from src.interface.modal_window import ModalWindow
 
 
 class GameInterface:
@@ -211,15 +211,15 @@ class GameInterface:
                             self.modal_window.open_modal()
                             return
                         grid_x, grid_y = self._convert_mouse_to_grid()
-                        if not self.game_logic.is_emptyspace(grid_x, grid_y):
+                        if not self.game_logic.board.is_empty_square(grid_x, grid_y):
                             # TODO: change log message
                             self.text_box.append_html_text(
                                 "this cell is already occupied<br>"
                             )
-                        elif self.game_logic.board.is_win():
+                        elif self.game_logic.is_win():
                             # TODO: change log message
                             self.text_box.append_html_text("Game Over. <br>")
-                        elif self.game_logic.is_game_drawn():
+                        elif self.game_logic.is_draw():
                             # TODO: change log message
                             self.text_box.append_html_text("Game is drawn.<br>")
                         else:
@@ -366,14 +366,14 @@ class GameInterface:
 
     def display_score(self):
         self.draw_text(
-            f"{self.game_logic.captured_p1}",
+            f"{self.game_logic.player1.captured}",
             8 * (self.width // 200),
             BLACK,
             self.p1_score_rect.centerx,
             self.p1_score_rect.centery,
         )
         self.draw_text(
-            f"{self.game_logic.captured_p2}",
+            f"{self.game_logic.player2.captured}",
             8 * (self.width // 200),
             BLACK,
             self.p2_score_rect.centerx,
