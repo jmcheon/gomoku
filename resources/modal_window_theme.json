@@ -4,7 +4,7 @@
     "colours":
     {
         "dark_bg":"#FFFFFF",
-        "normal_border": "#999999"
+        "normal_border": "#000000"
     },
 
     "background_image":
@@ -21,5 +21,21 @@
         "border_width": "1",
         "shadow_width": "15"
     }
-  }
+  },
+  "label":
+     {
+         "colours":
+         {
+             "normal_text": "#000000",
+             "text_shadow": "#505050"
+         },
+         "font":
+         {
+             "name": "montserrat",
+             "size": "12",
+             "bold": "0",
+             "italic": "0"
+         }
+     }
 }
+

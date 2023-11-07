@@ -209,6 +209,7 @@ class GameInterface:
                     if event.button == 1:
                         self.test_count += 1
                         if self.test_count == 5:
+                            self.modal_window.set_modal_message("hello world two")
                             self.modal_window.open_modal()
                             return
                         grid_x, grid_y = self._convert_mouse_to_grid()
