@@ -38,6 +38,7 @@ class GameInterface:
         self.ui_manager = pygame_gui.UIManager(
             (self.width, self.height), "resources/log_theme.json"
         )
+        self.ui_manager.get_theme().load_theme("resources/modal_window_theme.json")
 
         self.modal_window = ModalWindow(self.ui_manager, (self.width, self.height))
 
