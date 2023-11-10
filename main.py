@@ -13,9 +13,10 @@ class Gomoku:
 
     def init_game(self):
         self.interface = GameInterface(self.width, self.height)
-        self.game_logic = GameLogic()
         # TODO: load option configuration values and pass to self.game_logic
-        self.interface.new()
+        game_option = self.interface.new()
+        self.game_logic = GameLogic()
+        self.game_logic.set_config(game_option)
         self.interface.set_game_logic(self.game_logic)
 
     def run(self):

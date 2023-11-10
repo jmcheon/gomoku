@@ -181,7 +181,7 @@ class GameInterface:
         self.__init__(self.width, self.height)
         game_menu = GameMenu(self.screen, self.width, self.height)
         # game_menu.new()
-        game_menu.wait_for_key()
+        return game_menu.wait_for_key()
 
     def _convert_mouse_to_grid(self):
         mouse_x, mouse_y = pygame.mouse.get_pos()

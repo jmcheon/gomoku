@@ -16,6 +16,10 @@ class GameLogic:
         # TODO: integrate with Board
         self.trace = []
 
+    # TODO: keep this, or move this into initializer if needed
+    def set_config(self, options):
+        print(options)
+
     def is_draw(self) -> bool:
         # loop over board square
         for row in range(NUM_LINES):
