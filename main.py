@@ -48,6 +48,6 @@ if __name__ == "__main__":
 
     model = create_model()
     target_model = create_model()
-    dqn = DQN(model, target_model)
+    # dqn = DQN(model, target_model)
 
     # print(dqn.get_state_representation(gomoku.board))

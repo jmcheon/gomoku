@@ -1,8 +1,6 @@
 import math
 import random
 
-from etc.QLearningAgent import QLearningAgent
-
 
 class TreeNode:
     def __init__(self, board, parent):
@@ -25,8 +23,10 @@ class TreeNode:
 
 
 class MCTS:
-    def __init__(self, agent):
-        self.agent = agent
+    def __init__(self, model):
+        self.model = model
+        self.game_state = np.zeros((19, 19, 17))
+        self.game_state = [np.zeros((19, 19)) for _ in range(17)]
 
     # search for the best move in the current position
     def search(self, initial_state):
@@ -80,7 +80,7 @@ class MCTS:
                 return new_node
 
     # simulate the game via making random moves until reach end of the game
-    def rollout(self, board):
+    def rollout2(self, board):
         # make random moves for both sides until terminal state of the game is reached
         while not board.is_win():
             # try to make a move
@@ -98,10 +98,59 @@ class MCTS:
         # print(board)
 
         # return score from the player "x" perspective
-        if board.player2 == "X":
+        if board.player2 == PLAYER_1:
             return 1
-        elif board.player2 == "O":
+        elif board.player2 == PLAYER_2:
             return -1
+
+    def rollout(self, board):
+        self.preprocess_board(board)
+
+        # predict the move probabilities(p) and the value(v) of the board state.
+        move_probs, value = self.model.predict(self.game_state)
+        print(f"move_probs(p): {move_probs}, value(v): {value}")
+
+        # TODO: select a move based on the move probabilites and apply it to the board
+        """
+        # use the move probabilities to select the next move.
+        next_move = self.select_move(move_probs)
+
+        # apply the selected move to get the new board state.
+        new_board = board.apply_move(next_move)
+
+        # return the predicted value of the new board state.
+        return value
+        """
+
+    def preprocess_board(self, board, player_turn) -> None:
+        """
+        Convert the board state to a suitable format for the model.
+
+            self.game_state = [X_t, Y_t, X_t-1, Y_t-1, ... X_t-7, Y_t-7, C]
+            X: 8 feature planes of black stone
+            Y: 8 feature planes of white stone
+            C: the color of player stone; 1 for black, 0 for white
+        """
+        # get each board state of black and white from the current board position
+        player_1_state = board.create_board_state(PLAYER_1)
+        player_2_state = board.create_board_state(PLAYER_2)
+
+        # insert each board state of black and white to the beginning of the game_state list
+        self.game_state.insert(0, player_1_state)
+        self.game_state.insert(1, player_2_state)
+
+        # remove the second and third board states to the last
+        del self.game_state[-3:-1]
+
+        # last element of the game_state standing for the color of the player stone; 1 for black, 0 for white
+        if player_turn == PLAYER_1:
+            self.game_state[-1] = np.zeros((19, 19))
+        else:
+            self.game_state[-1] = np.ones((19, 19))
+
+    def select_move(self, move_probs):
+        next_move = np.argmax(move_probs)
+        return next_move
 
     # backpropagate the number of visits and score up to the root node
     def backpropagate(self, node, score):
@@ -147,4 +196,5 @@ class MCTS:
         # return one of the best moves randomly
         # best_move = random.choice(best_moves)
         # print("best_move board:", best_move.board)
+        print(f"best_moves: {best_moves}")
         return random.choice(best_moves)

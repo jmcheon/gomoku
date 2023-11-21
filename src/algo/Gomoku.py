@@ -106,9 +106,11 @@ class Gomoku:
                                 remove_captured_list(self.board, capture_list)
                                 # print(self.board)
                             else:
+                                """
                                 check_double_three(
                                     self.board, grid_x, grid_y, self.board.player1
                                 )
+                                """
                                 self.board = self.board.make_move(grid_x, grid_y)
                             print(self.board)
                             trace.append(self.board)
@@ -144,8 +146,8 @@ class Gomoku:
             if self.board.player1 == PLAYER1:
                 self.draw_circles(grid_x, grid_y, self.surface, black_transparent)
             elif self.board.player1 == PLAYER2:
-                self.draw_circles(grid_x, grid_y, self.surface, white_transparent)
-                # self.board = best_move(self.board)
+                # self.draw_circles(grid_x, grid_y, self.surface, white_transparent)
+                self.board = self.best_move(self.board)
 
             for x in range(NUM_LINES):
                 for y in range(NUM_LINES):

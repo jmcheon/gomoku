@@ -24,7 +24,7 @@ GRID_END_X = 680  # Adjust this value to position the grid as needed
 GRID_END_Y = 680  # Adjust this value to position the grid as needed
 
 # Define the number of lines (which determines grid size)
-NUM_LINES = 19  # Adjust this value to change the number of lines in the grid
+NUM_LINES = 5  # Adjust this value to change the number of lines in the grid
 
 # Calculate the cell size based on the specified starting and ending positions
 CELL_SIZE_X = math.ceil((GRID_END_X - GRID_START_X) / NUM_LINES)
@@ -47,6 +47,8 @@ white_transparent = pygame.Color(255, 255, 255, 128)
 # Neural Network
 INPUT_SHAPE = NUM_LINES * NUM_LINES
 OUTPUT_SHAPE = NUM_LINES
+NUM_EPISODES = 1000
+BATCH_SIZE = 5
 
 # path
 MLP_DIR_NAME = "multilayer_perceptron"

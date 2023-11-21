@@ -3,6 +3,9 @@ import math
 
 import pygame
 
+# CNN & MCTS
+
+
 RESET = 1
 
 BLACK = (0, 0, 0)
@@ -15,8 +18,8 @@ SCREEN_WIDTH, SCREEN_HEIGHT = 1600, 1000
 NUM_LINES = 19
 LINE_COLOR = BLACK
 BACKGROUND_COLOR = WHITE
-PLAYER_1 = "X"
-PLAYER_2 = "O"
+PLAYER_1 = "X"  # Black stone
+PLAYER_2 = "O"  # White stone
 EMPTY_SQUARE = "."
 
 GRID_START_X = (5 * SCREEN_WIDTH / 8) / 10

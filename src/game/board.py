@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+import numpy as np
 from src.config import *
 
 
@@ -24,6 +25,19 @@ class Board:
 
     def is_empty_square(self, x, y):
         return self.get_value(x, y) == EMPTY_SQUARE
+
+    def create_board_state(self, player_turn):
+        """
+        Args:
+            board_position: a list of lists (square matrix)
+        Returns:
+            board_state: as a numpy.array refined, a matrix of dimension n x n
+        """
+        board_state = [
+            [1 if i == player_turn else i for i in row] for row in self.position
+        ]
+
+        return np.array(board_state)
 
     def __str__(self) -> str:
         board_str = ""
