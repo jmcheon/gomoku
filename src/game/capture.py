@@ -40,7 +40,7 @@ def remove_pairs(board: Board, captured_pairs):
     for _ in range(2):
         nx = x + direction[0] if nx == 0 else nx + direction[0]
         ny = y + direction[1] if ny == 0 else ny + direction[1]
-        board.set_value(nx, ny, board.empty_square)
+        board.set_value(nx, ny, EMPTY_SQUARE)
 
 
 def capture_opponent(board: Board, x, y, player):

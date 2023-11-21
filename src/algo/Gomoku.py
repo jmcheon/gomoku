@@ -87,7 +87,7 @@ class Gomoku:
                         # Ensure the cursor position is within the grid area
                         if (
                             self.board.get_value(grid_x, grid_y)
-                            != self.board.empty_square
+                            != EMPTY_SQUARE
                         ):
                             print("this cell is already occupied")
                         else:
