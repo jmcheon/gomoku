@@ -188,7 +188,7 @@ class GameInterface:
                 str(record_index),
                 True,
                 (255, 0, 0)
-                if record_index == len(self.game_logic.record) - 1
+                if record_index == len(self.game_logic.record)
                 else record_color,
             )  # White color
 
