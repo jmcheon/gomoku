@@ -22,10 +22,10 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
     if count > 4:
         return False
     nx = x + direction[0]
-    if (nx > NUM_LINES):
+    if nx > NUM_LINES:
         return False
     ny = y + direction[1]
-    if (ny > NUM_LINES):
+    if ny > NUM_LINES:
         return False
 
     if 3 <= count and count <= 4:
@@ -66,14 +66,14 @@ def check_next_only_range(board: Board, x, y, dir, player):
         == board.get_value(x - dir[0], y - dir[1])
         == player
     ):
-        print("hello world")
+        # print("hello world")
         return_list = make_list_to_direction(board, x, y, (-dir[0], -dir[1]), 3, player)
         return_list += make_list_to_direction(board, x, y, dir, 3, player)
-        if (
-        board.get_value(x + (dir[0] * 2), y + (dir[1] * 2))
-        != (PLAYER_2 if player == PLAYER_1 else PLAYER_1)
-        and board.get_value(x - (dir[0] * 2), y - (dir[1] * 2))
-        != (PLAYER_2 if player == PLAYER_1 else PLAYER_1)):
+        if board.get_value(x + (dir[0] * 2), y + (dir[1] * 2)) != (
+            PLAYER_2 if player == PLAYER_1 else PLAYER_1
+        ) and board.get_value(x - (dir[0] * 2), y - (dir[1] * 2)) != (
+            PLAYER_2 if player == PLAYER_1 else PLAYER_1
+        ):
             print("word")
         # if board.get_value(x - dir[0] - dir[0], y - dir[1] - dir[1]) == player:
         #     return_list.append((x - dir[0] - dir[0], y - dir[1] - dir[1]))
@@ -168,7 +168,7 @@ def check_double_three(board: Board, x, y, player):
         print("a")
         for i in range(len(DIRECTIONS) // 2):
             cont_range = check_next_only_range(board, x, y, DIRECTIONS[i], player)
-            print("cont_range", cont_range)
+            # print("cont_range", cont_range)
             if cont_range:
                 direction = DIRECTIONS[i]
                 break
@@ -194,10 +194,11 @@ def check_double_three(board: Board, x, y, player):
                     print("double tree found!!!!!!!!!!!!")
                     return True
                 elif (
-                        check_next_only_range(
-                            board, one_place[0], one_place[1], dir, player
-                        ) != None and
-                    len(
+                    check_next_only_range(
+                        board, one_place[0], one_place[1], dir, player
+                    )
+                    != None
+                    and len(
                         check_next_only_range(
                             board, one_place[0], one_place[1], dir, player
                         )

@@ -177,6 +177,32 @@ class GameInterface:
                 thickness,
             )
 
+        record_index = self.game_logic.find_index_record(x, y)
+        if record_index != -1:
+            # Create a font object
+            font = pygame.font.Font(None, 36)  # You can adjust the font size as needed
+
+            # Render the text
+            record_color = (255, 255, 255) if color == BLACK else (0, 0, 0)
+            text_surface = font.render(
+                str(record_index),
+                True,
+                (255, 0, 0)
+                if record_index == len(self.game_logic.record) - 1
+                else record_color,
+            )  # White color
+
+            # Get the rect of the text surface
+            text_rect = text_surface.get_rect(
+                center=(
+                    x * CELL_SIZE_X + GRID_START_X + CELL_SIZE_X // 2,
+                    y * CELL_SIZE_Y + GRID_START_Y + CELL_SIZE_Y // 2,
+                )
+            )
+
+            # Draw the text surface onto the target surface
+            target.blit(text_surface, text_rect)
+
     def new(self):
         self.__init__(self.width, self.height)
         game_menu = GameMenu(self.screen, self.width, self.height)

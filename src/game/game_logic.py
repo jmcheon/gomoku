@@ -74,18 +74,26 @@ class GameLogic:
 
     def place_stone(self, x, y, captured_list=None):
         self.board = self.make_move(x, y)
-        self.record_trace()
+        self.record_trace(x, y)
         # self.trace.append(self.game_logic.board)
         if captured_list is not None:
             remove_captured_list(self.board, captured_list)
         self.change_player_turn()
 
-    def record_trace(self):
+    def find_index_record(self, x, y):
+        for i, item in enumerate(self.record):
+            if item[0] == (x, y):
+                return i + 1
+        return -1
+
+    def record_trace(self, x, y):
+        self.record.append(((x, y), self.turn))
         self.trace.append(self.board)
 
     def undo_last_move(self):
         if self.trace:  # Checks if the trace list is not empty
-            print("trace.pop", self.trace.pop())
+            self.trace.pop()
+            self.record.pop()
             if self.trace:
                 self.board = self.trace[-1]
             else:

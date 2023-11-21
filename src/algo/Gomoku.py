@@ -85,10 +85,7 @@ class Gomoku:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if event.button == 1:
                         # Ensure the cursor position is within the grid area
-                        if (
-                            self.board.get_value(grid_x, grid_y)
-                            != EMPTY_SQUARE
-                        ):
+                        if self.board.get_value(grid_x, grid_y) != EMP:
                             print("this cell is already occupied")
                         else:
                             if self.board.is_win() == False:
