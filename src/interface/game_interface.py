@@ -139,6 +139,9 @@ class GameInterface:
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
 
+    def convert_pos_to_coordinates(self, x, y):
+        return (x + 1, chr(ord("A") + y))
+
     def draw_stone(self, x, y, target, color, thickness=0):
         initial_size = 6  # Adjust as needed
         max_lines = 20  # Adjust as needed
@@ -262,6 +265,7 @@ class GameInterface:
                                 self.game_logic.place_stone(
                                     grid_x, grid_y, captured_list=capture_list
                                 )
+                                self.convert_pos_to_coordinates(grid_x, grid_y)
                                 self.text_box.append_html_text("capture gogo")
                             else:
                                 if (
@@ -269,6 +273,10 @@ class GameInterface:
                                     is False
                                 ):
                                     self.game_logic.place_stone(grid_x, grid_y)
+                                    self.text_box.append_html_text(
+                                        f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
+                                    )
+                                    self.convert_pos_to_coordinates(grid_x, grid_y)
                                 else:
                                     # TODO: change log message related
                                     self.text_box.append_html_text(
