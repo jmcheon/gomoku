@@ -4,7 +4,7 @@ from src.config import *
 
 def is_valid_position(position):
     # Check if the position (x, y) is within the bounds of the board.
-    return 0 <= position[0] < 19 and 0 <= position[1] < 19
+    return 0 <= position[0] < NUM_LINES and 0 <= position[1] < NUM_LINES
 
 
 def make_list_to_direction(board: Board, x, y, dir, n, player):
@@ -22,7 +22,11 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
     if count > 4:
         return False
     nx = x + direction[0]
+    if (nx > NUM_LINES):
+        return False
     ny = y + direction[1]
+    if (ny > NUM_LINES):
+        return False
 
     if 3 <= count and count <= 4:
         if (
@@ -179,13 +183,16 @@ def check_double_three(board: Board, x, y, player):
                     )
                     == True
                     and board.get_value(one_place[0] - dir[0], one_place[1] - dir[1])
-                    == board.empty_square
+                    == EMPTY_SQUARE
                 ):
                     print()
                     print(one_place[0], one_place[1], dir)
                     print("double tree found!!!!!!!!!!!!")
                     return True
                 elif (
+                        check_next_only_range(
+                            board, one_place[0], one_place[1], dir, player
+                        ) != None and
                     len(
                         check_next_only_range(
                             board, one_place[0], one_place[1], dir, player

@@ -8,7 +8,11 @@ directions = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 
 
 def dfs_capture(board: Board, x, y, player, direction, count):
     nx = x + direction[0]
+    if (nx > NUM_LINES):
+        return False
     ny = y + direction[1]
+    if (ny > NUM_LINES):
+        return False
 
     if count == 3:
         if is_valid_position((nx, ny)) == True and board.get_value(nx, ny) == player:
