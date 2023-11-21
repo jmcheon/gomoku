@@ -53,6 +53,7 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
 
 def check_next_only_range(board: Board, x, y, dir, player):
     return_list = []
+    print("direction", dir, (-dir[0], -dir[1]), player)
     if (
         is_valid_position((x + dir[0], y + dir[1])) is False
         or is_valid_position((x + dir[0] + dir[0], y + dir[1] + dir[1])) is False
@@ -61,18 +62,19 @@ def check_next_only_range(board: Board, x, y, dir, player):
     ):
         return None
     if (
-        board.get_value(x, y)
-        == board.get_value(x + dir[0], y + dir[1])
+        board.get_value(x + dir[0], y + dir[1])
         == board.get_value(x - dir[0], y - dir[1])
         == player
-    ) and (
+    ):
+        print("hello world")
+        return_list = make_list_to_direction(board, x, y, (-dir[0], -dir[1]), 3, player)
+        return_list += make_list_to_direction(board, x, y, dir, 3, player)
+        if (
         board.get_value(x + (dir[0] * 2), y + (dir[1] * 2))
         != (PLAYER_2 if player == PLAYER_1 else PLAYER_1)
         and board.get_value(x - (dir[0] * 2), y - (dir[1] * 2))
-        != (PLAYER_2 if player == PLAYER_1 else PLAYER_1)
-    ):
-        return_list = make_list_to_direction(board, x, y, (-dir[0], -dir[1]), 3, player)
-        return_list += make_list_to_direction(board, x, y, dir, 3, player)
+        != (PLAYER_2 if player == PLAYER_1 else PLAYER_1)):
+            print("word")
         # if board.get_value(x - dir[0] - dir[0], y - dir[1] - dir[1]) == player:
         #     return_list.append((x - dir[0] - dir[0], y - dir[1] - dir[1]))
         # return_list.append((x - dir[0], y - dir[1]))
@@ -127,6 +129,7 @@ def check_next_only_range(board: Board, x, y, dir, player):
         # return_list.append((x + dir[0], y + dir[1]))
         return_list = make_list_to_direction(board, x, y, (-dir[0], -dir[1]), 3, player)
         return_list += make_list_to_direction(board, x, y, dir, 3, player)
+    print(return_list)
     return_list = list(set(return_list))
     return return_list
 
@@ -162,10 +165,11 @@ def check_double_three(board: Board, x, y, player):
             direction = dir
             break
     if direction is None:
-        # print("a")
+        print("a")
         for i in range(len(DIRECTIONS) // 2):
             cont_range = check_next_only_range(board, x, y, DIRECTIONS[i], player)
-            if cont_range is not None:
+            print("cont_range", cont_range)
+            if cont_range:
                 direction = DIRECTIONS[i]
                 break
     # print("three", three, direction)
