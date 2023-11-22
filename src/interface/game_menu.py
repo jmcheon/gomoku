@@ -57,22 +57,23 @@ class GameMenu:
     def init_options_menu(self):
         # Slider and label for capture stone
 
-        capture_stone_menu_rect = pygame.Rect(
+        capture_stone_text_rect = pygame.Rect(
             int(self.width / 5), int(self.height * 0.3), 180, 30
         )
 
-        self.capture_stone_menu = pygame_gui.elements.UILabel(
-            relative_rect=capture_stone_menu_rect,
+        self.capture_stone_text = pygame_gui.elements.UILabel(
+            relative_rect=capture_stone_text_rect,
             text="Capture Stone Number",
             manager=self.manager,
         )
 
         capture_stone_slider_rect = pygame.Rect(
-            capture_stone_menu_rect.right,
+            capture_stone_text_rect.right,
             int(self.height * 0.3),
             self.width / 2,
             30,
         )
+
         self.capture_stone_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=capture_stone_slider_rect,
             start_value=10.0,
@@ -147,18 +148,18 @@ class GameMenu:
             self.manager,
         )
 
-        capture_option_rect = pygame.Rect(
+        capture_enable_text_rect = pygame.Rect(
             int(self.width / 5), int(self.height * 0.5), 180, 30
         )
 
-        self.capture_option_label = pygame_gui.elements.UILabel(
-            relative_rect=capture_option_rect,
+        self.capture_enable_text = pygame_gui.elements.UILabel(
+            relative_rect=capture_enable_text_rect,
             text="Capture",
             manager=self.manager,
         )
 
         capture_buttion_rect = pygame.Rect(
-            (capture_option_rect.right, int(self.height * 0.5)), (200, 50)
+            (capture_enable_text_rect.right, int(self.height * 0.5)), (200, 50)
         )
         # "Capture" button
         self.capture_button = pygame_gui.elements.UIButton(
@@ -168,18 +169,18 @@ class GameMenu:
             object_id="#capture_button",
         )
 
-        doublethree_option_rect = pygame.Rect(
+        doublethree_text_rect = pygame.Rect(
             capture_buttion_rect.right, int(self.height * 0.5), 180, 30
         )
 
-        self.doublethree_option_label = pygame_gui.elements.UILabel(
-            relative_rect=doublethree_option_rect,
+        self.doublethree_text_label = pygame_gui.elements.UILabel(
+            relative_rect=doublethree_text_rect,
             text="Double Three",
             manager=self.manager,
         )
 
         doublethree_button_rect = pygame.Rect(
-            (doublethree_option_rect.right, int(self.height * 0.5)), (200, 50)
+            (doublethree_text_rect.right, int(self.height * 0.5)), (200, 50)
         )
         # "Double Three" button
         self.doublethree_button = pygame_gui.elements.UIButton(
@@ -189,12 +190,12 @@ class GameMenu:
             object_id="#doublethree_button",
         )
 
-        mode_option_rect = pygame.Rect(
+        dropdown_label_rect = pygame.Rect(
             int(self.width / 5), int(self.height * 0.6), 180, 30
         )
 
-        self.capture_option_label = pygame_gui.elements.UILabel(
-            relative_rect=mode_option_rect,
+        self.dropdown_label = pygame_gui.elements.UILabel(
+            relative_rect=dropdown_label_rect,
             text="Mode",
             manager=self.manager,
         )
@@ -229,7 +230,8 @@ class GameMenu:
         text_main_rect = (400, 100)
         self.text_main = pygame_gui.elements.UILabel(
             relative_rect=pygame.Rect(
-                (self.width / 2 - text_main_rect[0] / 2, 200), text_main_rect
+                (self.width / 2 - text_main_rect[0] / 2, int(self.height * 0.15)),
+                text_main_rect,
             ),
             text="오목 // Gomoku",
             manager=self.manager,
@@ -237,10 +239,14 @@ class GameMenu:
         )
 
         self.text_options = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((700, 200), (200, 50)),
+            relative_rect=pygame.Rect(
+                (self.width / 2 - text_main_rect[0] / 2, int(self.height * 0.15)),
+                text_main_rect,
+            ),
             text="Options Menu",
             manager=self.manager,
             visible=False,
+            object_id="#options_menu",
         )
 
         email_rect = (450, 30)
@@ -284,29 +290,37 @@ class GameMenu:
 
     def show_options_menu(self):
         self.text_options.show()
-        self.capture_stone_menu.show()
+        self.capture_stone_text.show()
         self.capture_stone_label.show()
         self.capture_stone_slider.show()
+        self.advantage_text.show()
         self.black_capture_label.show()
         self.black_capture_slider.show()
         self.white_capture_label.show()
         self.white_capture_slider.show()
+        self.capture_enable_text.show()
         self.capture_button.show()
+        self.doublethree_text_label.show()
         self.doublethree_button.show()
+        self.dropdown_label.show()
         self.dropdown_menu.show()
         self.button_to_main.show()
 
     def hide_options_menu(self):
         self.text_options.hide()
-        self.capture_stone_menu.hide()
+        self.capture_stone_text.hide()
         self.capture_stone_label.hide()
         self.capture_stone_slider.hide()
+        self.advantage_text.hide()
         self.black_capture_label.hide()
         self.black_capture_slider.hide()
         self.white_capture_label.hide()
         self.white_capture_slider.hide()
+        self.capture_enable_text.hide()
         self.capture_button.hide()
+        self.doublethree_text_label.hide()
         self.doublethree_button.hide()
+        self.dropdown_label.hide()
         self.dropdown_menu.hide()
         self.button_to_main.hide()
 

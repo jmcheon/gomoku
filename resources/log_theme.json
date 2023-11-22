@@ -55,6 +55,20 @@
           "italic": "0"
       }
   },
+  "#options_menu":
+  {
+      "colours":
+      {
+          "normal_text": "#000000"
+      },
+      "font":
+      {
+          "name": "notosanskr",
+          "size": "44",
+          "bold": "0",
+          "italic": "0"
+      }
+  },
   "#cjung-mo":
   {
     "colours":
