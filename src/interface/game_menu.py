@@ -165,16 +165,31 @@ class GameMenu:
             visible=False,
         )
 
+        email_rect = (450, 30)
         self.text_name_email_1 = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((self.width - 550, self.height - 70), (400, 30)),
+            relative_rect=pygame.Rect(
+                (
+                    self.width - email_rect[0] - self.width * 0.01,
+                    self.height - email_rect[1] * 3,
+                ),
+                email_rect,
+            ),
             text="by Jung Moo Cheon (cjung-mo@student.42.fr)",
             manager=self.manager,
+            object_id="#cjung-mo",
         )
 
         self.text_name_email_2 = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((self.width - 460, self.height - 40), (300, 30)),
+            relative_rect=pygame.Rect(
+                (
+                    self.width - email_rect[0] - self.width * 0.01,
+                    self.height - email_rect[1] * 2,
+                ),
+                email_rect,
+            ),
             text="Sungyong Cho (sucho@student.42.fr)",
             manager=self.manager,
+            object_id="#sucho",
         )
 
     def show_main_menu(self):
