@@ -247,7 +247,7 @@ class GameInterface:
                             )
                         elif self.game_logic.is_win():
                             self.modal_window.set_modal_message(
-                                f"Game Over! Player {1 if self.game_logic.turn == PLAYER_1 else 2} Wins!"
+                                f"Game Over! Player {1 if self.game_logic.board.turn == PLAYER_1 else 2} Wins!"
                             )
                             self.modal_window.open_modal()
                             # TODO: change log message
@@ -298,9 +298,9 @@ class GameInterface:
         grid_x, grid_y = self._convert_mouse_to_grid()
 
         # for anchor
-        if self.game_logic.turn == PLAYER_1:
+        if self.game_logic.board.turn == PLAYER_1:
             self.draw_stone(grid_x, grid_y, self.board_surface, BLACK)
-        elif self.game_logic.turn == PLAYER_2:
+        elif self.game_logic.board.turn == PLAYER_2:
             self.draw_stone(grid_x, grid_y, self.board_surface, WHITE, 1)
 
     def _draw_placed_stones(self):

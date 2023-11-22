@@ -258,7 +258,7 @@ class GameMenu:
                 ),
                 email_rect,
             ),
-            text="by Jung Moo Cheon (cjung-mo@student.42.fr)",
+            text="by Jungmoo Cheon (cjung-mo@student.42.fr)",
             manager=self.manager,
             object_id="#cjung-mo",
         )

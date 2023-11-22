@@ -44,7 +44,7 @@ class Board:
             for col in range(NUM_LINES):
                 if self.position[row][col] == EMPTY_SQUARE:
                     new_board, action = self.make_move(col, row)
-                    states_lst.append((new_board, action)
+                    states_lst.append((new_board, action))
         return states_lst
 
     def create_board_state(self, player_turn):

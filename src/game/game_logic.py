@@ -86,7 +86,7 @@ class GameLogic:
         return -1
 
     def record_trace(self, x, y):
-        self.record.append(((x, y), self.turn))
+        self.record.append(((x, y), self.board.turn))
         self.trace.append(self.board)
 
     def undo_last_move(self):
