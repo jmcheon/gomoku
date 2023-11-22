@@ -3,7 +3,7 @@ import random
 
 
 class TreeNode:
-    def __init__(self, board, parent):
+    def __init__(self, board, parent, prior_probs=0.0):
         self.board = board
         # init is node terminal flag
         if board.is_win() or board.is_draw():
@@ -16,8 +16,9 @@ class TreeNode:
         self.parent = parent
         # the number of node visitis
         self.visits = 0
-        # the total score of the node
-        self.score = 0
+        # the action value of the node
+        self.action_value = 0
+        self.prior_probs = prior_probs
         # current node's children
         self.children = {}
 
@@ -25,7 +26,6 @@ class TreeNode:
 class MCTS:
     def __init__(self, model):
         self.model = model
-        self.game_state = np.zeros((19, 19, 17))
         self.game_state = [np.zeros((19, 19)) for _ in range(17)]
 
     # search for the best move in the current position
@@ -37,23 +37,19 @@ class MCTS:
             # select a node (selection phase)
             node = self.select(self.root)
 
-            # score current node (simulation phase)
-            score = self.rollout(node.board)
+            move_probs, vlaue = self.evaluate_board(node.board)
 
             # backpropagate results
-            self.backpropagate(node, score)
+            self.backpropagate(node, value)
 
-        # pick up the best move in the current position
-        try:
-            return self.get_best_move(self.root, 0)  # exploration rate
-        except:
-            pass
+       # pick up the best move in the current position
+       return self.select_action(self.root)
 
     # select most promising node
     def select(self, node):
         while not node.is_terminal:
             if node.is_fully_expanded:
-                node = self.get_best_move(node, 2)
+                node = node.children[self.select_action(node)]
             else:
                 return self.expand(node)
         return node
@@ -62,15 +58,21 @@ class MCTS:
     def expand(self, node):
         # generate legal states for the given node
         state_lst = node.board.generate_states()
-        for state in state_lst:
+        for board, action in state_lst:
             # print("state:", state)
             # make sure the current state is not present in child nodes
-            if str(state.position) not in node.children:
+            if str(board.position) not in node.children:
+                # Get the prior probability for this state from the policy head of the neural network.
+                self.preprocess_board(board, board.turn)
+                policy_probs, _ = self.model.predict(self.game_state)
+                action_index = self.action_to_index(action)
+                prior_prob = policy_probs[action_index]
+
                 # create a new node
-                new_node = TreeNode(state, node)
+                new_node = TreeNode(state, node, prior_prob)
 
                 # add child node to parent's node children list (dict)
-                node.children[str(state.position)] = new_node
+                node.children[action] = new_node
 
                 # case when node is fully expanded
                 if len(state_lst) == len(node.children):
@@ -79,48 +81,13 @@ class MCTS:
                 # return newly created node
                 return new_node
 
-    # simulate the game via making random moves until reach end of the game
-    def rollout2(self, board):
-        # make random moves for both sides until terminal state of the game is reached
-        while not board.is_win():
-            # try to make a move
-            try:
-                # make the on board
-                board = random.choice(board.generate_states())
-                # print(board)
-                # input()
-
-            # no moves available
-            except:
-                # print(board)
-                # return a draw score
-                return 0
-        # print(board)
-
-        # return score from the player "x" perspective
-        if board.player2 == PLAYER_1:
-            return 1
-        elif board.player2 == PLAYER_2:
-            return -1
-
-    def rollout(self, board):
+    def evaluate_board(self, board):
         self.preprocess_board(board)
 
         # predict the move probabilities(p) and the value(v) of the board state.
         move_probs, value = self.model.predict(self.game_state)
-        print(f"move_probs(p): {move_probs}, value(v): {value}")
 
-        # TODO: select a move based on the move probabilites and apply it to the board
-        """
-        # use the move probabilities to select the next move.
-        next_move = self.select_move(move_probs)
-
-        # apply the selected move to get the new board state.
-        new_board = board.apply_move(next_move)
-
-        # return the predicted value of the new board state.
-        return value
-        """
+        return move_probs, value
 
     def preprocess_board(self, board, player_turn) -> None:
         """
@@ -148,53 +115,44 @@ class MCTS:
         else:
             self.game_state[-1] = np.ones((19, 19))
 
-    def select_move(self, move_probs):
-        next_move = np.argmax(move_probs)
-        return next_move
+    def backpropagate(self, search_path, value, to_play):
+        """Backpropagate the value through the nodes in the search path"""
+        for node in reversed(search_path):
+            node.visits += 1
+            # Note: The value is from the perspective of the current player,
+            # so we need to invert it when the player to play is not the current player
+            node.total_value += value if node.to_play == to_play else -value
 
-    # backpropagate the number of visits and score up to the root node
-    def backpropagate(self, node, score):
+    # backpropagate the number of visits and action_value up to the root node
+    def backpropagate(self, node, action_value):
         # update nodes's up to root node
         while node is not None:
             # update node's visits
             node.visits += 1
 
-            # update node's score
-            node.score += score
+            # update node's action_value
+            node.action_value += action_value
 
             # set node to parent
             node = node.parent
 
-    # select the best node basing on UCB1 formula
-    def get_best_move(self, node, exploration_constant):
+    def select_action(self, node):
         best_score = float("-inf")
-        best_moves = []
+        best_action = None
 
-        for child_node in node.children.values():
-            # define current player
-            if child_node.board.player2 == "X":
-                current_player = 1
-            if child_node.board.player2 == "O":
-                current_player = -1
+        for action, child_node in node.children.items():
+            Q = child_node.total_value / child_node.visits  # average value
+            U = child_node.prior_prob / (1 + child_node.visits)  # exploration term
+            score = Q + U
 
-            # get move score using UCT formula
-            move_score = (
-                current_player * child_node.score / child_node.visits
-                + exploration_constant
-                * math.sqrt(math.log(node.visits / child_node.visits))
-            )
-            # print(move_score)
+            if score > best_score:
+                best_score = score
+                best_action = action
 
-            # better move has been found
-            if move_score > best_score:
-                best_score = move_score
-                best_moves = [child_node]
-            # found as good move as already available
-            elif move_score == best_score:
-                best_moves.append(child_node)
+        return best_action
 
-        # return one of the best moves randomly
-        # best_move = random.choice(best_moves)
-        # print("best_move board:", best_move.board)
-        print(f"best_moves: {best_moves}")
-        return random.choice(best_moves)
+    def action_to_index(self, action):
+        # Convert an action to an index into the policy_probs array.
+        # Since your action is likely a 2D tuple (row, col) and policy_probs is a 1D array,
+        # you need to flatten the action to get the correct index.
+        return np.ravel_multi_index(action, (NUM_LINES, NUM_LINES))

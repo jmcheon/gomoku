@@ -11,7 +11,6 @@ class GameLogic:
         self.player1 = Player(PLAYER_1)
         self.player2 = Player(PLAYER_2)
         # TODO: integrate with Board
-        self.turn = PLAYER_1
         self.record = []
         # TODO: integrate with Board
         self.trace = []
@@ -33,7 +32,7 @@ class GameLogic:
         for col in range(NUM_LINES):
             winning_sequence = []
             for row in range(NUM_LINES):
-                if self.board.get_value(col, row) == self.turn:
+                if self.board.get_value(col, row) == self.board.turn:
                     winning_sequence.append((row, col))
                 if len(winning_sequence) >= 5:
                     return True
@@ -41,7 +40,7 @@ class GameLogic:
         for row in range(NUM_LINES):
             winning_sequence = []
             for col in range(NUM_LINES):
-                if self.board.get_value(col, row) == self.turn:
+                if self.board.get_value(col, row) == self.board.turn:
                     winning_sequence.append((row, col))
                 if len(winning_sequence) >= 5:
                     return True
@@ -49,7 +48,7 @@ class GameLogic:
         winning_sequence = []
         for row in range(NUM_LINES):
             col = row
-            if self.board.get_value(col, row) == self.turn:
+            if self.board.get_value(col, row) == self.board.turn:
                 winning_sequence.append((row, col))
             if len(winning_sequence) >= 5:
                 return True
@@ -57,7 +56,7 @@ class GameLogic:
         winning_sequence = []
         for row in range(NUM_LINES):
             col = NUM_LINES - row - 1
-            if self.board.get_value(col, row) == self.turn:
+            if self.board.get_value(col, row) == self.board.turn:
                 winning_sequence.append((row, col))
             if len(winning_sequence) >= 5:
                 return True
@@ -68,7 +67,7 @@ class GameLogic:
         board = Board(self.board)
 
         # make move
-        board.position[row][col] = self.turn
+        board.position[row][col] = self.board.turn
 
         return board
 
@@ -103,10 +102,10 @@ class GameLogic:
             return False
 
     def change_player_turn(self):
-        self.turn = PLAYER_2 if self.turn == PLAYER_1 else PLAYER_1
+        self.board.turn = PLAYER_2 if self.board.turn == PLAYER_1 else PLAYER_1
 
     def check_doublethree(self, x, y):
-        return check_double_three(self.board, x, y, self.turn)
+        return check_double_three(self.board, x, y, self.board.turn)
 
     def capture_opponent(self, x, y):
-        return capture_opponent(self.board, x, y, self.turn)
+        return capture_opponent(self.board, x, y, self.board.turn)

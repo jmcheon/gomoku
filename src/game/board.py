@@ -8,6 +8,7 @@ class Board:
     def __init__(self, board=None) -> None:
         # define board position
         self.position = [[EMPTY_SQUARE] * NUM_LINES for _ in range(NUM_LINES)]
+        self.turn = PLAYER_1
 
         # create a copy of previous board state if available
         if board is not None:
@@ -26,6 +27,26 @@ class Board:
     def is_empty_square(self, x, y):
         return self.get_value(x, y) == EMPTY_SQUARE
 
+    def make_move(self, col: int, row: int) -> object:
+        # create new board instance that inherits from the current state
+        board = Board(self)
+
+        # make move
+        board.position[row][col] = self.turn
+
+        return board, (row, col)
+
+    # generate legal moves to play in the current position
+    def generate_states(self) -> list:
+        # define states list (move list - list of available actions to consider)
+        states_lst = []
+        for row in range(NUM_LINES):
+            for col in range(NUM_LINES):
+                if self.position[row][col] == EMPTY_SQUARE:
+                    new_board, action = self.make_move(col, row)
+                    states_lst.append((new_board, action)
+        return states_lst
+
     def create_board_state(self, player_turn):
         """
         Args:
@@ -34,7 +55,7 @@ class Board:
             board_state: as a numpy.array refined, a matrix of dimension n x n
         """
         board_state = [
-            [1 if i == player_turn else i for i in row] for row in self.position
+            [1 if i == player_turn else 0 for i in row] for row in self.position
         ]
 
         return np.array(board_state)
