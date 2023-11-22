@@ -345,7 +345,14 @@ class GameMenu:
         running = True
         clock = pygame.time.Clock()
 
-        selected_options = None
+        selected_options = {
+            "capture": True,
+            "doublethree": True,
+            "mode": self.dropdown_menu.selected_option,
+            "capture_limit": 10,
+            "advantage_black": 0,
+            "advantage_white": 0,
+        }
         while running:
             time_delta = clock.tick(60) / 1000.0
 
@@ -353,6 +360,8 @@ class GameMenu:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     # running = False
+
+                self.manager.process_events(event)
 
                 if event.type == pygame.USEREVENT:
                     if event.user_type == pygame_gui.UI_BUTTON_PRESSED:
@@ -366,13 +375,72 @@ class GameMenu:
                             print("Not Available")
                         if event.ui_element == self.button_to_multiplay:
                             # TODO: append all the options and return
-                            selected_options = self.dropdown_menu.selected_option
                             self.menu = None
                             running = False
 
-                self.manager.process_events(event)
+                        if self.menu == OPTIONS_MENU:
+                            if event.ui_element == self.capture_button:
+                                if self.capture_button.text == "Enable":
+                                    self.capture_button.set_text("Disable")
+                                    selected_options["capture"] = False
+                                else:
+                                    self.capture_button.set_text("Enable")
+                                    selected_options["capture"] = True
+                            if event.ui_element == self.doublethree_button:
+                                if self.doublethree_button.text == "Enable":
+                                    self.doublethree_button.set_text("Disable")
+                                    selected_options["doublethree"] = False
+                                else:
+                                    self.doublethree_button.set_text("Enable")
+                                    selected_options["doublethree"] = True
+                            if event.ui_element == self.dropdown_menu:
+                                selected_options[
+                                    "mode"
+                                ] = self.dropdown_menu.selected_option
+
+                elif event.type == pygame_gui.UI_HORIZONTAL_SLIDER_MOVED:
+                    if event.ui_element == self.capture_stone_slider:
+                        value = int(self.capture_stone_slider.get_current_value())
+                        selected_options["capture_limit"] = value
+                        self.capture_stone_label.set_text(str(value))
+
+                        # Update the maximum value of the second slider dynamically
+                        slider2_max_value = value / 2 + (
+                            1 if (value / 2) % 2 != 0 else 0
+                        )
+                        self.black_capture_slider.value_range = (
+                            0,
+                            slider2_max_value,
+                        )
+                        self.white_capture_slider.value_range = (
+                            0,
+                            slider2_max_value,
+                        )
+                        # Adjust the position of slider2 within the new range
+                        # current_value = self.black_capture_slider.get_current_value()
+                        # if current_value > slider2_max_value:
+                        #     self.black_capture_slider.set_current_value(0)
+                        #     self.white_capture_slider.set_current_value(0)
+                        self.black_capture_label.set_text(str(0))
+                        self.black_capture_slider.set_current_value(0)
+                        self.white_capture_label.set_text(str(0))
+                        self.white_capture_slider.set_current_value(0)
+
+                    elif event.ui_element == self.black_capture_slider:
+                        selected_options["advantage_black"] = int(
+                            self.black_capture_slider.get_current_value()
+                        )
+                        self.black_capture_label.set_text(
+                            str(int(self.black_capture_slider.get_current_value()))
+                        )
+                    elif event.ui_element == self.white_capture_slider:
+                        selected_options["advantage_white"] = int(
+                            self.white_capture_slider.get_current_value()
+                        )
+                        self.white_capture_label.set_text(
+                            str(int(self.white_capture_slider.get_current_value()))
+                        )
 
             self.manager.update(time_delta)
             self.draw()
-
         return selected_options

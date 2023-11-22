@@ -209,7 +209,6 @@ class GameInterface:
     def new(self):
         self.__init__(self.width, self.height)
         game_menu = GameMenu(self.screen, self.width, self.height)
-        # game_menu.new()
         return game_menu.wait_for_key()
 
     def _convert_mouse_to_grid(self):
