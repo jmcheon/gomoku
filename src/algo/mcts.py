@@ -17,7 +17,7 @@ class TreeNode:
         # the number of node visitis
         self.visits = 0
         # the action value of the node
-        self.action_value = 0
+        self.total_value = 0
         self.prior_probs = prior_probs
         # current node's children
         self.children = {}
@@ -42,8 +42,8 @@ class MCTS:
             # backpropagate results
             self.backpropagate(node, value)
 
-       # pick up the best move in the current position
-       return self.select_action(self.root)
+        # pick up the best move in the current position
+        return self.select_action(self.root)
 
     # select most promising node
     def select(self, node):
@@ -115,23 +115,16 @@ class MCTS:
         else:
             self.game_state[-1] = np.ones((19, 19))
 
-    def backpropagate(self, search_path, value, to_play):
-        """Backpropagate the value through the nodes in the search path"""
-        for node in reversed(search_path):
-            node.visits += 1
-            # Note: The value is from the perspective of the current player,
-            # so we need to invert it when the player to play is not the current player
-            node.total_value += value if node.to_play == to_play else -value
-
-    # backpropagate the number of visits and action_value up to the root node
+    # backpropagate the number of visits and total_value up to the root node
     def backpropagate(self, node, action_value):
         # update nodes's up to root node
         while node is not None:
             # update node's visits
             node.visits += 1
 
-            # update node's action_value
-            node.action_value += action_value
+            # update node's total_value
+            node.total_value += action_value
+            action_value -= action_value
 
             # set node to parent
             node = node.parent
