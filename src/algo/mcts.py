@@ -1,5 +1,5 @@
-import math
-import random
+import numpy as np
+from src.config import *
 
 
 class TreeNode:
@@ -26,7 +26,7 @@ class TreeNode:
 class MCTS:
     def __init__(self, model):
         self.model = model
-        self.game_state = [np.zeros((19, 19)) for _ in range(17)]
+        self.game_state = [np.zeros((NUM_LINES, NUM_LINES)) for _ in range(17)]
 
     # search for the best move in the current position
     def search(self, initial_state):
@@ -111,9 +111,9 @@ class MCTS:
 
         # last element of the game_state standing for the color of the player stone; 1 for black, 0 for white
         if player_turn == PLAYER_1:
-            self.game_state[-1] = np.zeros((19, 19))
+            self.game_state[-1] = np.zeros((NUM_LINES, NUM_LINES))
         else:
-            self.game_state[-1] = np.ones((19, 19))
+            self.game_state[-1] = np.ones((NUM_LINES, NUM_LINES))
 
     # backpropagate the number of visits and total_value up to the root node
     def backpropagate(self, node, action_value):

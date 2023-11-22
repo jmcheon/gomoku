@@ -1,11 +1,16 @@
 from src.game.game_logic import GameLogic
 from src.interface.game_interface import GameInterface
 from src.config import *
+from src.algo.conv import create_CNN_model, create_mini_CNN_model
+from src.game.board import Board
+from src.algo.mcts import MCTS
 
 
 class Gomoku:
-    def __init__(self, width, height):
+    def __init__(self, width, height, model):
         pygame.init()
+        self.board = Board()
+        self.mcts = MCTS(model)
         self.width = width
         self.height = height
         self.interface = None
@@ -28,23 +33,14 @@ class Gomoku:
                 self.init_game()  # Go back to the main menu
 
 
-def create_model():
-    model = NeuralNet()
-    model.create_network(
-        [
-            DenseLayer(INPUT_SHAPE, 200, activation="ReLU"),
-            DenseLayer(200, 100, activation="ReLU", weights_initializer="zero"),
-            DenseLayer(100, 50, activation="ReLU", weights_initializer="zero"),
-            DenseLayer(
-                50, OUTPUT_SHAPE, activation="softmax", weights_initializer="zero"
-            ),
-        ]
-    )
-    return model
-
-
 if __name__ == "__main__":
-    game = Gomoku(SCREEN_WIDTH, SCREEN_HEIGHT)
+    if NUM_LINES == 19:
+        model = create_CNN_model()
+    elif NUM_LINES == 9:
+        model = create_mini_CNN_model()
+    else:
+        raise ValueError(f"Unsupported board size: {NUM_LINES}, choose either 19 or 9.")
+    game = Gomoku(SCREEN_WIDTH, SCREEN_HEIGHT, model)
     game.init_game()
     game.run()
 
