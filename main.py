@@ -27,6 +27,7 @@ class Gomoku:
                 self.interface.reset_requested = False  # Reset the flag
                 self.init_game()  # Go back to the main menu
 
+
 def create_model():
     model = NeuralNet()
     model.create_network(

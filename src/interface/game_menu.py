@@ -148,10 +148,14 @@ class GameMenu:
 
     def init_texts(self):
         # Create UI Label elements for texts on different screens
+        text_main_rect = (400, 100)
         self.text_main = pygame_gui.elements.UILabel(
-            relative_rect=pygame.Rect((self.width / 2, 200), (400, 100)),
+            relative_rect=pygame.Rect(
+                (self.width / 2 - text_main_rect[0] / 2, 200), text_main_rect
+            ),
             text="오목 // Gomoku",
             manager=self.manager,
+            object_id="#main_title",
         )
 
         self.text_options = pygame_gui.elements.UILabel(

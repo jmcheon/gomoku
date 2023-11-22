@@ -33,5 +33,34 @@
       {
          "border_width": "1"
       }
+  },
+  "dummy_load_barlow": {
+        "font": {
+            "name": "notosanskr",
+            "size": "16",
+            "regular_path": "resources/notosanskr-regular.ttf"
+        }
+  },
+  "#main_title":
+  {
+      "colours":
+      {
+          "dark_bg": "#25292e",
+          "normal_text": "#c5cbd8",
+          "text_shadow": "#505050"
+      },
+      "font":
+      {
+          "name": "notosanskr",
+          "size": "36",
+          "bold": "0",
+          "italic": "0"
+      },
+      "misc":
+      {
+          "text_shadow": "1",
+          "text_shadow_size": "1",
+          "text_shadow_offset": "0,0"
+      }
   }
 }
