@@ -17,6 +17,7 @@ class GameLogic:
 
     # TODO: keep this, or move this into initializer if needed
     def set_config(self, options):
+        self.options = options
         print(options)
 
     def is_draw(self) -> bool:

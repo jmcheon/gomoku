@@ -26,6 +26,7 @@ class GameInterface:
 
     def set_game_logic(self, game_logic: GameLogic):
         self.game_logic = game_logic
+        self.mode = self.game_logic.options["mode"]
 
     def _initialize_size(self):
         self.grid_start_x = GRID_START_X
@@ -494,11 +495,14 @@ class GameInterface:
     def run(self):
         self.screen.blit(self.board_surface, (0, 0))
         self.screen.blit(self.right_pane, (right_pane_begin_x, right_pane_begin_y))
-        self.events()
+        # self.events()
         if self.modal_window.is_open:
             if self.modal_window.wait_for_response() == RESET:
                 self.reset_requested = True
         else:
-            self.events()
+            if self.mode == "single":
+                self.events()
+            # else:
+            #     self.events()
         self.draw()
         pygame.display.update()

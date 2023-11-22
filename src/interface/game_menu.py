@@ -347,8 +347,9 @@ class GameMenu:
 
         selected_options = {
             "capture": True,
+            "mode": None,
             "doublethree": True,
-            "mode": self.dropdown_menu.selected_option,
+            "option": self.dropdown_menu.selected_option,
             "capture_limit": 10,
             "advantage_black": 0,
             "advantage_white": 0,
@@ -372,8 +373,11 @@ class GameMenu:
                             self.menu = OPTIONS_MENU
 
                         if event.ui_element == self.button_to_singleplay:
-                            print("Not Available")
+                            selected_options["mode"] = "single"
+                            self.menu = None
+                            running = False
                         if event.ui_element == self.button_to_multiplay:
+                            selected_options["mode"] = "double"
                             # TODO: append all the options and return
                             self.menu = None
                             running = False
@@ -395,7 +399,7 @@ class GameMenu:
                                     selected_options["doublethree"] = True
                             if event.ui_element == self.dropdown_menu:
                                 selected_options[
-                                    "mode"
+                                    "option"
                                 ] = self.dropdown_menu.selected_option
 
                 elif event.type == pygame_gui.UI_HORIZONTAL_SLIDER_MOVED:
