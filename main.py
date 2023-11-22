@@ -9,15 +9,14 @@ from src.algo.mcts import MCTS
 class Gomoku:
     def __init__(self, width, height, model):
         pygame.init()
-        self.board = Board()
-        self.mcts = MCTS(model)
+        self.model = model
         self.width = width
         self.height = height
         self.interface = None
         self.game_logic = None
 
     def init_game(self):
-        self.interface = GameInterface(self.width, self.height)
+        self.interface = GameInterface(self.width, self.height, self.model)
         # TODO: load option configuration values and pass to self.game_logic
         game_option = self.interface.new()
         self.game_logic = GameLogic()

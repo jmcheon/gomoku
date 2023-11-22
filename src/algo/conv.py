@@ -2,6 +2,7 @@ import tensorflow as tf
 
 
 def create_CNN_model():
+    print("Creating CNN model....")
     input_board = tf.keras.layers.Input(shape=(19, 19, 17), name="board_input")
 
     # Common
@@ -23,7 +24,7 @@ def create_CNN_model():
     p = tf.keras.layers.Flatten()(p)
     p = tf.keras.layers.Dense(362, activation="softmax", name="policy_output")(p)
 
-    model = tf.keras.models.Model(inputs=[input_board], outputs=[v, p])
+    model = tf.keras.models.Model(inputs=[input_board], outputs=[p, v])
     model.compile(
         loss=["mean_squared_error", "categorical_crossentropy"], optimizer="adam"
     )
@@ -33,6 +34,7 @@ def create_CNN_model():
 
 
 def create_mini_CNN_model():
+    print("Creating mini CNN model....")
     input_board = tf.keras.layers.Input(shape=(9, 9, 17), name="board_input")
 
     # Common
@@ -54,11 +56,12 @@ def create_mini_CNN_model():
     p = tf.keras.layers.Flatten()(p)
     p = tf.keras.layers.Dense(81, activation="softmax", name="policy_output")(p)
 
-    model = tf.keras.models.Model(inputs=[input_board], outputs=[v, p])
+    model = tf.keras.models.Model(inputs=[input_board], outputs=[p, v])
     model.compile(
         loss=["mean_squared_error", "categorical_crossentropy"], optimizer="adam"
     )
 
+    model.summary()
     return model
 
 

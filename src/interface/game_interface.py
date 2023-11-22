@@ -8,10 +8,11 @@ from src.game.doublethree import check_double_three
 from src.game.game_logic import GameLogic
 from src.interface.game_menu import GameMenu
 from src.interface.modal_window import ModalWindow
+from src.algo.mcts import MCTS
 
 
 class GameInterface:
-    def __init__(self, width, height):
+    def __init__(self, width, height, model):
         self.running = True
         self.width = width
         self.height = height
@@ -23,6 +24,8 @@ class GameInterface:
         self.reset_requested = False
         self._initialize_ui()
         self._initialize_size()
+        self.model = model
+        self.mcts = MCTS(model)
 
     def set_game_logic(self, game_logic: GameLogic):
         self.game_logic = game_logic
@@ -223,7 +226,7 @@ class GameInterface:
             target.blit(text_surface, text_rect)
 
     def new(self):
-        self.__init__(self.width, self.height)
+        self.__init__(self.width, self.height, self.model)
         game_menu = GameMenu(self.screen, self.width, self.height)
         return game_menu.wait_for_key()
 
@@ -246,6 +249,11 @@ class GameInterface:
 
     def events_single(self):
         if self.modal_window.is_open == False:
+            if self.game_logic.board.turn == PLAYER_2:
+                action = self.mcts.search(self.game_logic.board)
+                grid_x, grid_y = action
+                print(f"selected action: {action}")
+                self.game_logic.place_stone(grid_x, grid_y)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -254,7 +262,10 @@ class GameInterface:
                         self.test_count += 1
                         # if self.test_count == 5:
                         #     return
-                        grid_x, grid_y = self._convert_mouse_to_grid()
+
+                        if self.game_logic.board.turn == PLAYER_1:
+                            grid_x, grid_y = self._convert_mouse_to_grid()
+
                         print(self.game_logic.board)
                         if not self.game_logic.board.is_empty_square(grid_x, grid_y):
                             # TODO: change log message

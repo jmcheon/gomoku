@@ -33,11 +33,11 @@ class MCTS:
         # create root node
         self.root = TreeNode(initial_state, None)
 
-        for iteration in range(300):
+        for iteration in range(30):
             # select a node (selection phase)
             node = self.select(self.root)
 
-            move_probs, vlaue = self.evaluate_board(node.board)
+            move_probs, value = self.evaluate_board(node.board)
 
             # backpropagate results
             self.backpropagate(node, value)
@@ -54,6 +54,15 @@ class MCTS:
                 return self.expand(node)
         return node
 
+    def convert_game_state(self):
+        game_state = np.array(self.game_state)
+        game_state = np.transpose(game_state, (1, 2, 0))
+        # game_state = game_state.reshape(-1, 9, 9, 17)
+        # game_state.shape becomes (1, 9, 9, 17)
+        game_state = np.expand_dims(game_state, axis=0)
+        # print("game_state.shape:", game_state.shape, type(game_state))
+        return game_state
+
     # expand node
     def expand(self, node):
         # generate legal states for the given node
@@ -64,12 +73,12 @@ class MCTS:
             if str(board.position) not in node.children:
                 # Get the prior probability for this state from the policy head of the neural network.
                 self.preprocess_board(board, board.turn)
-                policy_probs, _ = self.model.predict(self.game_state)
+                policy_probs, _ = self.model.predict(self.convert_game_state())
                 action_index = self.action_to_index(action)
-                prior_prob = policy_probs[action_index]
+                prior_prob = policy_probs[0][action_index]
 
                 # create a new node
-                new_node = TreeNode(state, node, prior_prob)
+                new_node = TreeNode(board, node, prior_prob)
 
                 # add child node to parent's node children list (dict)
                 node.children[action] = new_node
@@ -82,10 +91,10 @@ class MCTS:
                 return new_node
 
     def evaluate_board(self, board):
-        self.preprocess_board(board)
+        # self.preprocess_board(board, board.turn)
 
         # predict the move probabilities(p) and the value(v) of the board state.
-        move_probs, value = self.model.predict(self.game_state)
+        move_probs, value = self.model.predict(self.convert_game_state())
 
         return move_probs, value
 
@@ -135,11 +144,15 @@ class MCTS:
 
         for action, child_node in node.children.items():
             Q = child_node.total_value / child_node.visits  # average value
-            U = child_node.prior_prob / (1 + child_node.visits)  # exploration term
+            U = child_node.prior_probs / (1 + child_node.visits)  # exploration term
             score = Q + U
+            print("score in select_action():", score, type(score))
+            print("best_score in select_action():", best_score, type(best_score))
+            max_score = np.argmax(score)
 
-            if score > best_score:
-                best_score = score
+            if max_score > best_score:
+                # if score > best_score:
+                best_score = max_score
                 best_action = action
 
         return best_action
@@ -148,4 +161,6 @@ class MCTS:
         # Convert an action to an index into the policy_probs array.
         # Since your action is likely a 2D tuple (row, col) and policy_probs is a 1D array,
         # you need to flatten the action to get the correct index.
+        print("action: ", action)
+        print("action index: ", np.ravel_multi_index(action, (NUM_LINES, NUM_LINES)))
         return np.ravel_multi_index(action, (NUM_LINES, NUM_LINES))

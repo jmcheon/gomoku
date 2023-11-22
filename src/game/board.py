@@ -27,6 +27,49 @@ class Board:
     def is_empty_square(self, x, y):
         return self.get_value(x, y) == EMPTY_SQUARE
 
+    def is_draw(self) -> bool:
+        # loop over board square
+        for row in range(NUM_LINES):
+            for col in range(NUM_LINES):
+                if self.is_empty_square(col, row):
+                    return False
+        return True
+
+    def is_win(self) -> bool:
+        # vertical sequence detection
+        for col in range(NUM_LINES):
+            winning_sequence = []
+            for row in range(NUM_LINES):
+                if self.get_value(col, row) == self.turn:
+                    winning_sequence.append((row, col))
+                if len(winning_sequence) >= 5:
+                    return True
+        # horizontal sequence detection
+        for row in range(NUM_LINES):
+            winning_sequence = []
+            for col in range(NUM_LINES):
+                if self.get_value(col, row) == self.turn:
+                    winning_sequence.append((row, col))
+                if len(winning_sequence) >= 5:
+                    return True
+        # 1st diagonal sequence detection
+        winning_sequence = []
+        for row in range(NUM_LINES):
+            col = row
+            if self.get_value(col, row) == self.turn:
+                winning_sequence.append((row, col))
+            if len(winning_sequence) >= 5:
+                return True
+        # 2nd diagonal sequence detection
+        winning_sequence = []
+        for row in range(NUM_LINES):
+            col = NUM_LINES - row - 1
+            if self.get_value(col, row) == self.turn:
+                winning_sequence.append((row, col))
+            if len(winning_sequence) >= 5:
+                return True
+        return False
+
     def make_move(self, col: int, row: int) -> object:
         # create new board instance that inherits from the current state
         board = Board(self)
