@@ -64,7 +64,15 @@ class GameInterface:
 
     def _initialize_time_rect(self):
         self.time_rect = pygame.Rect(
-            self.right_pane_rect.centerx - time_width / 2,
+            self.right_pane_rect.centerx - scorebox_width / 2,
+            time_height / 2,
+            time_width,
+            time_height,
+        )
+
+        self.goal_rect = pygame.Rect(
+            self.right_pane_rect.centerx
+            + (scorebox_width - self.time_rect.width * 2) / 2,
             time_height / 2,
             time_width,
             time_height,
@@ -108,13 +116,20 @@ class GameInterface:
             self.scorebox_rect.left,
             self.scorebox_rect.top + self.scorebox_rect.height / 2,
             self.scorebox_rect.width / 2,
-            self.scorebox_rect.height / 2,
+            self.scorebox_rect.height / 2 * 0.6,
         )
         self.p2_score_rect = pygame.Rect(
             self.scorebox_rect.centerx,
             self.scorebox_rect.top + self.scorebox_rect.height / 2,
             self.scorebox_rect.width / 2,
-            self.scorebox_rect.height / 2,
+            self.scorebox_rect.height / 2 * 0.6,
+        )
+
+        self.pause_rect = pygame.Rect(
+            self.scorebox_rect.centerx - self.scorebox_rect.width / 4,
+            self.p1_score_rect.bottom,
+            self.scorebox_rect.width / 2,
+            self.scorebox_rect.height / 2 * 0.5,
         )
 
     def _initialize_log_rect(self):
@@ -384,6 +399,7 @@ class GameInterface:
 
     def display_time(self):
         pygame.draw.rect(self.screen, BACKGROUND_COLOR, self.time_rect)
+        pygame.draw.rect(self.screen, BACKGROUND_COLOR, self.goal_rect)
         # Get the elapsed time since pygame started
 
         elapsed_time_millis = pygame.time.get_ticks()
@@ -403,20 +419,36 @@ class GameInterface:
             self.time_rect.centery // 1.5,
         )
 
+        self.draw_text(
+            str("goal: 10"),
+            6 * (self.width // 200),  # for responsive
+            BLACK,
+            self.goal_rect.centerx,
+            self.goal_rect.centery // 1.5,
+        )
+
     def display_score(self):
         self.draw_text(
             f"{self.game_logic.player1.captured}",
-            8 * (self.width // 200),
+            10 * (self.width // 200),
             BLACK,
             self.p1_score_rect.centerx,
-            self.p1_score_rect.centery,
+            self.p1_score_rect.top,
         )
         self.draw_text(
             f"{self.game_logic.player2.captured}",
-            8 * (self.width // 200),
+            10 * (self.width // 200),
             BLACK,
             self.p2_score_rect.centerx,
-            self.p2_score_rect.centery,
+            self.p2_score_rect.top,
+        )
+
+        self.draw_text(
+            "PAUSE",
+            8 * (self.width // 200),
+            BLACK,
+            self.pause_rect.centerx,
+            self.pause_rect.top,
         )
 
     def display_log(self):
@@ -437,6 +469,7 @@ class GameInterface:
         )
         pygame.draw.rect(self.screen, BLACK, self.p1_score_rect, 2)
         pygame.draw.rect(self.screen, BLACK, self.p2_score_rect, 2)
+        pygame.draw.rect(self.screen, BLACK, self.pause_rect, 2)
         self.display_score()
 
     def _display_right_pane(self):
