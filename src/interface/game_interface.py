@@ -1,6 +1,7 @@
 import pygame
 import pygame_gui
 from pygame_gui.elements.ui_text_box import UITextBox
+from src.algo.mcts import MCTS
 from src.config import *
 from src.game.board import Board
 from src.game.capture import capture_opponent, remove_captured_list
@@ -8,7 +9,6 @@ from src.game.doublethree import check_double_three
 from src.game.game_logic import GameLogic
 from src.interface.game_menu import GameMenu
 from src.interface.modal_window import ModalWindow
-from src.algo.mcts import MCTS
 
 
 class GameInterface:
@@ -250,6 +250,7 @@ class GameInterface:
     def events_single(self):
         if self.modal_window.is_open == False:
             if self.game_logic.board.turn == PLAYER_2:
+                print("board before mcts:\n", self.game_logic.board)
                 action = self.mcts.search(self.game_logic.board)
                 grid_x, grid_y = action
                 print(f"selected action: {action}")

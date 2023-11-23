@@ -77,11 +77,12 @@ class Board:
         # make move
         board.position[row][col] = self.turn
 
-        return board, (row, col)
+        return board, (col, row)
 
     # generate legal moves to play in the current position
     def generate_states(self) -> list:
         # define states list (move list - list of available actions to consider)
+        # print("board before generating states:\n", self)
         states_lst = []
         for row in range(NUM_LINES):
             for col in range(NUM_LINES):

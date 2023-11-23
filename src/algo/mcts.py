@@ -43,12 +43,17 @@ class MCTS:
             self.backpropagate(node, value)
 
         # pick up the best move in the current position
-        return self.select_action(self.root)
+        action = self.select_action(self.root)
+        print("action in mcts search:", action)
+        # return initial_state.make_move(action[1], action[0])
+        return action
 
     # select most promising node
     def select(self, node):
+        print("Selection...")
         while not node.is_terminal:
             if node.is_fully_expanded:
+                print("node is fully expanded", node.children)
                 node = node.children[self.select_action(node)]
             else:
                 return self.expand(node)
@@ -65,17 +70,24 @@ class MCTS:
 
     # expand node
     def expand(self, node):
+        print("Expansion...")
         # generate legal states for the given node
         state_lst = node.board.generate_states()
+        # print(f"generated states: {state_lst}")
         for board, action in state_lst:
             # print("state:", state)
             # make sure the current state is not present in child nodes
-            if str(board.position) not in node.children:
+            if action not in node.children:
                 # Get the prior probability for this state from the policy head of the neural network.
                 self.preprocess_board(board, board.turn)
                 policy_probs, _ = self.model.predict(self.convert_game_state())
                 action_index = self.action_to_index(action)
                 prior_prob = policy_probs[0][action_index]
+                """
+                print(
+                    f"policy probs: {policy_probs}\naction index: {action_index}\nprior_prob: {prior_prob}"
+                )
+                """
 
                 # create a new node
                 new_node = TreeNode(board, node, prior_prob)

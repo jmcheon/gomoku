@@ -1,9 +1,9 @@
+from src.algo.conv import create_CNN_model, create_mini_CNN_model
+from src.algo.mcts import MCTS
+from src.config import *
+from src.game.board import Board
 from src.game.game_logic import GameLogic
 from src.interface.game_interface import GameInterface
-from src.config import *
-from src.algo.conv import create_CNN_model, create_mini_CNN_model
-from src.game.board import Board
-from src.algo.mcts import MCTS
 
 
 class Gomoku:
@@ -42,9 +42,3 @@ if __name__ == "__main__":
     game = Gomoku(SCREEN_WIDTH, SCREEN_HEIGHT, model)
     game.init_game()
     game.run()
-
-    model = create_model()
-    target_model = create_model()
-    # dqn = DQN(model, target_model)
-
-    # print(dqn.get_state_representation(gomoku.board))
