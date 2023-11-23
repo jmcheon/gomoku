@@ -39,17 +39,24 @@ class Gomoku:
                 self.interface.reset_requested = False  # Reset the flag
                 self.init_game()  # Go back to the main menu
 
+    def run_debug(self):
+        while self.interface.running:
+            self.interface.run_debug()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Gomoku game with optional debug mode."
     )
+
     parser.add_argument("--debug", action="store_true", help="Enable debug mode.")
     args = parser.parse_args()
+
     if args.debug == True:
         game = Gomoku(SCREEN_WIDTH, SCREEN_HEIGHT, None)
         game.init_debug()
-        game.run()
+        game.run_debug()
+
     else:
         if NUM_LINES == 19:
             model = create_CNN_model()

@@ -664,3 +664,14 @@ class GameInterface:
                 self.events_double()
         self.draw()
         pygame.display.update()
+
+    def run_debug(self):
+        self.screen.blit(self.board_surface, (0, 0))
+        self.screen.blit(self.right_pane, (right_pane_begin_x, right_pane_begin_y))
+        if self.text_box.get_text_letter_count() == 0:
+            self.text_box.append_html_text("Debug mode enabled <br>")
+
+        # TODO: handle only exit and such
+        self.events_debug()
+        self.draw()
+        pygame.display.update()
