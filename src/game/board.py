@@ -43,12 +43,6 @@ class Board:
         self.position[row][col] = value
         return value
 
-    def get_horizontal_list(self, row):
-        lst = []
-        for col in range(NUM_LINES):
-            lst.append((col, row))
-        return lst
-
     def is_empty_square(self, x, y):
         return self.get_value(x, y) == EMPTY_SQUARE
 
@@ -58,56 +52,37 @@ class Board:
             for col in range(NUM_LINES):
                 if self.is_empty_square(col, row):
                     return False
+        print_colored_text("is draw: True", "magenta")
         return True
 
     def check_vertical_sequence(self, x, y):
         count = 0
-        for i in range(6):
-            if y + i < NUM_LINES and self.get_value(x, y + i) == self.turn:
+        for i in range(-4, 5):
+            if (
+                y + i >= 0
+                and y + i < NUM_LINES
+                and self.get_value(x, y + i) == self.turn
+            ):
                 count += 1
                 if count >= 5:
                     return True
             else:
-                break
-        for i in range(1, 5):
-            if y - i >= 0 and self.get_value(x, y - i) == self.turn:
-                count += 1
-                if count >= 5:
-                    return True
-            else:
-                break
+                count = 0
         return False
 
     def check_horizontal_sequence(self, x, y):
         count = 0
-        print("horizontal current move: ", x, y)
-        """
-        0 1 2 3 4 5 - 18
-        -4 0 4
         for i in range(-4, 5):
-            if x + i >= 0 and self.get_value(x + i, y) == self.turn:
-                print("checking: ", x + i, y)
+            if (
+                x + i >= 0
+                and x + i < NUM_LINES
+                and self.get_value(x + i, y) == self.turn
+            ):
                 count += 1
                 if count >= 5:
-                    print("true count: ", count)
                     return True
             else:
                 count = 0
-                """
-        for i in range(6):
-            if x - i >= 0 and self.get_value(x - i, y) == self.turn:
-                count += 1
-                if count >= 5:
-                    return True
-            else:
-                break
-        for i in range(1, 5):
-            if x + i < NUM_LINES and self.get_value(x + i, y) == self.turn:
-                count += 1
-                if count >= 5:
-                    return True
-            else:
-                break
         return False
 
     def check_1st_diagonal_sequence(self, x, y):

@@ -44,16 +44,16 @@ class MCTS:
 
         # pick up the best move in the current position
         action = self.select_action(self.root)
-        print("action in mcts search:", action)
+        # print("action in mcts search:", action)
         # return initial_state.make_move(action[1], action[0])
         return action
 
     # select most promising node
     def select(self, node):
-        print("Selection...")
+        # print("Selection...")
         while not node.is_terminal:
             if node.is_fully_expanded:
-                print("node is fully expanded", node.children)
+                # print("node is fully expanded", node.children)
                 node = node.children[self.select_action(node)]
             else:
                 return self.expand(node)
@@ -70,7 +70,7 @@ class MCTS:
 
     # expand node
     def expand(self, node):
-        print("Expansion...")
+        # print("Expansion...")
         # generate legal states for the given node
         state_lst = node.board.generate_states()
         # print(f"generated states: {state_lst}")
@@ -158,8 +158,10 @@ class MCTS:
             Q = child_node.total_value / child_node.visits  # average value
             U = child_node.prior_probs / (1 + child_node.visits)  # exploration term
             score = Q + U
+            """
             print("score in select_action():", score, type(score))
             print("best_score in select_action():", best_score, type(best_score))
+            """
             max_score = np.argmax(score)
 
             if max_score > best_score:
@@ -173,6 +175,8 @@ class MCTS:
         # Convert an action to an index into the policy_probs array.
         # Since your action is likely a 2D tuple (row, col) and policy_probs is a 1D array,
         # you need to flatten the action to get the correct index.
+        """
         print("action: ", action)
         print("action index: ", np.ravel_multi_index(action, (NUM_LINES, NUM_LINES)))
+        """
         return np.ravel_multi_index(action, (NUM_LINES, NUM_LINES))
