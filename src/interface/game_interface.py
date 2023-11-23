@@ -259,6 +259,7 @@ class GameInterface:
                 self.game_logic.place_stone(grid_x, grid_y)
 
                 if self.game_logic.is_win():
+                    print("player", self.game_logic.board.turn)
                     self.modal_window.set_modal_message(
                         f"Game Over! Player {1 if self.game_logic.board.turn == PLAYER_1 else 2} Wins!"
                     )
@@ -269,6 +270,8 @@ class GameInterface:
                     self.modal_window.set_modal_message(f"Game is drawn.")
                     # TODO: change log message
                     self.text_box.append_html_text("Game is drawn.<br>")
+                else:
+                    self.game_logic.change_player_turn()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -289,6 +292,7 @@ class GameInterface:
                             )
                         capture_list = self.game_logic.capture_opponent(grid_x, grid_y)
                         if capture_list:
+                            print("world hello")
                             self.game_logic.place_stone(
                                 grid_x, grid_y, captured_list=capture_list
                             )
@@ -296,6 +300,7 @@ class GameInterface:
                             self.text_box.append_html_text("capture gogo")
                         else:
                             self.game_logic.place_stone(grid_x, grid_y)
+                            print(self.game_logic.board)
                             self.text_box.append_html_text(
                                 f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
                             )
@@ -315,6 +320,7 @@ class GameInterface:
                                 )
                             """
                         if self.game_logic.is_win():
+                            print("hello world")
                             self.modal_window.set_modal_message(
                                 f"Game Over! Player {1 if self.game_logic.board.turn == PLAYER_1 else 2} Wins!"
                             )
@@ -325,6 +331,7 @@ class GameInterface:
                             self.modal_window.set_modal_message(f"Game is drawn.")
                             # TODO: change log message
                             self.text_box.append_html_text("Game is drawn.<br>")
+                        self.game_logic.change_player_turn()
                         self.text_box.update(5.0)
                     elif event.button == 3:
                         if self.game_logic.undo_last_move() is False:

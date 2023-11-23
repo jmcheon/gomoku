@@ -29,6 +29,7 @@ class GameLogic:
         return True
 
     def is_win(self) -> bool:
+        print("check check", self.board.turn, self.board)
         # vertical sequence detection
         for x in range(NUM_LINES):
             for y in range(NUM_LINES):
@@ -83,7 +84,7 @@ class GameLogic:
         # self.trace.append(self.game_logic.board)
         if captured_list is not None:
             remove_captured_list(self.board, captured_list)
-        self.change_player_turn()
+        # self.change_player_turn()
 
     def find_index_record(self, x, y):
         for i, item in enumerate(self.record):
