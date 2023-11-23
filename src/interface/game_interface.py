@@ -289,6 +289,7 @@ class GameInterface:
                             self.text_box.append_html_text(
                                 "this cell is already occupied<br>"
                             )
+                            break
                         capture_list = self.game_logic.capture_opponent(grid_x, grid_y)
                         if capture_list:
                             print("world hello")
