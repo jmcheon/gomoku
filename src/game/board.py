@@ -43,6 +43,12 @@ class Board:
         self.position[row][col] = value
         return value
 
+    def get_horizontal_list(self, row):
+        lst = []
+        for col in range(NUM_LINES):
+            lst.append((col, row))
+        return lst
+
     def is_empty_square(self, x, y):
         return self.get_value(x, y) == EMPTY_SQUARE
 
@@ -69,12 +75,25 @@ class Board:
                 if count >= 5:
                     return True
             else:
-                count = 0
+                break
         return False
 
-    def check_horizontal_sequence(self, y, x):
+    def check_horizontal_sequence(self, x, y):
         count = 0
         print("current move: ", x, y)
+        """
+        0 1 2 3 4 5 - 18
+        -4 0 4
+        for i in range(-4, 5):
+            if x + i >= 0 and self.get_value(x + i, y) == self.turn:
+                print("checking: ", x + i, y)
+                count += 1
+                if count >= 5:
+                    print("true count: ", count)
+                    return True
+            else:
+                count = 0
+                """
         for i in range(6):
             if x - i >= 0 and self.get_value(x - i, y) == self.turn:
                 print("checking backward: ", x - i, y)
@@ -92,16 +111,19 @@ class Board:
                     print("true count: ", count)
                     return True
             else:
-                count = 0
+                break
         print("false count: ", count)
         return False
 
     def check_1st_diagonal_sequence(self, y, x):
         count = 0
+        print_colored_text(f"current move: {x} {y}", "blue")
         for i in range(6):
             if x - i >= 0 and y - i >= 0 and self.get_value(x - i, y - i) == self.turn:
+                print("checking 1st diagonal backward: ", x - i, y - i)
                 count += 1
                 if count >= 5:
+                    print("true 1st diagonal count: ", count)
                     return True
             else:
                 break
@@ -111,11 +133,14 @@ class Board:
                 and y + i < NUM_LINES
                 and self.get_value(x + i, y + i) == self.turn
             ):
+                print("checking 1st diagonal forward: ", x + i, y + i)
                 count += 1
                 if count >= 5:
+                    print("true 1st diagonal count: ", count)
                     return True
             else:
-                count = 0
+                break
+        print("false 1st diagonal count: ", count)
         return False
 
     def check_2nd_diagonal_sequence(self, y, x):
@@ -141,7 +166,7 @@ class Board:
                 if count >= 5:
                     return True
             else:
-                count = 0
+                break
         return False
 
     def is_win(self) -> bool:

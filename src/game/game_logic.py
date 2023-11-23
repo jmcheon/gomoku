@@ -30,20 +30,20 @@ class GameLogic:
 
     def is_win(self) -> bool:
         # vertical sequence detection
-        for col in range(NUM_LINES):
-            for row in range(NUM_LINES):
-                if self.board.get_value(col, row) == self.board.turn:
-                    if self.board.check_vertical_sequence(col, row):
+        for x in range(NUM_LINES):
+            for y in range(NUM_LINES):
+                if self.board.get_value(x, y) == self.board.turn:
+                    if self.board.check_vertical_sequence(x, y):
                         print_colored_text(
                             "vertical sequence detection: True", "magenta"
                         )
                         return True
         # horizontal sequence detection
-        for row in range(NUM_LINES):
+        for y in range(NUM_LINES):
             winning_sequence = []
-            for col in range(NUM_LINES):
-                if self.board.get_value(col, row) == self.board.turn:
-                    if self.board.check_horizontal_sequence(col, row):
+            for x in range(NUM_LINES):
+                if self.board.get_value(x, y) == self.board.turn:
+                    if self.board.check_horizontal_sequence(y, x):
                         print_colored_text(
                             "horizontal sequence detection: True", "magenta"
                         )

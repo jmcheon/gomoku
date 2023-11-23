@@ -308,6 +308,11 @@ class GameInterface:
                                 self.convert_pos_to_coordinates(grid_x, grid_y)
                                 self.text_box.append_html_text("capture gogo")
                             else:
+                                self.game_logic.place_stone(grid_x, grid_y)
+                                self.text_box.append_html_text(
+                                    f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
+                                )
+                                """
                                 if (
                                     self.game_logic.check_doublethree(grid_x, grid_y)
                                     is False
@@ -321,6 +326,7 @@ class GameInterface:
                                     self.text_box.append_html_text(
                                         f"doublethree detected{123} <br>"
                                     )
+                                """
                         self.text_box.update(5.0)
                     elif event.button == 3:
                         if self.game_logic.undo_last_move() is False:
