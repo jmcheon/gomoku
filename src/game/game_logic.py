@@ -28,47 +28,6 @@ class GameLogic:
                     return False
         return True
 
-    def is_win(self) -> bool:
-        print("check check", self.board.turn, self.board)
-        # vertical sequence detection
-        for x in range(NUM_LINES):
-            for y in range(NUM_LINES):
-                if self.board.get_value(x, y) == self.board.turn:
-                    if self.board.check_vertical_sequence(x, y):
-                        print_colored_text(
-                            "vertical sequence detection: True", "magenta"
-                        )
-                        return True
-        # horizontal sequence detection
-        for y in range(NUM_LINES):
-            winning_sequence = []
-            for x in range(NUM_LINES):
-                if self.board.get_value(x, y) == self.board.turn:
-                    if self.board.check_horizontal_sequence(x, y):
-                        print_colored_text(
-                            "horizontal sequence detection: True", "magenta"
-                        )
-                        return True
-        # 1st diagonal sequence detection
-        for row in range(NUM_LINES):
-            col = row
-            if self.board.get_value(col, row) == self.board.turn:
-                if self.board.check_1st_diagonal_sequence(col, row):
-                    print_colored_text(
-                        "1st diagonal sequence detection: True", "magenta"
-                    )
-                    return True
-        # 2nd diagonal sequence detection
-        for row in range(NUM_LINES):
-            col = NUM_LINES - row - 1
-            if self.board.get_value(col, row) == self.board.turn:
-                if self.board.check_2nd_diagonal_sequence(col, row):
-                    print_colored_text(
-                        "2nd diagonal sequence detection: True", "magenta"
-                    )
-                    return True
-        return False
-
     def make_move(self, col: int, row: int) -> object:
         # create new board instance that inherits from the current state
         board = Board(self.board)

@@ -6,7 +6,7 @@ class TreeNode:
     def __init__(self, board, parent, prior_probs=0.0):
         self.board = board
         # init is node terminal flag
-        if board.is_win() or board.is_draw():
+        if board.is_win_board() or board.is_draw():
             self.is_terminal = True
         else:
             self.is_terminal = False
