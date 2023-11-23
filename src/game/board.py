@@ -35,8 +35,33 @@ class Board:
                     return False
         return True
 
-    def is_win(self, x, y):
-        # 1st diagonal sequence detection
+    def check_vertical_sequence(self):
+        count = 0
+        for i in range(5):
+            if y + i <= NUM_LINES and self.get_value(x, y + i) == self.turn:
+                count += 1
+                if count >= 5:
+                    return True
+        for i in range(5):
+            if y - i >= 0 and self.get_value(x, y - i) == self.turn:
+                count += 1
+                if count >= 5:
+                    return True
+
+    def check_horizontal_sequence(self):
+        count = 0
+        for i in range(5):
+            if x - i >= 0 and self.get_value(x - i, y) == self.turn:
+                count += 1
+                if count >= 5:
+                    return True
+        for i in range(5):
+            if x + i <= NUM_LINES and self.get_value(x + i, y) == self.turn:
+                count += 1
+                if count >= 5:
+                    return True
+
+    def check_1st_diagonal_sequence(self):
         count = 0
         for i in range(5):
             if x - i >= 0 and y - i >= 0 and self.get_value(x - i, y - i) == self.turn:
@@ -53,7 +78,7 @@ class Board:
                 if count >= 5:
                     return True
 
-        # 2nd diagonal sequence detection
+    def check_2nd_diagonal_sequence(self):
         count = 0
         for i in range(5):
             if (
@@ -74,33 +99,17 @@ class Board:
                 if count >= 5:
                     return True
 
+    def is_win2(self, x, y):
+        pass
+        # 1st diagonal sequence detection
+
+        # 2nd diagonal sequence detection
+
         # horizontal sequence detection
-        count = 0
-        for i in range(5):
-            if x - i >= 0 and self.get_value(x - i, y) == self.turn:
-                count += 1
-                if count >= 5:
-                    return True
-        for i in range(5):
-            if x + i <= NUM_LINES and self.get_value(x + i, y) == self.turn:
-                count += 1
-                if count >= 5:
-                    return True
 
         # vertical sequence detection
-        count = 0
-        for i in range(5):
-            if y + i <= NUM_LINES and self.get_value(x, y + i) == self.turn:
-                count += 1
-                if count >= 5:
-                    return True
-        for i in range(5):
-            if y - i >= 0 and self.get_value(x, y - i) == self.turn:
-                count += 1
-                if count >= 5:
-                    return True
 
-    def is_win2(self) -> bool:
+    def is_win(self) -> bool:
         # vertical sequence detection
         for col in range(NUM_LINES):
             winning_sequence = []
