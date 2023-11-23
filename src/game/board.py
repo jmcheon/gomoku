@@ -4,6 +4,25 @@ import numpy as np
 from src.config import *
 
 
+class TextColors:
+    RED = "\033[31m"
+    GREEN = "\033[32m"
+    YELLOW = "\033[33m"
+    BLUE = "\033[34m"
+    MAGENTA = "\033[35m"
+    CYAN = "\033[36m"
+    WHITE = "\033[37m"
+    RESET = "\033[0m"
+
+
+def print_colored_text(text, color_code):
+    if color_code.upper() in dir(TextColors):
+        color = getattr(TextColors, color_code.upper())
+        print(f"{color}{text}{TextColors.RESET}")
+    else:
+        print(text)
+
+
 class Board:
     def __init__(self, board=None) -> None:
         # define board position
@@ -35,81 +54,137 @@ class Board:
                     return False
         return True
 
-    def check_vertical_sequence(self):
+    def check_vertical_sequence(self, y, x):
         count = 0
-        for i in range(5):
-            if y + i <= NUM_LINES and self.get_value(x, y + i) == self.turn:
+        for i in range(6):
+            if y + i < NUM_LINES and self.get_value(x, y + i) == self.turn:
                 count += 1
                 if count >= 5:
                     return True
-        for i in range(5):
+            else:
+                break
+        for i in range(1, 5):
             if y - i >= 0 and self.get_value(x, y - i) == self.turn:
                 count += 1
                 if count >= 5:
                     return True
+            else:
+                count = 0
+        return False
 
-    def check_horizontal_sequence(self):
+    def check_horizontal_sequence(self, y, x):
         count = 0
-        for i in range(5):
+        print("current move: ", x, y)
+        for i in range(6):
             if x - i >= 0 and self.get_value(x - i, y) == self.turn:
+                print("checking backward: ", x - i, y)
                 count += 1
                 if count >= 5:
+                    print("true count: ", count)
                     return True
-        for i in range(5):
-            if x + i <= NUM_LINES and self.get_value(x + i, y) == self.turn:
+            else:
+                break
+        for i in range(1, 5):
+            if x + i < NUM_LINES and self.get_value(x + i, y) == self.turn:
+                print("checking forward: ", x + i, y)
                 count += 1
                 if count >= 5:
+                    print("true count: ", count)
                     return True
+            else:
+                count = 0
+        print("false count: ", count)
+        return False
 
-    def check_1st_diagonal_sequence(self):
+    def check_1st_diagonal_sequence(self, y, x):
         count = 0
-        for i in range(5):
+        for i in range(6):
             if x - i >= 0 and y - i >= 0 and self.get_value(x - i, y - i) == self.turn:
                 count += 1
                 if count >= 5:
                     return True
-        for i in range(5):
+            else:
+                break
+        for i in range(1, 5):
             if (
-                x + i <= NUM_LINES
-                and y + i <= NUM_LINES
+                x + i < NUM_LINES
+                and y + i < NUM_LINES
                 and self.get_value(x + i, y + i) == self.turn
             ):
                 count += 1
                 if count >= 5:
                     return True
+            else:
+                count = 0
+        return False
 
-    def check_2nd_diagonal_sequence(self):
+    def check_2nd_diagonal_sequence(self, y, x):
         count = 0
-        for i in range(5):
+        for i in range(6):
             if (
                 x - i >= 0
-                and y + i <= NUM_LINES
+                and y + i < NUM_LINES
                 and self.get_value(x - i, y + i) == self.turn
             ):
                 count += 1
                 if count >= 5:
                     return True
-        for i in range(5):
+            else:
+                break
+        for i in range(1, 5):
             if (
-                x + i <= NUM_LINES
+                x + i < NUM_LINES
                 and y - i >= 0
                 and self.get_value(x + i, y - i) == self.turn
             ):
                 count += 1
                 if count >= 5:
                     return True
-
-    def is_win2(self, x, y):
-        pass
-        # 1st diagonal sequence detection
-
-        # 2nd diagonal sequence detection
-
-        # horizontal sequence detection
-
-        # vertical sequence detection
+            else:
+                count = 0
+        return False
 
     def is_win(self) -> bool:
+        # vertical sequence detection
+        for col in range(NUM_LINES):
+            for row in range(NUM_LINES):
+                if self.get_value(col, row) == self.turn:
+                    if self.check_vertical_sequence(col, row):
+                        print_colored_text(
+                            "vertical sequence detection: True", "yellow"
+                        )
+                        return True
+        # horizontal sequence detection
+        for row in range(NUM_LINES):
+            for col in range(NUM_LINES):
+                # print("horizontal sequence detection: ", self.position[row])
+                if self.get_value(col, row) == self.turn:
+                    if self.check_horizontal_sequence(col, row):
+                        print_colored_text(
+                            "horizontal sequence detection: True", "yellow"
+                        )
+                        return True
+        # 1st diagonal sequence detection
+        for row in range(NUM_LINES):
+            col = row
+            if self.get_value(col, row) == self.turn:
+                if self.check_1st_diagonal_sequence(col, row):
+                    print_colored_text(
+                        "1st diagonal sequence detection: True", "yellow"
+                    )
+                    return True
+        # 2nd diagonal sequence detection
+        for row in range(NUM_LINES):
+            col = NUM_LINES - row - 1
+            if self.get_value(col, row) == self.turn:
+                if self.check_2nd_diagonal_sequence(col, row):
+                    print_colored_text(
+                        "2nd diagonal sequence detection: True", "yellow"
+                    )
+                    return True
+        return False
+
+    def is_win2(self) -> bool:
         # vertical sequence detection
         for col in range(NUM_LINES):
             winning_sequence = []

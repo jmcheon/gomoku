@@ -1,5 +1,5 @@
 from src.config import *
-from src.game.board import Board
+from src.game.board import Board, print_colored_text
 from src.game.capture import capture_opponent, remove_captured_list
 from src.game.doublethree import check_double_three
 from src.game.Player import Player
@@ -31,36 +31,41 @@ class GameLogic:
     def is_win(self) -> bool:
         # vertical sequence detection
         for col in range(NUM_LINES):
-            winning_sequence = []
             for row in range(NUM_LINES):
                 if self.board.get_value(col, row) == self.board.turn:
-                    winning_sequence.append((row, col))
-                if len(winning_sequence) >= 5:
-                    return True
+                    if self.board.check_vertical_sequence(col, row):
+                        print_colored_text(
+                            "vertical sequence detection: True", "magenta"
+                        )
+                        return True
         # horizontal sequence detection
         for row in range(NUM_LINES):
             winning_sequence = []
             for col in range(NUM_LINES):
                 if self.board.get_value(col, row) == self.board.turn:
-                    winning_sequence.append((row, col))
-                if len(winning_sequence) >= 5:
-                    return True
+                    if self.board.check_horizontal_sequence(col, row):
+                        print_colored_text(
+                            "horizontal sequence detection: True", "magenta"
+                        )
+                        return True
         # 1st diagonal sequence detection
-        winning_sequence = []
         for row in range(NUM_LINES):
             col = row
             if self.board.get_value(col, row) == self.board.turn:
-                winning_sequence.append((row, col))
-            if len(winning_sequence) >= 5:
-                return True
+                if self.board.check_1st_diagonal_sequence(col, row):
+                    print_colored_text(
+                        "1st diagonal sequence detection: True", "magenta"
+                    )
+                    return True
         # 2nd diagonal sequence detection
-        winning_sequence = []
         for row in range(NUM_LINES):
             col = NUM_LINES - row - 1
             if self.board.get_value(col, row) == self.board.turn:
-                winning_sequence.append((row, col))
-            if len(winning_sequence) >= 5:
-                return True
+                if self.board.check_2nd_diagonal_sequence(col, row):
+                    print_colored_text(
+                        "2nd diagonal sequence detection: True", "magenta"
+                    )
+                    return True
         return False
 
     def make_move(self, col: int, row: int) -> object:
