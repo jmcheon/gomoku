@@ -311,14 +311,6 @@ class GameInterface:
                     grid_x, grid_y = self._convert_mouse_to_grid()
                     if self.is_already_occupied(grid_x, grid_y) == True:
                         break
-                    # capture_list = self.game_logic.capture_opponent(grid_x, grid_y)
-                    # if capture_list:
-                    #     print("world hello")
-                    #     self.game_logic.place_stone(
-                    #         grid_x, grid_y, captured_list=capture_list
-                    #     )
-                    #     self.convert_pos_to_coordinates(grid_x, grid_y)
-                    #     self.text_box.append_html_text("capture gogo")
                     if self.is_capturing_stone(grid_x, grid_y) is False:
                         if self.game_logic.check_doublethree(grid_x, grid_y) is False:
                             self.game_logic.place_stone(grid_x, grid_y)
@@ -402,64 +394,12 @@ class GameInterface:
             self.ui_manager.process_events(event)
 
     def events_selfplay(self):
+        self.play_ai()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    self.test_count += 1
-                    # if self.test_count == 5:
-                    #     return
-                    grid_x, grid_y = self._convert_mouse_to_grid()
-                    print(self.game_logic.board)
-                    if not self.game_logic.board.is_empty_square(grid_x, grid_y):
-                        # TODO: change log message
-                        self.text_box.append_html_text(
-                            "this cell is already occupied<br>"
-                        )
-                    elif self.game_logic.board.is_win_board():
-                        self.modal_window.set_modal_message(
-                            f"Game Over! Player {1 if self.game_logic.board.turn == PLAYER_1 else 2} Wins!"
-                        )
-                        self.modal_window.open_modal()
-                        # TODO: change log message
-                        self.text_box.append_html_text("Game Over. <br>")
-                    elif self.game_logic.is_draw():
-                        self.modal_window.set_modal_message(f"Game is drawn.")
-                        # TODO: change log message
-                        self.text_box.append_html_text("Game is drawn.<br>")
-                    else:
-                        capture_list = self.game_logic.capture_opponent(grid_x, grid_y)
-                        if capture_list:
-                            self.game_logic.place_stone(
-                                grid_x, grid_y, captured_list=capture_list
-                            )
-                            self.convert_pos_to_coordinates(grid_x, grid_y)
-                            self.text_box.append_html_text("capture gogo")
-                        else:
-                            if (
-                                self.game_logic.check_doublethree(grid_x, grid_y)
-                                is False
-                            ):
-                                self.game_logic.place_stone(grid_x, grid_y)
-                                self.text_box.append_html_text(
-                                    f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
-                                )
-                            else:
-                                # TODO: change log message related
-                                self.text_box.append_html_text(
-                                    f"doublethree detected{123} <br>"
-                                )
-                    self.text_box.update(5.0)
-                elif event.button == 3:
-                    if self.game_logic.undo_last_move() is False:
-                        self.text_box.append_html_text(
-                            "Trace is empty, cannot go back further<br>"
-                        )
-            # TODO: testing
-            # elif event.type == pygame.KEYUP:
-            #     if event.type == pygame.K_SPACE:
-            #         pass
+                pass
             self.ui_manager.process_events(event)
 
     def _anchor_mouse_stones(self):
@@ -655,10 +595,10 @@ class GameInterface:
         else:
             if self.mode == "single":
                 self.events_single()
-            elif self.mode == "debug":
-                self.events_selfplay()
+            # elif self.mode == "debug":
+            #     self.events_selfplay()
             else:
-                self.events_double()
+                self.events_selfplay()
         self.draw()
         pygame.display.update()
 

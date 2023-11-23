@@ -26,6 +26,7 @@ class Gomoku:
 
     def init_debug(self):
         self.interface = GameInterface(self.width, self.height, self.model)
+        # game_option = self.interface.new()
         self.game_logic = GameLogic()
         self.game_logic.set_config("debug")
         self.interface.set_game_logic(self.game_logic)
