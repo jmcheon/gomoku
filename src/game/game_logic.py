@@ -43,7 +43,7 @@ class GameLogic:
             winning_sequence = []
             for x in range(NUM_LINES):
                 if self.board.get_value(x, y) == self.board.turn:
-                    if self.board.check_horizontal_sequence(y, x):
+                    if self.board.check_horizontal_sequence(x, y):
                         print_colored_text(
                             "horizontal sequence detection: True", "magenta"
                         )

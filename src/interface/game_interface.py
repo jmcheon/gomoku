@@ -252,6 +252,11 @@ class GameInterface:
             if self.game_logic.board.turn == PLAYER_2:
                 print("board before mcts:\n", self.game_logic.board)
                 action = self.mcts.search(self.game_logic.board)
+
+                grid_x, grid_y = action
+                print(f"selected action: {action}")
+                self.game_logic.place_stone(grid_x, grid_y)
+
                 if self.game_logic.is_win():
                     self.modal_window.set_modal_message(
                         f"Game Over! Player {1 if self.game_logic.board.turn == PLAYER_1 else 2} Wins!"
@@ -263,11 +268,6 @@ class GameInterface:
                     self.modal_window.set_modal_message(f"Game is drawn.")
                     # TODO: change log message
                     self.text_box.append_html_text("Game is drawn.<br>")
-
-                grid_x, grid_y = action
-
-                print(f"selected action: {action}")
-                self.game_logic.place_stone(grid_x, grid_y)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.running = False
@@ -286,7 +286,34 @@ class GameInterface:
                             self.text_box.append_html_text(
                                 "this cell is already occupied<br>"
                             )
-                        elif self.game_logic.is_win():
+                        capture_list = self.game_logic.capture_opponent(grid_x, grid_y)
+                        if capture_list:
+                            self.game_logic.place_stone(
+                                grid_x, grid_y, captured_list=capture_list
+                            )
+                            self.convert_pos_to_coordinates(grid_x, grid_y)
+                            self.text_box.append_html_text("capture gogo")
+                        else:
+                            self.game_logic.place_stone(grid_x, grid_y)
+                            self.text_box.append_html_text(
+                                f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
+                            )
+                            """
+                            if (
+                                self.game_logic.check_doublethree(grid_x, grid_y)
+                                is False
+                            ):
+                                self.game_logic.place_stone(grid_x, grid_y)
+                                self.text_box.append_html_text(
+                                    f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
+                                )
+                            else:
+                                # TODO: change log message related
+                                self.text_box.append_html_text(
+                                    f"doublethree detected{123} <br>"
+                                )
+                            """
+                        if self.game_logic.is_win():
                             self.modal_window.set_modal_message(
                                 f"Game Over! Player {1 if self.game_logic.board.turn == PLAYER_1 else 2} Wins!"
                             )
@@ -297,36 +324,6 @@ class GameInterface:
                             self.modal_window.set_modal_message(f"Game is drawn.")
                             # TODO: change log message
                             self.text_box.append_html_text("Game is drawn.<br>")
-                        else:
-                            capture_list = self.game_logic.capture_opponent(
-                                grid_x, grid_y
-                            )
-                            if capture_list:
-                                self.game_logic.place_stone(
-                                    grid_x, grid_y, captured_list=capture_list
-                                )
-                                self.convert_pos_to_coordinates(grid_x, grid_y)
-                                self.text_box.append_html_text("capture gogo")
-                            else:
-                                self.game_logic.place_stone(grid_x, grid_y)
-                                self.text_box.append_html_text(
-                                    f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
-                                )
-                                """
-                                if (
-                                    self.game_logic.check_doublethree(grid_x, grid_y)
-                                    is False
-                                ):
-                                    self.game_logic.place_stone(grid_x, grid_y)
-                                    self.text_box.append_html_text(
-                                        f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
-                                    )
-                                else:
-                                    # TODO: change log message related
-                                    self.text_box.append_html_text(
-                                        f"doublethree detected{123} <br>"
-                                    )
-                                """
                         self.text_box.update(5.0)
                     elif event.button == 3:
                         if self.game_logic.undo_last_move() is False:
