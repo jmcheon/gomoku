@@ -252,7 +252,20 @@ class GameInterface:
             if self.game_logic.board.turn == PLAYER_2:
                 print("board before mcts:\n", self.game_logic.board)
                 action = self.mcts.search(self.game_logic.board)
+                if self.game_logic.is_win():
+                    self.modal_window.set_modal_message(
+                        f"Game Over! Player {1 if self.game_logic.board.turn == PLAYER_1 else 2} Wins!"
+                    )
+                    self.modal_window.open_modal()
+                    # TODO: change log message
+                    self.text_box.append_html_text("Game Over. <br>")
+                elif self.game_logic.is_draw():
+                    self.modal_window.set_modal_message(f"Game is drawn.")
+                    # TODO: change log message
+                    self.text_box.append_html_text("Game is drawn.<br>")
+
                 grid_x, grid_y = action
+
                 print(f"selected action: {action}")
                 self.game_logic.place_stone(grid_x, grid_y)
             for event in pygame.event.get():
