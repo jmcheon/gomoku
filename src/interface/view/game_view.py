@@ -1,10 +1,10 @@
 import pygame
 import pygame_gui
+from config import *
+from pygame_gui.elements.ui_text_box import UITextBox
 from src.game.board import Board
 from src.interface.view.game_menu import GameMenu
 from src.interface.view.modal_window import ModalWindow
-from pygame_gui.elements.ui_text_box import UITextBox
-from src.config import *
 
 
 class GameView:

@@ -1,6 +1,3 @@
-import pickle
-from datetime import datetime
-
 import pygame
 import pygame_gui
 from config import *
@@ -9,7 +6,6 @@ from src.algo.mcts import MCTS
 from src.game.board import Board
 from src.game.capture import capture_opponent, remove_captured_list
 from src.game.doublethree import check_double_three
-
 # from interface.controller.game_logic import GameLogic
 from src.interface.view.game_menu import GameMenu
 from src.interface.view.modal_window import ModalWindow
@@ -30,54 +26,6 @@ class GameInterface:
         self._initialize_size()
         self.model = model
         self.mcts = MCTS(model)
-        self.game_data = []
-        self.winner = None
-        self.is_ternimal = False
-
-    def get_reward(self):
-        if self.winner == None:
-            return 0
-        elif self.winner == self.game_logic.board.turn:
-            return 1
-        else:
-            return -1
-
-    def add_reward_in_game_data(self):
-        game_data_with_rewards = []
-        print(f"winner: {self.winner}, turn: {self.game_logic.board.turn}")
-        for board, action in self.game_data:
-            reward = self.get_reward()
-            game_data_with_rewards.append((board, action, reward))
-            self.game_data = game_data_with_rewards
-        print(self.game_data)
-
-    def save_model(self, model_name):
-        """
-        Args:
-            model_name: in the format .h5
-        """
-        model.save(f"{model_name}.h5")
-
-    def load_model(self, model_name):
-        model = load_model(model_name)
-
-    def get_game_data_file_name(self):
-        now = datetime.now()
-
-        # convert it to a string in the format 'YYYYMMDD_HHMMSS'
-        timestamp_str = now.strftime("%Y%m%d_%H%M%S")
-
-        file_name = f"game_data_{timestamp_str}.pkl"
-
-        return file_name
-
-    def save_game_data(self, file_name):
-        with open(file_name, "wb") as f:
-            pickle.dump(self.game_data, f)
-
-    def load_game_data(self, file_name):
-        with open(file_name, "rb") as f:
-            pickle.dump(self.game_data, f)
 
     def set_game_logic(self, game_logic: GameLogic):
         self.game_logic = game_logic

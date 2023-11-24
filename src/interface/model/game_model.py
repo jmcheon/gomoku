@@ -15,6 +15,7 @@ class GameModel:
         self.record = []
         # TODO: integrate with Board
         self.trace = []
+        self.game_data = []
 
     # TODO: keep this, or move this into initializer if needed
     def set_config(self, options):
@@ -39,13 +40,14 @@ class GameModel:
         return board, (col, row)
 
     def place_stone(self, x, y, captured_list=None):
-        self.board, _ = self.make_move(x, y)
+        print(f"x: {x}, y: {y}")
+        self.board, action = self.make_move(x, y)
         self.record_trace(x, y)
         # self.trace.append(self.game_logic.board)
         if captured_list is not None:
             remove_captured_list(self.board, captured_list)
         # self.change_player_turn()
-        self.game_data.append((board, action))
+        self.game_data.append((self.board, action))
 
     def record_trace(self, x, y):
         self.record.append(((x, y), self.board.turn, self.record_count))
