@@ -31,4 +31,5 @@ if __name__ == "__main__":
 
         game = GameController(SCREEN_WIDTH, SCREEN_HEIGHT, model)
         game.init_game()
-        game.run()
+        while game.running == True:
+            game.run()
