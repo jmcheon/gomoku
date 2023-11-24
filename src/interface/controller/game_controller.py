@@ -64,7 +64,10 @@ class GameController:
             self.view.draw()
             if self.view.reset_requested:
                 self.view.reset_requested = False  # Reset the flag
-                self.init_game()  # Go back to the main menu
+                if self.mode == "selfplay":
+                    self.init_selfplay()
+                else:
+                    self.init_game()  # Go back to the main menu
 
     def get_reward(self):
         if self.winner == None:
