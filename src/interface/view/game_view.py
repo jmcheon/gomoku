@@ -410,10 +410,10 @@ class GameView:
         self.display_scorebox()
         self.display_log()
 
-    def draw(self):
+    def draw(self, mode):
         self.screen.blit(self.board_surface, (0, 0))
         self.screen.blit(self.right_pane, (right_pane_begin_x, right_pane_begin_y))
-        if not self.modal_window.is_open:
+        if not self.modal_window.is_open and not mode == "selfplay":
             self._anchor_mouse_stones()
         self.create_grid()
         self._draw_placed_stones()

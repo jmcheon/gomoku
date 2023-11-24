@@ -61,7 +61,7 @@ class GameController:
                 # else:
                 #     self.events_selfplay()
             # Check for a reset condition (e.g., a key press 'R')
-            self.view.draw()
+            self.view.draw(self.mode)
             if self.view.reset_requested:
                 self.view.reset_requested = False  # Reset the flag
                 if self.mode == "selfplay":
