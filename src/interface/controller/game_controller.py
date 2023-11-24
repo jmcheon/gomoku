@@ -48,7 +48,7 @@ class GameController:
         while self.running:
             if self.view.modal_window.is_open:
                 if self.view.modal_window.wait_for_response() == RESET:
-                    self.view.reset_requested == True
+                    self.view.reset_requested = True
             else:
                 self.view.update_board_and_player_turn(
                     self.game_model.board, self.game_model.record
@@ -60,10 +60,10 @@ class GameController:
                 # else:
                 #     self.events_selfplay()
             # Check for a reset condition (e.g., a key press 'R')
+            self.view.draw()
             if self.view.reset_requested:
                 self.view.reset_requested = False  # Reset the flag
                 self.init_game()  # Go back to the main menu
-            self.view.draw()
 
     def get_reward(self):
         if self.winner == None:
@@ -167,7 +167,7 @@ class GameController:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN and not self.view.reset_requested:
                 if event.button == 1:
                     # need this
                     grid_x, grid_y = self.view._convert_mouse_to_grid()
