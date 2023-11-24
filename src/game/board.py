@@ -1,7 +1,7 @@
 from copy import deepcopy
 
 import numpy as np
-from src.config import *
+from config import *
 
 
 class TextColors:
@@ -54,6 +54,24 @@ class Board:
                     return False
         print_colored_text("is draw: True", "magenta")
         return True
+
+    # . . . . x . . . .
+    def check_vertical_three(self, x, y):
+        count = 0
+        for i in range(-4, 5):
+            if (
+                y + i >= 0
+                and y + i < NUM_LINES
+                and self.get_value(x, y + i) == self.turn
+            ):
+                count += 1
+                if count >= 3:
+                    return True
+            elif self.get_value(x, y + i) == EMPTY_SQUARE:
+                continue
+            else:
+                count = 0
+        return False
 
     def check_vertical_sequence(self, x, y):
         count = 0

@@ -1,5 +1,5 @@
 import numpy as np
-from src.config import *
+from config import *
 
 
 class TreeNode:
@@ -45,8 +45,8 @@ class MCTS:
         # pick up the best move in the current position
         action = self.select_action(self.root)
         # print("action in mcts search:", action)
-        # return initial_state.make_move(action[1], action[0])
-        return action
+        return initial_state.make_move(action[0], action[1])
+        # return action
 
     # select most promising node
     def select(self, node):

@@ -1,5 +1,5 @@
 from src.game.board import Board
-from src.config import *
+from config import *
 
 
 def is_valid_position(position):

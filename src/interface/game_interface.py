@@ -1,8 +1,11 @@
+import pickle
+from datetime import datetime
+
 import pygame
 import pygame_gui
+from config import *
 from pygame_gui.elements.ui_text_box import UITextBox
 from src.algo.mcts import MCTS
-from src.config import *
 from src.game.board import Board
 from src.game.capture import capture_opponent, remove_captured_list
 from src.game.doublethree import check_double_three
@@ -27,6 +30,54 @@ class GameInterface:
         self._initialize_size()
         self.model = model
         self.mcts = MCTS(model)
+        self.game_data = []
+        self.winner = None
+        self.is_ternimal = False
+
+    def get_reward(self):
+        if self.winner == None:
+            return 0
+        elif self.winner == self.game_logic.board.turn:
+            return 1
+        else:
+            return -1
+
+    def add_reward_in_game_data(self):
+        game_data_with_rewards = []
+        print(f"winner: {self.winner}, turn: {self.game_logic.board.turn}")
+        for board, action in self.game_data:
+            reward = self.get_reward()
+            game_data_with_rewards.append((board, action, reward))
+            self.game_data = game_data_with_rewards
+        print(self.game_data)
+
+    def save_model(self, model_name):
+        """
+        Args:
+            model_name: in the format .h5
+        """
+        model.save(f"{model_name}.h5")
+
+    def load_model(self, model_name):
+        model = load_model(model_name)
+
+    def get_game_data_file_name(self):
+        now = datetime.now()
+
+        # convert it to a string in the format 'YYYYMMDD_HHMMSS'
+        timestamp_str = now.strftime("%Y%m%d_%H%M%S")
+
+        file_name = f"game_data_{timestamp_str}.pkl"
+
+        return file_name
+
+    def save_game_data(self, file_name):
+        with open(file_name, "wb") as f:
+            pickle.dump(self.game_data, f)
+
+    def load_game_data(self, file_name):
+        with open(file_name, "rb") as f:
+            pickle.dump(self.game_data, f)
 
     def set_game_logic(self, game_logic: GameLogic):
         self.game_logic = game_logic
@@ -251,25 +302,15 @@ class GameInterface:
 
     def play_ai(self):
         print("board before mcts:\n", self.game_logic.board)
-        action = self.mcts.search(self.game_logic.board)
+        board, action = self.mcts.search(self.game_logic.board)
+        self.game_data.append((board, action))
 
         grid_x, grid_y = action
         print(f"selected action: {action}")
         self.game_logic.place_stone(grid_x, grid_y)
 
-        if self.game_logic.board.is_win_board():
-            self.modal_window.set_modal_message(
-                f"Game Over! Player {1 if self.game_logic.board.turn == PLAYER_1 else 2} Wins!"
-            )
-            self.modal_window.open_modal()
-            # TODO: change log message
-            self.text_box.append_html_text("Game Over. <br>")
-        elif self.game_logic.is_draw():
-            self.modal_window.set_modal_message(f"Game is drawn.")
-            # TODO: change log message
-            self.text_box.append_html_text("Game is drawn.<br>")
-        else:
-            self.game_logic.change_player_turn()
+        self.check_terminate_state()
+        self.game_logic.change_player_turn()
 
     def is_already_occupied(self, grid_x, grid_y):
         if not self.game_logic.board.is_empty_square(grid_x, grid_y):
@@ -288,6 +329,9 @@ class GameInterface:
 
     def check_terminate_state(self):
         if self.game_logic.board.is_win_board():
+            self.winner = self.game_logic.board.turn
+            self.is_terminal = True
+            self.add_reward_in_game_data()
             self.modal_window.set_modal_message(
                 f"Game Over! Player {1 if self.game_logic.board.turn == PLAYER_1 else 2} Wins!"
             )
@@ -295,6 +339,8 @@ class GameInterface:
             # TODO: change log message
             self.text_box.append_html_text("Game Over. <br>")
         elif self.game_logic.is_draw():
+            self.is_terminal = True
+            self.add_reward_in_game_data()
             self.modal_window.set_modal_message(f"Game is drawn.")
             # TODO: change log message
             self.text_box.append_html_text("Game is drawn.<br>")

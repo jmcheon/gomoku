@@ -1,6 +1,6 @@
 import pygame
 import pygame_gui
-from src.config import *
+from config import *
 
 
 class GameMenu:

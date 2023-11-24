@@ -1,5 +1,5 @@
 from src.game.board import Board
-from src.config import *
+from config import *
 from src.game.doublethree import is_valid_position
 
 

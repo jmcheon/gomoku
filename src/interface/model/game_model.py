@@ -1,4 +1,4 @@
-from src.config import *
+from config import *
 from src.game.board import Board, print_colored_text
 from src.game.capture import capture_opponent, remove_captured_list
 from src.game.doublethree import check_double_three
@@ -36,15 +36,16 @@ class GameModel:
         # make move
         board.position[row][col] = self.board.turn
 
-        return board
+        return board, (col, row)
 
     def place_stone(self, x, y, captured_list=None):
-        self.board = self.make_move(x, y)
+        self.board, _ = self.make_move(x, y)
         self.record_trace(x, y)
         # self.trace.append(self.game_logic.board)
         if captured_list is not None:
             remove_captured_list(self.board, captured_list)
         # self.change_player_turn()
+        self.game_data.append((board, action))
 
     def record_trace(self, x, y):
         self.record.append(((x, y), self.board.turn, self.record_count))
