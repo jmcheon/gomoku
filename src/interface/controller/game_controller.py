@@ -17,7 +17,6 @@ class GameController:
         self.game_model = None
         self.mode = None
         self.mcts = MCTS(model)
-        self.trace_count = 0
         self.running = True
 
     def init_game(self):
@@ -30,7 +29,7 @@ class GameController:
         if game_option != "debug":
             self.mode = game_option["mode"]
         self.view.screen.fill(WHITE)
-        self.view.set_game_model(self.game_model)
+        # self.view.set_game_model(self.game_model)
 
     # def init_debug(self):
     #     self.interface = GameView(self.width, self.height, self.model)
@@ -46,6 +45,9 @@ class GameController:
                 if self.view.modal_window.wait_for_response() == RESET:
                     self.view.reset_requested == True
             else:
+                self.view.update_board_and_player_turn(
+                    self.game_model.board, self.game_model.record
+                )
                 if self.mode == "single":
                     self.events_single()
                 # elif self.mode == "debug":
@@ -79,6 +81,9 @@ class GameController:
             self.view.text_box.append_html_text("Game is drawn.<br>")
         else:
             self.game_model.change_player_turn()
+        self.view.update_board_and_player_turn(
+            self.game_model.board, self.game_model.record
+        )
 
     def is_already_occupied(self, grid_x, grid_y):
         if not self.game_model.board.is_empty_square(grid_x, grid_y):
@@ -120,7 +125,6 @@ class GameController:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     # need this
-                    self.trace_count += 1
                     grid_x, grid_y = self.view._convert_mouse_to_grid()
                     if self.is_already_occupied(grid_x, grid_y) == True:
                         break
@@ -137,6 +141,9 @@ class GameController:
                             )
                     self.check_terminate_state()
                     self.game_model.change_player_turn()
+                    self.view.update_board_and_player_turn(
+                        self.game_model.board, self.game_model.record
+                    )
                     self.view.text_box.update(5.0)
                 elif event.button == 3:
                     if self.game_model.undo_last_move() is False:

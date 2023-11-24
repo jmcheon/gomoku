@@ -1,9 +1,8 @@
 import pygame
 import pygame_gui
-from src.interface.model.game_model import GameModel
+from src.game.board import Board
 from src.interface.view.game_menu import GameMenu
 from src.interface.view.modal_window import ModalWindow
-from src.algo.mcts import MCTS
 from pygame_gui.elements.ui_text_box import UITextBox
 from src.config import *
 
@@ -15,14 +14,14 @@ class GameView:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.bg = pygame.Surface((self.width, self.height))
         self.font_name = pygame.font.match_font("arial")
-        # self._initialize_game()
         self.reset_requested = False
         self._initialize_game_view()
         self._initialize_size()
         self.player_turn = PLAYER_1
 
-    def set_game_model(self, game_model: GameModel):
-        self.game_model = game_model
+    def update_board_and_player_turn(self, board: Board, record):
+        self.board = board
+        self.record = record
 
     def _initialize_size(self):
         self.grid_start_x = GRID_START_X
@@ -151,6 +150,12 @@ class GameView:
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
 
+    def find_index_record(self, x, y):
+        for i, item in enumerate(self.record):
+            if item[0] == (x, y) and not self.board.is_empty_square(x, y):
+                return item[2]
+        return -1
+
     def draw_stone(self, x, y, target, color, thickness=0):
         initial_size = 6  # Adjust as needed
         max_lines = 20  # Adjust as needed
@@ -189,7 +194,7 @@ class GameView:
                 thickness,
             )
 
-        record_index = self.game_model.find_index_record(x, y)
+        record_index = self.find_index_record(x, y)
         if record_index != -1:
             # Create a font object
             font = pygame.font.Font(None, 36)  # You can adjust the font size as needed
@@ -199,9 +204,7 @@ class GameView:
             text_surface = font.render(
                 str(record_index),
                 True,
-                (255, 0, 0)
-                if record_index == len(self.game_model.record)
-                else record_color,
+                (255, 0, 0) if record_index == len(self.record) else record_color,
             )  # White color
 
             # Get the rect of the text surface
@@ -242,18 +245,18 @@ class GameView:
         grid_x, grid_y = self._convert_mouse_to_grid()
 
         # for anchor
-        if self.game_model.board.turn == PLAYER_1:
+        if self.board.turn == PLAYER_1:
             self.draw_stone(grid_x, grid_y, self.board_surface, BLACK)
-        elif self.game_model.board.turn == PLAYER_2:
+        elif self.board.turn == PLAYER_2:
             self.draw_stone(grid_x, grid_y, self.board_surface, WHITE, 1)
 
     def _draw_placed_stones(self):
         # for drawing already placed dots
         for x in range(NUM_LINES):
             for y in range(NUM_LINES):
-                if self.game_model.board.get_value(x, y) == "X":
+                if self.board.get_value(x, y) == "X":
                     self.draw_stone(x, y, self.screen, BLACK)
-                elif self.game_model.board.get_value(x, y) == "O":
+                elif self.board.get_value(x, y) == "O":
                     self.draw_stone(x, y, self.screen, WHITE, 1)
 
     def create_grid(self):
@@ -406,19 +409,6 @@ class GameView:
         self.display_time()
         self.display_scorebox()
         self.display_log()
-        # pygame.draw.rect(self.screen, (255, 0, 0), self.right_pane_rect, 2)
-
-    # def draw(self):
-    #     # left
-    #     # if not self.modal_window.is_open:
-    #     #     self._anchor_mouse_stones()
-    #     self.create_grid()
-    #     # self._draw_placed_stones()
-
-    #     # right
-    #     self._display_right_pane()
-    #     self.ui_manager.update(0.01)
-    #     self.ui_manager.draw_ui(window_surface=self.screen)
 
     def draw(self):
         self.screen.blit(self.board_surface, (0, 0))

@@ -10,6 +10,7 @@ class GameModel:
         self.board = Board()
         self.player1 = Player(PLAYER_1)
         self.player2 = Player(PLAYER_2)
+        self.record_count = 1
         # TODO: integrate with Board
         self.record = []
         # TODO: integrate with Board
@@ -45,14 +46,9 @@ class GameModel:
             remove_captured_list(self.board, captured_list)
         # self.change_player_turn()
 
-    def find_index_record(self, x, y):
-        for i, item in enumerate(self.record):
-            if item[0] == (x, y):
-                return i + 1
-        return -1
-
     def record_trace(self, x, y):
-        self.record.append(((x, y), self.board.turn))
+        self.record.append(((x, y), self.board.turn, self.record_count))
+        self.record_count += 1
         self.trace.append(self.board)
 
     def undo_last_move(self):
