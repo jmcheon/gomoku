@@ -13,31 +13,23 @@ if __name__ == "__main__":
     parser.add_argument("--train", action="store_true", help="Enable train mode.")
     args = parser.parse_args()
 
-    if args.selfplay == True:
-        if NUM_LINES == 19:
-            model = create_CNN_model()
-        elif NUM_LINES == 9:
-            model = create_mini_CNN_model()
-        else:
-            raise ValueError(
-                f"Unsupported board size: {NUM_LINES}, choose either 19 or 9."
-            )
+    if NUM_LINES == 19:
+        model = create_CNN_model()
+    elif NUM_LINES == 9:
+        model = create_mini_CNN_model()
+    else:
+        raise ValueError(f"Unsupported board size: {NUM_LINES}, choose either 19 or 9.")
 
+    if args.train == True:
+        print("coming soon")
+
+    elif args.selfplay == True:
         game = GameController(SCREEN_WIDTH, SCREEN_HEIGHT, model)
         game.init_selfplay()
         while game.running == True:
             game.run()
 
     else:
-        if NUM_LINES == 19:
-            model = create_CNN_model()
-        elif NUM_LINES == 9:
-            model = create_mini_CNN_model()
-        else:
-            raise ValueError(
-                f"Unsupported board size: {NUM_LINES}, choose either 19 or 9."
-            )
-
         game = GameController(SCREEN_WIDTH, SCREEN_HEIGHT, model)
         game.init_game()
         while game.running == True:
