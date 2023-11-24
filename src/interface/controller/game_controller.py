@@ -31,18 +31,19 @@ class GameController:
         self.view._initialize_game_view()
         self.game_model = GameModel()
         self.game_model.set_config(game_option)
-        if game_option != "debug":
+        if game_option != "selfplay":
             self.mode = game_option["mode"]
         self.view.screen.fill(WHITE)
         # self.view.set_game_model(self.game_model)
 
-    # def init_debug(self):
-    #     self.interface = GameView(self.width, self.height, self.model)
-    #     # game_option = self.interface.new()
-    #     self.game_logic = GameModel()
-    #     self.game_logic.set_config("debug")
-    #     self.interface.set_game_logic(self.game_logic)
-    #     self.interface.mode = "debug"
+    def init_selfplay(self):
+        self.view = GameView(self.width, self.height)
+        # game_option = self.interface.new()
+        self.view._initialize_game_view()
+        self.game_model = GameModel()
+        self.game_model.set_config("selfplay")
+        self.mode = "selfplay"
+        self.view.screen.fill(WHITE)
 
     def run(self):
         while self.running:
@@ -55,8 +56,8 @@ class GameController:
                 )
                 if self.mode == "single":
                     self.events_single()
-                # elif self.mode == "debug":
-                #     self.events_selfplay()
+                elif self.mode == "selfplay":
+                    self.events_selfplay()
                 # else:
                 #     self.events_selfplay()
             # Check for a reset condition (e.g., a key press 'R')
@@ -195,6 +196,15 @@ class GameController:
                         self.view.text_box.append_html_text(
                             "Trace is empty, cannot go back further<br>"
                         )
+            self.view.ui_manager.process_events(event)
+
+    def events_selfplay(self):
+        self.play_ai()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+            # elif event.type == pygame.MOUSEBUTTONDOWN:
+            #     pass
             self.view.ui_manager.process_events(event)
 
     # def run_debug(self):
