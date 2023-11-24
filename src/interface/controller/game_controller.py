@@ -179,16 +179,16 @@ class GameController:
                             self.view.text_box.append_html_text(
                                 f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
                             )
+                            self.check_terminate_state()
+                            self.game_model.change_player_turn()
+                            self.view.update_board_and_player_turn(
+                                self.game_model.board, self.game_model.record
+                            )
                         else:
                             # TODO: change log message related
                             self.view.text_box.append_html_text(
                                 f"doublethree detected{123} <br>"
                             )
-                    self.check_terminate_state()
-                    self.game_model.change_player_turn()
-                    self.view.update_board_and_player_turn(
-                        self.game_model.board, self.game_model.record
-                    )
                     self.view.text_box.update(5.0)
                 elif event.button == 3:
                     if self.game_model.undo_last_move() is False:
