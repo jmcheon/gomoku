@@ -5,7 +5,7 @@ from src.game.doublethree import check_double_three
 from src.game.Player import Player
 
 
-class GameLogic:
+class GameModel:
     def __init__(self):
         self.board = Board()
         self.player1 = Player(PLAYER_1)

@@ -1,18 +1,13 @@
 import pygame
 import pygame_gui
-from pygame_gui.elements.ui_text_box import UITextBox
-from src.algo.mcts import MCTS
-from src.config import *
-from src.game.board import Board
-from src.game.capture import capture_opponent, remove_captured_list
-from src.game.doublethree import check_double_three
-
-# from interface.controller.game_logic import GameLogic
 from src.interface.view.game_menu import GameMenu
 from src.interface.view.modal_window import ModalWindow
+from src.algo.mcts import MCTS
+from pygame_gui.elements.ui_text_box import UITextBox
+from src.config import *
 
 
-class GameInterface:
+class GameView:
     def __init__(self, width, height, model):
         self.running = True
         self.width = width
@@ -23,15 +18,10 @@ class GameInterface:
         self.test_count = 0
         # self._initialize_game()
         self.reset_requested = False
-        self._initialize_ui()
+        self._initialize_game_view()
         self._initialize_size()
         self.model = model
         self.mcts = MCTS(model)
-
-    def set_game_logic(self, game_logic: GameLogic):
-        self.game_logic = game_logic
-        if game_logic.options != "debug":
-            self.mode = self.game_logic.options["mode"]
 
     def _initialize_size(self):
         self.grid_start_x = GRID_START_X
@@ -39,7 +29,7 @@ class GameInterface:
         self.grid_width = SCREEN_WIDTH // 2
         self.grid_height = SCREEN_HEIGHT // 1.25
 
-    def _initialize_ui(self):
+    def _initialize_game_view(self):
         # for pygame_gui (log textbox)
         self.ui_manager = pygame_gui.UIManager(
             (self.width, self.height), "resources/log_theme.json"
@@ -160,9 +150,6 @@ class GameInterface:
         text_rect.midtop = (x, y)
         self.screen.blit(text_surface, text_rect)
 
-    def convert_pos_to_coordinates(self, x, y):
-        return (x + 1, chr(ord("A") + y))
-
     def draw_stone(self, x, y, target, color, thickness=0):
         initial_size = 6  # Adjust as needed
         max_lines = 20  # Adjust as needed
@@ -248,160 +235,6 @@ class GameInterface:
             grid_y = mouse_y // CELL_SIZE_Y
 
         return int(grid_x), int(grid_y)
-
-    def play_ai(self):
-        print("board before mcts:\n", self.game_logic.board)
-        action = self.mcts.search(self.game_logic.board)
-
-        grid_x, grid_y = action
-        print(f"selected action: {action}")
-        self.game_logic.place_stone(grid_x, grid_y)
-
-        if self.game_logic.board.is_win_board():
-            self.modal_window.set_modal_message(
-                f"Game Over! Player {1 if self.game_logic.board.turn == PLAYER_1 else 2} Wins!"
-            )
-            self.modal_window.open_modal()
-            # TODO: change log message
-            self.text_box.append_html_text("Game Over. <br>")
-        elif self.game_logic.is_draw():
-            self.modal_window.set_modal_message(f"Game is drawn.")
-            # TODO: change log message
-            self.text_box.append_html_text("Game is drawn.<br>")
-        else:
-            self.game_logic.change_player_turn()
-
-    def is_already_occupied(self, grid_x, grid_y):
-        if not self.game_logic.board.is_empty_square(grid_x, grid_y):
-            # TODO: change log message
-            self.text_box.append_html_text("this cell is already occupied<br>")
-            return True
-        return False
-
-    def is_capturing_stone(self, grid_x, grid_y):
-        capture_list = self.game_logic.capture_opponent(grid_x, grid_y)
-        if capture_list:
-            self.game_logic.place_stone(grid_x, grid_y, captured_list=capture_list)
-            self.text_box.append_html_text("capture gogo <br>")
-            return True
-        return False
-
-    def check_terminate_state(self):
-        if self.game_logic.board.is_win_board():
-            self.modal_window.set_modal_message(
-                f"Game Over! Player {1 if self.game_logic.board.turn == PLAYER_1 else 2} Wins!"
-            )
-            self.modal_window.open_modal()
-            # TODO: change log message
-            self.text_box.append_html_text("Game Over. <br>")
-        elif self.game_logic.is_draw():
-            self.modal_window.set_modal_message(f"Game is drawn.")
-            # TODO: change log message
-            self.text_box.append_html_text("Game is drawn.<br>")
-
-    def events_single(self):
-        if self.game_logic.board.turn == PLAYER_2:
-            self.play_ai()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    # need this
-                    self.test_count += 1
-                    grid_x, grid_y = self._convert_mouse_to_grid()
-                    if self.is_already_occupied(grid_x, grid_y) == True:
-                        break
-                    if self.is_capturing_stone(grid_x, grid_y) is False:
-                        if self.game_logic.check_doublethree(grid_x, grid_y) is False:
-                            self.game_logic.place_stone(grid_x, grid_y)
-                            self.text_box.append_html_text(
-                                f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
-                            )
-                        else:
-                            # TODO: change log message related
-                            self.text_box.append_html_text(
-                                f"doublethree detected{123} <br>"
-                            )
-                    self.check_terminate_state()
-                    self.game_logic.change_player_turn()
-                    self.text_box.update(5.0)
-                elif event.button == 3:
-                    if self.game_logic.undo_last_move() is False:
-                        self.text_box.append_html_text(
-                            "Trace is empty, cannot go back further<br>"
-                        )
-            self.ui_manager.process_events(event)
-
-    def events_double(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    self.test_count += 1
-                    # if self.test_count == 5:
-                    #     return
-                    grid_x, grid_y = self._convert_mouse_to_grid()
-                    print(self.game_logic.board)
-                    if not self.game_logic.board.is_empty_square(grid_x, grid_y):
-                        # TODO: change log message
-                        self.text_box.append_html_text(
-                            "this cell is already occupied<br>"
-                        )
-                    elif self.game_logic.board.is_win_board():
-                        self.modal_window.set_modal_message(
-                            f"Game Over! Player {1 if self.game_logic.board.turn == PLAYER_1 else 2} Wins!"
-                        )
-                        self.modal_window.open_modal()
-                        # TODO: change log message
-                        self.text_box.append_html_text("Game Over. <br>")
-                    elif self.game_logic.is_draw():
-                        self.modal_window.set_modal_message(f"Game is drawn.")
-                        # TODO: change log message
-                        self.text_box.append_html_text("Game is drawn.<br>")
-                    else:
-                        capture_list = self.game_logic.capture_opponent(grid_x, grid_y)
-                        if capture_list:
-                            self.game_logic.place_stone(
-                                grid_x, grid_y, captured_list=capture_list
-                            )
-                            self.convert_pos_to_coordinates(grid_x, grid_y)
-                            self.text_box.append_html_text("capture gogo")
-                        else:
-                            if (
-                                self.game_logic.check_doublethree(grid_x, grid_y)
-                                is False
-                            ):
-                                self.game_logic.place_stone(grid_x, grid_y)
-                                self.text_box.append_html_text(
-                                    f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
-                                )
-                            else:
-                                # TODO: change log message related
-                                self.text_box.append_html_text(
-                                    f"doublethree detected{123} <br>"
-                                )
-                    self.text_box.update(5.0)
-                elif event.button == 3:
-                    if self.game_logic.undo_last_move() is False:
-                        self.text_box.append_html_text(
-                            "Trace is empty, cannot go back further<br>"
-                        )
-            # TODO: testing
-            # elif event.type == pygame.KEYUP:
-            #     if event.type == pygame.K_SPACE:
-            #         pass
-            self.ui_manager.process_events(event)
-
-    def events_selfplay(self):
-        self.play_ai()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                pass
-            self.ui_manager.process_events(event)
 
     def _anchor_mouse_stones(self):
         self.board_surface.fill(BACKGROUND_COLOR)
@@ -565,7 +398,7 @@ class GameInterface:
         pygame.draw.rect(self.screen, BLACK, self.p1_score_rect, 2)
         pygame.draw.rect(self.screen, BLACK, self.p2_score_rect, 2)
         pygame.draw.rect(self.screen, BLACK, self.pause_rect, 2)
-        self.display_score()
+        # self.display_score()
 
     def _display_right_pane(self):
         self.right_pane.fill((128, 128, 128, 128))
@@ -574,42 +407,35 @@ class GameInterface:
         self.display_log()
         # pygame.draw.rect(self.screen, (255, 0, 0), self.right_pane_rect, 2)
 
+    # def draw(self):
+    #     # left
+    #     # if not self.modal_window.is_open:
+    #     #     self._anchor_mouse_stones()
+    #     self.create_grid()
+    #     # self._draw_placed_stones()
+
+    #     # right
+    #     self._display_right_pane()
+    #     self.ui_manager.update(0.01)
+    #     self.ui_manager.draw_ui(window_surface=self.screen)
+
     def draw(self):
-        # left
-        if not self.modal_window.is_open:
-            self._anchor_mouse_stones()
-        self.create_grid()
-        self._draw_placed_stones()
-
-        # right
-        self._display_right_pane()
-        self.ui_manager.update(0.01)
-        self.ui_manager.draw_ui(window_surface=self.screen)
-
-    def run(self):
         self.screen.blit(self.board_surface, (0, 0))
         self.screen.blit(self.right_pane, (right_pane_begin_x, right_pane_begin_y))
         # self.events()
-        if self.modal_window.is_open:
-            if self.modal_window.wait_for_response() == RESET:
-                self.reset_requested = True
-        else:
-            if self.mode == "single":
-                self.events_single()
-            # elif self.mode == "debug":
-            #     self.events_selfplay()
-            else:
-                self.events_selfplay()
-        self.draw()
-        pygame.display.update()
-
-    def run_debug(self):
-        self.screen.blit(self.board_surface, (0, 0))
-        self.screen.blit(self.right_pane, (right_pane_begin_x, right_pane_begin_y))
-        if self.text_box.get_text_letter_count() == 0:
-            self.text_box.append_html_text("Debug mode enabled <br>")
-
-        # TODO: handle only exit and such
-        self.events_selfplay()
-        self.draw()
+        # if self.modal_window.is_open:
+        #     if self.modal_window.wait_for_response() == RESET:
+        #         self.reset_requested = True
+        # else:
+        #     if self.mode == "single":
+        #         self.events_single()
+        #     # elif self.mode == "debug":
+        #     #     self.events_selfplay()
+        #     else:
+        #         self.events_selfplay()
+        # self.draw()
+        self.create_grid()
+        self._display_right_pane()
+        self.ui_manager.update(0.01)
+        self.ui_manager.draw_ui(window_surface=self.screen)
         pygame.display.update()
