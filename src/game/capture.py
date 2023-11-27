@@ -1,9 +1,6 @@
 from src.game.board import Board
 from config import *
-from game.doublethree_old import is_valid_position
-
-
-directions = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]
+from src.game.game_util import *
 
 
 def dfs_capture(board: Board, x, y, player, direction, count):
@@ -46,7 +43,7 @@ def remove_pairs(board: Board, captured_pairs):
 def capture_opponent(board: Board, x, y, player):
     print("capture_opponent", (x, y), player)
     captured_list = []
-    for dir in directions:
+    for dir in DIRECTIONS:
         # print(dir)
         if dfs_capture(board, x, y, player, dir, 1) == True:
             captured_list.append([(x, y), dir])

@@ -32,43 +32,54 @@ def dfs(board: Board, x, y, player, direction, count, player_count):
 
 def check_next_only_range(board: Board, x, y, dir, player):
     return_list = []
-    opposite_dir = (-dir[0], -dir[1])
-
-    def is_valid_and_empty(pos):
-        return is_valid_position(pos) and board.get_value(*pos) == EMPTY_SQUARE
-
-    def check_condition(condition, *positions):
-        return all(condition(pos) for pos in positions)
-
-    if not check_condition(
-        is_valid_and_empty,
-        (x + dir[0], y + dir[1]),
-        (x + dir[0] * 2, y + dir[1] * 2),
-        (x - dir[0], y - dir[1]),
-        (x - dir[0] * 2, y - dir[1] * 2),
+    print("direction", dir, (-dir[0], -dir[1]), player)
+    if (
+        is_valid_position((x + dir[0], y + dir[1])) is False
+        or is_valid_position((x + (dir[0] * 2), y + (dir[1] * 2))) is False
+        or is_valid_position((x - dir[0], y - dir[1])) is False
+        or is_valid_position((x - (dir[0] * 2), y - (dir[1] * 2))) is False
     ):
         return None
 
-    def process_direction(direction, opposite=False):
+    def check_one():
         nonlocal return_list
         if (
-            board.get_value(x + direction[0], y + direction[1])
+            board.get_value(x + dir[0], y + dir[1])
+            == board.get_value(x - dir[0], y - dir[1])
             == player
-            == board.get_value(x - direction[0], y - direction[1])
         ):
-            return_list += make_list_to_direction(
-                board, x, y, direction if not opposite else opposite_dir, 3, player
+            if board.get_value(x + (dir[0] * 2), y + (dir[1] * 2)) != (
+                PLAYER_2 if player == PLAYER_1 else PLAYER_1
+            ) and board.get_value(x - (dir[0] * 2), y - (dir[1] * 2)) != (
+                PLAYER_2 if player == PLAYER_1 else PLAYER_1
+            ):
+                return_list = make_list_to_direction(
+                    board, x, y, (-dir[0], -dir[1]), 3, player
+                )
+                return_list += make_list_to_direction(board, x, y, dir, 3, player)
+
+        return return_list
+
+    def check_dfs(dir):
+        nonlocal return_list
+        if (
+            dfs(board, x, y, player, dir, 2, 2) == True
+            and (
+                board.get_value(x - dir[0], y - dir[1])
+                == board.get_value(x, y)
+                == player
             )
+            and (
+                board.get_value(x - (dir[0] * 2), y - (dir[1] * 2))
+                != (PLAYER_2 if player == PLAYER_1 else PLAYER_1)
+            )
+        ):
+            return_list = make_list_to_direction(board, x, y, dir, 3, player)
+            return_list += make_list_to_direction(board, x, y, dir, 3, player)
 
-    if dfs(board, x, y, player, dir, 2, 2) and check_condition(
-        is_valid_and_empty, (x - dir[0] * 2, y - dir[1] * 2)
-    ):
-        process_direction(dir)
+        return return_list
 
-    elif dfs(board, x, y, player, opposite_dir, 2, 2) and check_condition(
-        is_valid_and_empty, (x + dir[0] * 2, y + dir[1] * 2)
-    ):
-        process_direction(opposite_dir, True)
+    return_list = check_one() or check_dfs(dir) or check_dfs((-dir[0], -dir[1]))
 
     return list(set(return_list))
 
@@ -92,6 +103,8 @@ def check_double_three(board: Board, x, y, player):
             if continous_range:
                 direction = DIRECTIONS[i]
                 break
+    if continous_range is not None:
+        print("cont_range", continous_range)
     if direction is not None:
         directions_copy = [
             d
