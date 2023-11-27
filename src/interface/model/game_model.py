@@ -56,6 +56,7 @@ class GameModel:
 
     def undo_last_move(self):
         if self.trace:  # Checks if the trace list is not empty
+            self.record_count -= 1
             self.trace.pop()
             self.record.pop()
             if self.trace:

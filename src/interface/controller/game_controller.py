@@ -58,8 +58,8 @@ class GameController:
                     self.events_single()
                 elif self.mode == "selfplay":
                     self.events_selfplay()
-                # else:
-                #     self.events_selfplay()
+                else:
+                    self.events_double()
             # Check for a reset condition (e.g., a key press 'R')
             self.view.draw(self.mode)
             if self.view.reset_requested:
@@ -191,7 +191,41 @@ class GameController:
                         else:
                             # TODO: change log message related
                             self.view.text_box.append_html_text(
-                                f"doublethree detected{123} <br>"
+                                f"doublethree detected {123} <br>"
+                            )
+                    self.view.text_box.update(5.0)
+                elif event.button == 3:
+                    if self.game_model.undo_last_move() is False:
+                        self.view.text_box.append_html_text(
+                            "Trace is empty, cannot go back further<br>"
+                        )
+            self.view.ui_manager.process_events(event)
+
+    def events_double(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN and not self.view.reset_requested:
+                if event.button == 1:
+                    # need this
+                    grid_x, grid_y = self.view._convert_mouse_to_grid()
+                    if self.is_already_occupied(grid_x, grid_y) == True:
+                        break
+                    if self.is_capturing_stone(grid_x, grid_y) is False:
+                        if self.game_model.check_doublethree(grid_x, grid_y) is False:
+                            self.game_model.place_stone(grid_x, grid_y)
+                            self.view.text_box.append_html_text(
+                                f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
+                            )
+                            self.check_terminate_state()
+                            self.game_model.change_player_turn()
+                            self.view.update_board_and_player_turn(
+                                self.game_model.board, self.game_model.record
+                            )
+                        else:
+                            # TODO: change log message related
+                            self.view.text_box.append_html_text(
+                                f"doublethree detected {123} <br>"
                             )
                     self.view.text_box.update(5.0)
                 elif event.button == 3:
