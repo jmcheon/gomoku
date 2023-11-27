@@ -1,21 +1,6 @@
 from src.game.board import Board
+from src.game.game_util import *
 from config import *
-
-
-def is_valid_position(position):
-    # Check if the position (x, y) is within the bounds of the board.
-    return 0 <= position[0] < NUM_LINES and 0 <= position[1] < NUM_LINES
-
-
-def make_list_to_direction(board: Board, x, y, dir, n, player):
-    return_list = []
-    return_list.append((x, y))
-    for i in range(1, n):
-        if is_valid_position((x + (dir[0] * i), y + (dir[1] * i))):
-            if board.get_value(x + (dir[0] * i), y + (dir[1] * i)) == player:
-                return_list.append((x + (dir[0] * i), y + (dir[1] * i)))
-
-    return return_list
 
 
 def dfs(board: Board, x, y, player, direction, count, player_count):

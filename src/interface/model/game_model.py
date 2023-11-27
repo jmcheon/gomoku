@@ -1,7 +1,7 @@
 from config import *
 from src.game.board import Board, print_colored_text
 from src.game.capture import capture_opponent, remove_captured_list
-from src.game.doublethree import check_double_three
+from src.game.doublethree_re import check_double_three
 from src.game.Player import Player
 
 

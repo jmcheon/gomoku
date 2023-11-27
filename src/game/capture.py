@@ -1,6 +1,6 @@
 from src.game.board import Board
 from config import *
-from src.game.doublethree import is_valid_position
+from game.doublethree_old import is_valid_position
 
 
 directions = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]
@@ -8,10 +8,10 @@ directions = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 
 
 def dfs_capture(board: Board, x, y, player, direction, count):
     nx = x + direction[0]
-    if (nx > NUM_LINES):
+    if nx > NUM_LINES:
         return False
     ny = y + direction[1]
-    if (ny > NUM_LINES):
+    if ny > NUM_LINES:
         return False
 
     if count == 3:
