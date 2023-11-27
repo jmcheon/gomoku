@@ -2,10 +2,12 @@ import pygame
 import pygame_gui
 from config import *
 from pygame_gui.elements.ui_text_box import UITextBox
+from interface.model.game_model import GameModel
 from src.algo.mcts import MCTS
 from src.game.board import Board
 from src.game.capture import capture_opponent, remove_captured_list
-from src.game.doublethree import check_double_three
+from game.doublethree_old import check_double_three
+
 # from interface.controller.game_logic import GameLogic
 from src.interface.view.game_menu import GameMenu
 from src.interface.view.modal_window import ModalWindow
@@ -26,11 +28,6 @@ class GameInterface:
         self._initialize_size()
         self.model = model
         self.mcts = MCTS(model)
-
-    def set_game_logic(self, game_logic: GameLogic):
-        self.game_logic = game_logic
-        if game_logic.options != "debug":
-            self.mode = self.game_logic.options["mode"]
 
     def _initialize_size(self):
         self.grid_start_x = GRID_START_X
