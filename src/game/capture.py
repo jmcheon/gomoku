@@ -26,18 +26,8 @@ def dfs_capture(board: Board, x, y, player, direction, count):
 
 
 def remove_captured_list(board: Board, captured_list):
-    for i in range(len(captured_list)):
-        remove_pairs(board, captured_list[i])
-
-
-def remove_pairs(board: Board, captured_pairs):
-    (x, y), direction = captured_pairs
-    nx = 0
-    ny = 0
-    for _ in range(2):
-        nx = x + direction[0] if nx == 0 else nx + direction[0]
-        ny = y + direction[1] if ny == 0 else ny + direction[1]
-        board.set_value(nx, ny, EMPTY_SQUARE)
+    for pair in captured_list:
+        board.set_value(pair[0], pair[1], EMPTY_SQUARE)
 
 
 def capture_opponent(board: Board, x, y, player):
@@ -46,6 +36,8 @@ def capture_opponent(board: Board, x, y, player):
     for dir in DIRECTIONS:
         # print(dir)
         if dfs_capture(board, x, y, player, dir, 1) == True:
-            captured_list.append([(x, y), dir])
-
+            captured_list = [
+                (x + dir[0], y + dir[1]),
+                (x + (dir[0] * 2), y + (dir[1] * 2)),
+            ]
     return captured_list

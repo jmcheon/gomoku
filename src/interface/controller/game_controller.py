@@ -136,8 +136,14 @@ class GameController:
     def is_capturing_stone(self, grid_x, grid_y):
         capture_list = self.game_model.capture_opponent(grid_x, grid_y)
         if capture_list:
-            self.game_model.place_stone(grid_x, grid_y, captured_list=capture_list)
-            self.view.append_log("capture gogo")
+            self.place_stone_and_update_board(grid_x, grid_y, capture_list)
+            print(capture_list)
+            coordinates = [
+                self.convert_pos_to_coordinates(x, y) for x, y in capture_list
+            ]
+            self.view.append_log(
+                f"Stone captured by Player {1 if self.game_model.board.turn == PLAYER_1 else 2} on {coordinates[0][0]}{coordinates[0][1]} and {coordinates[1][0]}{coordinates[1][1]}"
+            )
             return True
         return False
 
@@ -150,12 +156,20 @@ class GameController:
                 f"Game Over! Player {1 if self.game_model.board.turn == PLAYER_1 else 2} Wins!"
             )
             self.view.modal_window.open_modal()
-            self.view.append_log("Game Over. <br>")
+            self.view.append_log("Game Over.")
         elif self.game_model.is_draw():
             self.is_terminal = True
             self.add_reward_in_game_data()
             self.view.modal_window.set_modal_message(f"Game is drawn.")
-            self.view.append_log("Game is drawn.<br>")
+            self.view.append_log("Game is drawn.")
+
+    def place_stone_and_update_board(self, grid_x, grid_y, captured_list=None):
+        self.game_model.place_stone(grid_x, grid_y, captured_list=captured_list)
+        self.check_terminate_state()
+        self.game_model.change_player_turn()
+        self.view.update_board_and_player_turn(
+            self.game_model.board, self.game_model.record
+        )
 
     def convert_pos_to_coordinates(self, x, y):
         print("x, y", x, y)
@@ -176,14 +190,9 @@ class GameController:
                         break
                     if self.is_capturing_stone(grid_x, grid_y) is False:
                         if self.game_model.check_doublethree(grid_x, grid_y) is False:
-                            self.game_model.place_stone(grid_x, grid_y)
+                            self.place_stone_and_update_board(grid_x, grid_y)
                             self.view.append_log(
                                 f"Stone placed on {coordinates[0]}{coordinates[1]}"
-                            )
-                            self.check_terminate_state()
-                            self.game_model.change_player_turn()
-                            self.view.update_board_and_player_turn(
-                                self.game_model.board, self.game_model.record
                             )
                         else:
                             # TODO: change log message related
