@@ -129,8 +129,7 @@ class GameController:
 
     def is_already_occupied(self, grid_x, grid_y):
         if not self.game_model.board.is_empty_square(grid_x, grid_y):
-            # TODO: change log message
-            self.view.append_log("this cell is already occupied<br>")
+            self.view.append_log("this cell is already occupied")
             return True
         return False
 
@@ -138,7 +137,7 @@ class GameController:
         capture_list = self.game_model.capture_opponent(grid_x, grid_y)
         if capture_list:
             self.game_model.place_stone(grid_x, grid_y, captured_list=capture_list)
-            self.view.append_log("capture gogo <br>")
+            self.view.append_log("capture gogo")
             return True
         return False
 
@@ -151,17 +150,16 @@ class GameController:
                 f"Game Over! Player {1 if self.game_model.board.turn == PLAYER_1 else 2} Wins!"
             )
             self.view.modal_window.open_modal()
-            # TODO: change log message
             self.view.append_log("Game Over. <br>")
         elif self.game_model.is_draw():
             self.is_terminal = True
             self.add_reward_in_game_data()
             self.view.modal_window.set_modal_message(f"Game is drawn.")
-            # TODO: change log message
             self.view.append_log("Game is drawn.<br>")
 
     def convert_pos_to_coordinates(self, x, y):
-        return (x + 1, chr(ord("A") + y))
+        print("x, y", x, y)
+        return (y + 1, chr(ord("A") + x))
 
     def events(self):
         if self.game_model.board.turn == PLAYER_2 and self.mode == "single":
@@ -173,13 +171,14 @@ class GameController:
                 if event.button == 1:
                     # need this
                     grid_x, grid_y = self.view._convert_mouse_to_grid()
+                    coordinates = self.convert_pos_to_coordinates(grid_x, grid_y)
                     if self.is_already_occupied(grid_x, grid_y) == True:
                         break
                     if self.is_capturing_stone(grid_x, grid_y) is False:
                         if self.game_model.check_doublethree(grid_x, grid_y) is False:
                             self.game_model.place_stone(grid_x, grid_y)
                             self.view.append_log(
-                                f"Stone placed on {self.convert_pos_to_coordinates(grid_x,grid_y)[0]}{self.convert_pos_to_coordinates(grid_x,grid_y)[1]}<br>"
+                                f"Stone placed on {coordinates[0]}{coordinates[1]}"
                             )
                             self.check_terminate_state()
                             self.game_model.change_player_turn()
@@ -188,13 +187,13 @@ class GameController:
                             )
                         else:
                             # TODO: change log message related
-                            self.view.append_log(f"doublethree detected {123} <br>")
+                            self.view.append_log(
+                                f"Double-three detected around {coordinates[0]}{coordinates[1]}"
+                            )
                     self.view.text_box.update(5.0)
                 elif event.button == 3:
                     if self.game_model.undo_last_move() is False:
-                        self.view.append_log(
-                            "Trace is empty, cannot go back further<br>"
-                        )
+                        self.view.append_log("Trace is empty, cannot go back further")
             self.view.ui_manager.process_events(event)
 
     def events_selfplay(self):

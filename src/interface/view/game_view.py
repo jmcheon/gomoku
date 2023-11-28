@@ -422,5 +422,6 @@ class GameView:
         self.ui_manager.draw_ui(window_surface=self.screen)
         pygame.display.update()
 
-    def append_log(self, html_string):
+    def append_log(self, string):
+        html_string = string + "<br>"
         self.text_box.append_html_text(html_string)
