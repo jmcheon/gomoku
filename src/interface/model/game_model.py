@@ -1,7 +1,11 @@
 from config import *
+from src.game.game_util import make_list_to_direction
+from src.interface.model.capture import dfs_capture, remove_captured_list
+from src.interface.model.check_doublethree import (
+    check_continous_from_position,
+    check_next_only_range,
+)
 from src.game.board import Board, print_colored_text
-from src.game.capture import capture_opponent, remove_captured_list
-from src.game.doublethree_re import check_double_three
 from src.game.Player import Player
 
 
@@ -71,7 +75,53 @@ class GameModel:
         self.board.turn = PLAYER_2 if self.board.turn == PLAYER_1 else PLAYER_1
 
     def check_doublethree(self, x, y):
-        return check_double_three(self.board, x, y, self.board.turn)
+        def find_continuous_range():
+            for dir in DIRECTIONS:
+                if check_continous_from_position(
+                    self.board, x, y, dir, self.board.turn
+                ):
+                    return (
+                        make_list_to_direction(
+                            self.board, x, y, dir, 5, self.board.turn
+                        ),
+                        dir,
+                    )
+            return None, None
+
+        continous_range, direction = find_continuous_range()
+        if direction is None:
+            for i in range(len(DIRECTIONS) // 2):
+                continous_range = check_next_only_range(
+                    self.board, x, y, DIRECTIONS[i], self.board.turn
+                )
+                if continous_range:
+                    direction = DIRECTIONS[i]
+                    break
+        if direction is not None:
+            directions_copy = [
+                d
+                for d in DIRECTIONS
+                if d != direction and d != (-direction[0], -direction[1])
+            ]
+            for one_place in continous_range:
+                for dir in directions_copy:
+                    if check_continous_from_position(
+                        self.board, one_place[0], one_place[1], dir, self.board.turn
+                    ):
+                        return True
+                    elif check_next_only_range(
+                        self.board, one_place[0], one_place[1], dir, self.board.turn
+                    ):
+                        return True
+        return False
 
     def capture_opponent(self, x, y):
-        return capture_opponent(self.board, x, y, self.board.turn)
+        captured_list = []
+        for dir in DIRECTIONS:
+            # print(dir)
+            if dfs_capture(self.board, x, y, self.board.turn, dir, 1) == True:
+                captured_list = [
+                    (x + dir[0], y + dir[1]),
+                    (x + (dir[0] * 2), y + (dir[1] * 2)),
+                ]
+        return captured_list
