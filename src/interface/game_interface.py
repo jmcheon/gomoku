@@ -4,7 +4,7 @@ from config import *
 from pygame_gui.elements.ui_text_box import UITextBox
 from interface.model.game_model import GameModel
 from src.algo.mcts import MCTS
-from src.game.board import Board
+from src.game.Board import Board
 from src.game.capture import capture_opponent, remove_captured_list
 from game.doublethree_old import check_double_three
 

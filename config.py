@@ -71,3 +71,4 @@ BATCH_SIZE = 5
 # [MCTS]
 
 # [Path]
+DATA_DIR = "data"

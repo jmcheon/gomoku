@@ -2,7 +2,7 @@ from src.interface.controller.game_controller import GameController
 from src.algo.conv import create_CNN_model, create_mini_CNN_model
 from src.algo.mcts import MCTS
 from config import *
-from src.game.board import Board
+from src.game.Board import Board
 import argparse
 
 

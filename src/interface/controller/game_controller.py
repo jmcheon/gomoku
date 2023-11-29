@@ -6,6 +6,7 @@ from config import *
 from src.algo.mcts import MCTS
 from src.interface.model.game_model import GameModel
 from src.interface.view.game_view import GameView
+from src.game.utils import print_colored_text
 
 # from src.interface.game_interface import GameInterface
 
@@ -67,20 +68,23 @@ class GameController:
                 else:
                     self.init_game()  # Go back to the main menu
 
-    def get_reward(self):
+    def get_reward(self, turn):
+        # print(f"winner at getting reward: {turn}")
         if self.winner == None:
             return 0
-        elif self.winner == self.game_model.board.turn:
+        elif self.winner == turn:
             return 1
         else:
             return -1
 
     def add_reward_in_game_data(self):
         game_data_with_rewards = []
-        print(f"winner: {self.winner}, turn: {self.game_model.board.turn}")
+        print_colored_text(
+            f"winner: {self.winner}, turn: {self.game_model.board.turn}", "cyan"
+        )
         print(f"game_data: {self.game_model.game_data}")
         for board, action in self.game_model.game_data:
-            reward = self.get_reward()
+            reward = self.get_reward(board.turn)
             game_data_with_rewards.append((board, action, reward))
             self.game_model.game_data = game_data_with_rewards
         print(self.game_model.game_data)
@@ -105,8 +109,10 @@ class GameController:
 
         return file_name
 
+    # TODO: check same game data
     def save_game_data(self, file_name):
-        with open(file_name, "wb") as f:
+        print_colored_text(f"Saving game data into {DATA_DIR}/{file_name}", "cyan")
+        with open(f"{DATA_DIR}/{file_name}", "wb") as f:
             pickle.dump(self.game_model.game_data, f)
 
     def load_game_data(self, file_name):
@@ -150,8 +156,10 @@ class GameController:
     def check_terminate_state(self):
         if self.game_model.board.is_win_board():
             self.winner = self.game_model.board.turn
+            print(f"winner at terminal state: {self.game_model.board.turn}")
             self.is_terminal = True
             self.add_reward_in_game_data()
+            self.save_game_data(self.get_game_data_file_name())
             self.view.modal_window.set_modal_message(
                 f"Game Over! Player {1 if self.game_model.board.turn == PLAYER_1 else 2} Wins!"
             )
@@ -160,6 +168,7 @@ class GameController:
         elif self.game_model.is_draw():
             self.is_terminal = True
             self.add_reward_in_game_data()
+            self.save_game_data(self.get_game_data_file_name())
             self.view.modal_window.set_modal_message(f"Game is drawn.")
             self.view.append_log("Game is drawn.")
 

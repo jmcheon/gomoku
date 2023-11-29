@@ -5,7 +5,7 @@ from src.interface.model.check_doublethree import (
     check_continous_from_position,
     check_next_only_range,
 )
-from src.game.board import Board, print_colored_text
+from src.game.Board import Board
 from src.game.Player import Player
 
 

@@ -1,5 +1,5 @@
 from config import NUM_LINES
-from src.game.board import Board
+from src.game.Board import Board
 
 
 def is_valid_position(position):

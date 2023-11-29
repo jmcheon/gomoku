@@ -1,4 +1,4 @@
-from src.game.board import Board
+from src.game.Board import Board
 from config import *
 from src.game.game_util import *
 
