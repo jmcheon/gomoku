@@ -1,6 +1,6 @@
-from src.game.board import Board
+from srcs.game.board import Board
 from config import *
-from src.game.doublethree import is_valid_position
+from srcs.game.doublethree import is_valid_position
 
 
 directions = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]

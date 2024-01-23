@@ -3,11 +3,11 @@ from datetime import datetime
 
 import pygame
 from config import *
-from src.algo.mcts import MCTS
-from src.interface.model.game_model import GameModel
-from src.interface.view.game_view import GameView
+from srcs.algo.mcts import MCTS
+from srcs.interface.model.game_model import GameModel
+from srcs.interface.view.game_view import GameView
 
-# from src.interface.game_interface import GameInterface
+# from srcs.interface.game_interface import GameInterface
 
 
 class GameController:

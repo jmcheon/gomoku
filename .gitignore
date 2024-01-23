@@ -1,3 +1,4 @@
+/srcs/multilayer_perceptron/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

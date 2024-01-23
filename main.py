@@ -1,8 +1,8 @@
-from src.interface.controller.game_controller import GameController
-from src.algo.conv import create_CNN_model, create_mini_CNN_model
-from src.algo.mcts import MCTS
+from srcs.interface.controller.game_controller import GameController
+from srcs.algo.conv import create_CNN_model, create_mini_CNN_model
+from srcs.algo.mcts import MCTS
 from config import *
-from src.game.board import Board
+from srcs.game.board import Board
 import argparse
 
 

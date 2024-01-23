@@ -1,4 +1,4 @@
-from src.game.board import Board
+from srcs.game.board import Board
 from config import *
 
 

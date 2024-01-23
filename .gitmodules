@@ -1,0 +1,3 @@
+[submodule "srcs/multilayer_perceptron"]
+	path = srcs/multilayer_perceptron
+	url = https://github.com/jmcheon/multilayer_perceptron
